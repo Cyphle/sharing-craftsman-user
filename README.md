@@ -10,7 +10,7 @@ User microservice based on OAuth2 authentication schema. (Simplified schema with
 - Renew token
 
 ## Tech
-Based on NodeJS & Express ?
+Spring OAuth2
 
 ## Requests flows
 TO DO
