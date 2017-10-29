@@ -3,6 +3,6 @@ version: '2'
 services:
   user:
     build: .
-    container_name: mycontainer
+    container_name: sc_user
     ports:
       - 8080:8080
