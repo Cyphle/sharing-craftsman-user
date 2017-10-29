@@ -38,5 +38,4 @@ Try:
 
 - This app needs a page to register manually clients
 
-
-- Need to generate JWT token to send mailing for access ?? or just generate a random token associated with each guest
+- Add permitAll route /getUserDetails to allow other applications to get user infos
