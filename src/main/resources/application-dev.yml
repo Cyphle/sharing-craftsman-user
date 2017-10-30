@@ -52,9 +52,6 @@ bonecp:
   url: jdbc:mysql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?useUnicode=yes&characterEncoding=UTF-8
   username: ${DATABASE_USER}
   password: ${DATABASE_PASSWORD}
-#  url: jdbc:mysql://192.168.1.18:3306/sharingcraftsmanuser?useUnicode=yes&characterEncoding=UTF-8
-#  username: root
-#  password: root
   idleMaxAgeInMinutes: 240
   idleConnectionTestPeriodInMinutes: 60
   maxConnectionsPerPartition: 10
