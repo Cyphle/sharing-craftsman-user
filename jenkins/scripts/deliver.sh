@@ -6,6 +6,7 @@ echo pwd
 echo 'To complete this script. It will have to copy files somewhere on a server (jar + docker-compose + dockerfile + deploy.sh)'
 echo 'deploy.sh will be a script that search for container names and image names, destroy them and run docker-compose up'
 echo 'To allow jenkins to connect to server as ssh, create key and add to server'
+echo 'See to deploy over ssh: https://wiki.jenkins.io/display/JENKINS/Publish+Over+SSH+Plugin'
 
 
 #echo 'The following Maven command installs your Maven-built Java application'
