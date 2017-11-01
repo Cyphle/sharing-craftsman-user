@@ -2,6 +2,12 @@
 
 pwd
 echo pwd
+
+echo 'To complete this script. It will have to copy files somewhere on a server (jar + docker-compose + dockerfile + deploy.sh)'
+echo 'deploy.sh will be a script that search for container names and image names, destroy them and run docker-compose up'
+echo 'To allow jenkins to connect to server as ssh, create key and add to server'
+
+
 #echo 'The following Maven command installs your Maven-built Java application'
 #echo 'into the local Maven repository, which will ultimately be stored in'
 #echo 'Jenkins''s local Maven repository (and the "maven-repository" Docker data'
