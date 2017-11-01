@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Deliver') {
             steps {
-                sh 'docker-compose up'
+                sh 'chmod +x ./jenkins/scripts/deliver.sh'
             }
         }
     }
