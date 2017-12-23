@@ -7,6 +7,8 @@ import fr.sharingcraftsman.user.domain.utils.Crypter;
 import org.junit.Before;
 import org.junit.Test;
 
+import static fr.sharingcraftsman.user.domain.model.Password.passwordBuilder;
+import static fr.sharingcraftsman.user.domain.model.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -19,16 +21,16 @@ public class CredentialTest {
   }
 
   @Test
-  public void should_crypt_credentials_when_created() throws Exception {
-    Credentials credentials = Credentials.buildEncryptedCredentials(crypter, "john@doe.fr", "password");
+  public void should_crypt_password_when_created() throws Exception {
+    Credentials credentials = Credentials.buildEncryptedCredentials(crypter, usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
 
-    assertThat(credentials.getEncryptedPassword()).isEqualTo("T49xWf/l7gatvfVwethwDw==");
+    assertThat(credentials.getPassword()).isEqualTo("T49xWf/l7gatvfVwethwDw==");
   }
 
   @Test
-  public void should_throw_invalid_username_when_username_is_empty() throws Exception {
+  public void should_throw_username_exception_when_username_is_empty() throws Exception {
     try {
-      Credentials credentials = Credentials.buildEncryptedCredentials(crypter, "", "john@doe.fr");
+      Credentials credentials = Credentials.buildEncryptedCredentials(crypter, usernameBuilder.from(""), passwordBuilder.from("john@doe.fr"));
       fail("Should have thrown a UsernameException");
     } catch (CredentialException e) {
       assertThat(e.getMessage()).isEqualTo("Username cannot be empty");
@@ -36,9 +38,9 @@ public class CredentialTest {
   }
 
   @Test
-  public void should_throw_invalid_password_when_password_is_empty() throws Exception {
+  public void should_throw_password_exception_when_password_is_empty() throws Exception {
     try {
-      Credentials credentials = Credentials.buildEncryptedCredentials(crypter, "john@doe.fr", "");
+      Credentials credentials = Credentials.buildEncryptedCredentials(crypter, usernameBuilder.from("john@doe.fr"), passwordBuilder.from(""));
       fail("Should have throws a PasswordException");
     } catch (CredentialException e) {
       assertThat(e.getMessage()).isEqualTo("Password cannot be empty");

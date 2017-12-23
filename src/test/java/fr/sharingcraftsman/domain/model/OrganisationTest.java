@@ -12,6 +12,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static fr.sharingcraftsman.user.domain.model.Password.passwordBuilder;
+import static fr.sharingcraftsman.user.domain.model.Username.usernameBuilder;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,7 +31,7 @@ public class OrganisationTest {
 
   @Test
   public void should_save_user_when_registering() throws Exception {
-    Credentials credentials = Credentials.buildEncryptedCredentials(crypter, "john@doe.fr", "password");
+    Credentials credentials = Credentials.buildEncryptedCredentials(crypter, usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
 
     organisation.createNewCollaborator(credentials);
 

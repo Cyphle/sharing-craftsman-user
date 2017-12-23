@@ -25,10 +25,18 @@ public class AESCrypter implements Crypter {
   private SecretKeySpec secretKeySpec;
   private Cipher cipher;
 
-  public AESCrypter() throws UnsupportedEncodingException, NoSuchPaddingException, NoSuchAlgorithmException {
-    ivParameterSpec = new IvParameterSpec(SECRET_KEY_1.getBytes("UTF-8"));
-    secretKeySpec = new SecretKeySpec(SECRET_KEY_2.getBytes("UTF-8"), "AES");
-    cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+  public AESCrypter() {
+    try {
+      ivParameterSpec = new IvParameterSpec(SECRET_KEY_1.getBytes("UTF-8"));
+      secretKeySpec = new SecretKeySpec(SECRET_KEY_2.getBytes("UTF-8"), "AES");
+      cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+    } catch (UnsupportedEncodingException e) {
+      log.error("AESCrypter constructor - UnsupportedEncodingException : " + e.getMessage());
+    } catch (NoSuchPaddingException e) {
+      log.error("AESCrypter constructor - NoSuchPaddingException : " + e.getMessage());
+    } catch (NoSuchAlgorithmException e) {
+      log.error("AESCrypter constructor - NoSuchAlgorithmException : " + e.getMessage());
+    }
   }
 
   @Override

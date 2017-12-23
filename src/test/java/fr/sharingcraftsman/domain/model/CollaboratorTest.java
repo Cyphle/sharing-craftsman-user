@@ -7,6 +7,8 @@ import fr.sharingcraftsman.user.domain.utils.Crypter;
 import org.junit.Before;
 import org.junit.Test;
 
+import static fr.sharingcraftsman.user.domain.model.Password.passwordBuilder;
+import static fr.sharingcraftsman.user.domain.model.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CollaboratorTest {
@@ -19,7 +21,7 @@ public class CollaboratorTest {
 
   @Test
   public void should_create_user_from_valid_credentials() throws Exception {
-    Collaborator collaborator = Collaborator.from(Credentials.buildEncryptedCredentials(crypter, "john@doe.fr", "password"));
+    Collaborator collaborator = Collaborator.from(Credentials.buildEncryptedCredentials(crypter, usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password")));
 
     assertThat(collaborator).isNotNull();
   }

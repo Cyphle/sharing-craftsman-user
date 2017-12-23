@@ -1,42 +1,26 @@
 package fr.sharingcraftsman.user.domain.model;
 
 import fr.sharingcraftsman.user.domain.exceptions.CredentialException;
-import fr.sharingcraftsman.user.domain.exceptions.PasswordException;
-import fr.sharingcraftsman.user.domain.exceptions.UsernameException;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
 
 public class Credentials {
-  private String username;
-  private String password;
-  private final String encryptedPassword;
+  private Password password;
+  private Username username;
 
-  public Credentials(Crypter crypter, String username, String password) {
+  public Credentials(Username username, Password password) {
     this.username = username;
-    this.password = password;
-    this.encryptedPassword = crypter.encrypt(password);
+    this.password = password.getEncryptedVersion();
   }
 
   public String getUsername() {
-    return username;
+    return username.getUsername();
   }
 
-  public String getEncryptedPassword() {
-    return encryptedPassword;
+  public String getPassword() {
+    return password.getPassword();
   }
 
-  public static Credentials buildEncryptedCredentials(Crypter crypter, String username, String password) throws CredentialException {
-    validateUsername(username);
-    validatePassword(password);
-    return new Credentials(crypter, username, password);
-  }
-
-  private static void validateUsername(String username) throws CredentialException {
-    if (username.isEmpty())
-      throw new UsernameException("Username cannot be empty");
-  }
-
-  private static void validatePassword(String password) throws PasswordException {
-    if (password.isEmpty())
-      throw new PasswordException("Password cannot be empty");
+  public static Credentials buildEncryptedCredentials(Crypter crypter, Username username, Password password) throws CredentialException {
+    return new Credentials(username, password);
   }
 }

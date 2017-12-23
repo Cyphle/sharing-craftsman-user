@@ -17,7 +17,7 @@ public class Collaborator {
 
   public static Collaborator from(Credentials credentials) {
     Collaborator collaborator = new Collaborator(credentials.getUsername());
-    collaborator.setPassword(credentials.getEncryptedPassword());
+    collaborator.setPassword(credentials.getPassword());
     return collaborator;
   }
 }
