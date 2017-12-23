@@ -1,7 +1,6 @@
 package fr.sharingcraftsman.acceptance;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.config.SecurityConfig;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;

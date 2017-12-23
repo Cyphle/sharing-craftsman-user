@@ -4,58 +4,24 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.restassured.RestAssured;
-import org.junit.Before;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.get;
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 public class MyServiceSteps extends SpringIntegrationTest {
-  private MockMvc mvc;
-
-  @Autowired
-  private WebApplicationContext context;
-
-  private MyService service;
-  private boolean success;
-
-  private String ADMIN_USER = "user";
-  private String PASSWORD = "world";
   private String version;
 
-
-  @Before
-  public void setup() {
-    this.mvc = MockMvcBuilders
-            .webAppContextSetup(context)
-            .apply(springSecurity())
-            .build();
-  }
-
-  @Given("I go on the application")
-  public void initializeApplication() {
-    if (this.mvc == null) {
-      this.mvc = MockMvcBuilders
-              .webAppContextSetup(context)
-              .apply(springSecurity())
-              .build();
-    }
+  @Given("I setup application")
+  public void setUp() throws Exception {
+    RestAssured.baseURI = "http://localhost";
+    RestAssured.port = 8080;
   }
 
   @Given("^my service exists$")
   public void my_service_exists() throws Throwable {
-    MvcResult mvcResult = this.mvc.perform(MockMvcRequestBuilders.get("http://localhost:8080/version")).andReturn();
-
-    version = mvcResult.getResponse().getContentAsString();
+    Response response = get("/version");
+    String toto = "toto";
   }
 
   @When("^I call my service$")

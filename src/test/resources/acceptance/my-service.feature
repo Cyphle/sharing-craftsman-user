@@ -1,7 +1,7 @@
 Feature: Features of my service
 
-  Background: Initialize application
-    Given I go on the application
+  Background: Setup application
+    Given I setup application
 
   Scenario: Calling my service
     Given my service exists

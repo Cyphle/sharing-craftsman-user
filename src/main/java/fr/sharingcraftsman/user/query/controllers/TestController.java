@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.view.controllers;
+package fr.sharingcraftsman.user.query.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
