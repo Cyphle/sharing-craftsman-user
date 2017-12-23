@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.domain.exceptions;
+package fr.sharingcraftsman.user.domain.exceptions.company;
 
 public class AlreadyExistingCollaborator extends CollaboratorException {
   public AlreadyExistingCollaborator(String message) {

@@ -1,6 +1,8 @@
-package fr.sharingcraftsman.user.domain.model;
+package fr.sharingcraftsman.user.domain.model.authentication;
 
-import fr.sharingcraftsman.user.domain.exceptions.CredentialException;
+import fr.sharingcraftsman.user.domain.exceptions.authentication.CredentialException;
+import fr.sharingcraftsman.user.domain.model.common.Password;
+import fr.sharingcraftsman.user.domain.model.common.Username;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
 
 public class Credentials {

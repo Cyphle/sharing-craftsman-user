@@ -1,5 +1,8 @@
-package fr.sharingcraftsman.user.domain.model;
+package fr.sharingcraftsman.user.domain.model.company;
 
+import fr.sharingcraftsman.user.domain.model.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.model.common.Password;
+import fr.sharingcraftsman.user.domain.model.common.Username;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode

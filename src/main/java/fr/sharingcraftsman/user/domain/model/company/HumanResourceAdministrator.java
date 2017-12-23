@@ -1,4 +1,6 @@
-package fr.sharingcraftsman.user.domain.model;
+package fr.sharingcraftsman.user.domain.model.company;
+
+import fr.sharingcraftsman.user.domain.model.common.Username;
 
 public interface HumanResourceAdministrator {
   void saveCollaborator(Collaborator collaborator);

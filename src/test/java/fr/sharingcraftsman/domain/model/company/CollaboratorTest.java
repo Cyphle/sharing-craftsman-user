@@ -1,14 +1,14 @@
-package fr.sharingcraftsman.domain.model;
+package fr.sharingcraftsman.domain.model.company;
 
-import fr.sharingcraftsman.user.domain.model.Collaborator;
-import fr.sharingcraftsman.user.domain.model.Credentials;
+import fr.sharingcraftsman.user.domain.model.company.Collaborator;
+import fr.sharingcraftsman.user.domain.model.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.utils.AESCrypter;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
 import org.junit.Before;
 import org.junit.Test;
 
-import static fr.sharingcraftsman.user.domain.model.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.model.Username.usernameBuilder;
+import static fr.sharingcraftsman.user.domain.model.common.Password.passwordBuilder;
+import static fr.sharingcraftsman.user.domain.model.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CollaboratorTest {
