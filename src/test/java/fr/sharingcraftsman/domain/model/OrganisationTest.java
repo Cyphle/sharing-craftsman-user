@@ -1,9 +1,7 @@
 package fr.sharingcraftsman.domain.model;
 
-import fr.sharingcraftsman.user.domain.model.Collaborator;
-import fr.sharingcraftsman.user.domain.model.Credentials;
-import fr.sharingcraftsman.user.domain.model.HumanResourceAdministrator;
-import fr.sharingcraftsman.user.domain.model.Organisation;
+import fr.sharingcraftsman.user.domain.exceptions.CollaboratorException;
+import fr.sharingcraftsman.user.domain.model.*;
 import fr.sharingcraftsman.user.domain.utils.AESCrypter;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
 import org.junit.Before;
@@ -14,6 +12,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static fr.sharingcraftsman.user.domain.model.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.model.Username.usernameBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,10 +33,27 @@ public class OrganisationTest {
 
   @Test
   public void should_save_user_when_registering() throws Exception {
+    given(humanResourceAdministrator.getCollaborator(any(Username.class))).willReturn(new UnkownCollaborator());
+
     Credentials credentials = Credentials.buildEncryptedCredentials(crypter, usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
 
     organisation.createNewCollaborator(credentials);
 
     verify(humanResourceAdministrator).saveCollaborator(Collaborator.from(credentials));
+  }
+
+  @Test
+  public void should_throw_collaborator_exception_if_user_already_exists() throws Exception {
+    try {
+      given(humanResourceAdministrator.getCollaborator(any(Username.class))).willReturn(
+        new Collaborator(usernameBuilder.from("john@doe.fr"))
+      );
+      Credentials credentials = Credentials.buildEncryptedCredentials(crypter, usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
+
+      organisation.createNewCollaborator(credentials);
+      fail("Should throw CollaboratorException");
+    } catch (CollaboratorException e) {
+      assertThat(e.getMessage()).isEqualTo("Collaborator already exists with username: john@doe.fr");
+    }
   }
 }

@@ -3,7 +3,9 @@ package fr.sharingcraftsman.user.domain.model;
 import fr.sharingcraftsman.user.domain.exceptions.PasswordException;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
 import fr.sharingcraftsman.user.domain.utils.CrypterFactory;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode
 public class Password {
   public static PasswordBuilder passwordBuilder = new PasswordBuilder();
   public static Crypter crypter = CrypterFactory.getCrypter();

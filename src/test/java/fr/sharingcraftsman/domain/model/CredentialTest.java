@@ -24,7 +24,7 @@ public class CredentialTest {
   public void should_crypt_password_when_created() throws Exception {
     Credentials credentials = Credentials.buildEncryptedCredentials(crypter, usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
 
-    assertThat(credentials.getPassword()).isEqualTo("T49xWf/l7gatvfVwethwDw==");
+    assertThat(credentials.getPassword()).isEqualTo(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="));
   }
 
   @Test

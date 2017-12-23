@@ -12,12 +12,16 @@ public class Credentials {
     this.password = password.getEncryptedVersion();
   }
 
-  public String getUsername() {
-    return username.getUsername();
+  public Username getUsername() {
+    return username;
   }
 
-  public String getPassword() {
-    return password.getPassword();
+  public Password getPassword() {
+    return password;
+  }
+
+  public String getUsernameContent() {
+    return username.getUsername();
   }
 
   public static Credentials buildEncryptedCredentials(Crypter crypter, Username username, Password password) throws CredentialException {
