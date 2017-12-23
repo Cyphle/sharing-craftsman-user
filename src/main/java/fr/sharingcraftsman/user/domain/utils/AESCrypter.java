@@ -14,7 +14,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 
 public class AESCrypter implements Crypter {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
