@@ -16,6 +16,10 @@ public class Credentials {
     this.encryptedPassword = crypter.encrypt(password);
   }
 
+  public String getUsername() {
+    return username;
+  }
+
   public String getEncryptedPassword() {
     return encryptedPassword;
   }

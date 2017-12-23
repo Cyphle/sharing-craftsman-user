@@ -1,7 +1,7 @@
 FROM openjdk:8-jdk-alpine
 
 VOLUME /tmp
-ADD target/user-1.0-SNAPSHOT.jar app.jar
+ADD target/collaborator-1.0-SNAPSHOT.jar app.jar
 
 ENV JAVA_OPTS=""
 

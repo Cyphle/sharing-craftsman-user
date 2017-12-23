@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  user:
+  collaborator:
     build: .
     container_name: sc_user
     ports:
