@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.acceptance;
+package fr.sharingcraftsman.acceptance.config;
 
 import fr.sharingcraftsman.user.UserApplication;
 import org.springframework.boot.test.context.SpringBootContextLoader;
@@ -13,5 +13,5 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @WebAppConfiguration
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class SpringIntegrationTest {
+public class SpringAcceptanceTestConfig {
 }

@@ -38,6 +38,13 @@ spring:
     validationQuery: SELECT 1
   cache:
     type: NONE
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+      hibernate: ERROR
 # JPA
   jpa:
     show-sql: true

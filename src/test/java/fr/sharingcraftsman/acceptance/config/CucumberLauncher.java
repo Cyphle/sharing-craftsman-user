@@ -1,8 +1,8 @@
-package fr.sharingcraftsman.acceptance;
+package fr.sharingcraftsman.acceptance.config;
 
 import cucumber.api.junit.Cucumber;
 import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
-public class MyServiceTest {
+public class CucumberLauncher {
 }
