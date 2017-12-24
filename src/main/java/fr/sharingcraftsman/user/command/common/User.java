@@ -22,7 +22,7 @@ public class User {
   @Column(name = "password")
   private String password;
   @Column(name = "is_active")
-  private boolean isActive;
+  private boolean isActive = true;
   @Column(name = "creation_date")
   private Date creationDate;
   @Column(name = "last_update_date")
@@ -33,5 +33,69 @@ public class User {
   public User(String username, String password) {
     this.username = username;
     this.password = password;
+  }
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public String getLastname() {
+    return lastname;
+  }
+
+  public void setLastname(String lastname) {
+    this.lastname = lastname;
+  }
+
+  public String getFirstname() {
+    return firstname;
+  }
+
+  public void setFirstname(String firstname) {
+    this.firstname = firstname;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public boolean isActive() {
+    return isActive;
+  }
+
+  public void setActive(boolean active) {
+    isActive = active;
+  }
+
+  public Date getCreationDate() {
+    return creationDate;
+  }
+
+  public void setCreationDate(Date creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public Date getLastUpdateDate() {
+    return lastUpdateDate;
+  }
+
+  public void setLastUpdateDate(Date lastUpdateDate) {
+    this.lastUpdateDate = lastUpdateDate;
   }
 }

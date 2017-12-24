@@ -15,6 +15,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,5 +37,14 @@ public class UserAdapterTest {
     userAdapter.saveCollaborator((Collaborator) collaborator);
 
     verify(userRepository).save(new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+  }
+
+  @Test
+  public void should_get_user_by_username() throws Exception {
+    given(userRepository.findByUsername("john@doe.fr")).willReturn(new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+
+    Person collaborator = userAdapter.getCollaborator(usernameBuilder.from("john@doe.fr"));
+
+    assertThat((Collaborator) collaborator).isEqualTo(Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"))));
   }
 }
