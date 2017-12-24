@@ -1,8 +1,8 @@
-package fr.sharingcraftsman.user.command.adapters;
+package fr.sharingcraftsman.user.infrastructure.adapters;
 
-import fr.sharingcraftsman.user.command.common.User;
-import fr.sharingcraftsman.user.command.pivots.UserPivot;
-import fr.sharingcraftsman.user.command.repositories.UserRepository;
+import fr.sharingcraftsman.user.infrastructure.models.User;
+import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import fr.sharingcraftsman.user.domain.authentication.CredentialException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
@@ -13,15 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserAdapter implements HumanResourceAdministrator {
   private UserRepository userRepository;
+  private DateService dateService;
 
   @Autowired
-  public UserAdapter(UserRepository userRepository) {
+  public UserAdapter(UserRepository userRepository, DateService dateService) {
     this.userRepository = userRepository;
+    this.dateService = dateService;
   }
 
   @Override
-  public void saveCollaborator(Collaborator collaborator) {
+  public void createNewCollaborator(Collaborator collaborator) {
     User user = UserPivot.fromDomainToInfra(collaborator);
+    user.setCreationDate(dateService.now());
+    user.setLastUpdateDate(dateService.now());
     userRepository.save(user);
   }
 

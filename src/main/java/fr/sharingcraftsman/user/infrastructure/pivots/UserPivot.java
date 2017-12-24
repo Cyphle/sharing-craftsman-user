@@ -1,6 +1,6 @@
-package fr.sharingcraftsman.user.command.pivots;
+package fr.sharingcraftsman.user.infrastructure.pivots;
 
-import fr.sharingcraftsman.user.command.common.User;
+import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.domain.authentication.CredentialException;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
 

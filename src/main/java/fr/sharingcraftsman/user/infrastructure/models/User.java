@@ -1,6 +1,7 @@
-package fr.sharingcraftsman.user.command.common;
+package fr.sharingcraftsman.user.infrastructure.models;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -8,6 +9,7 @@ import java.util.Date;
 @Entity
 @Table(name = "users")
 @EqualsAndHashCode
+@ToString
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)

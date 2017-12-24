@@ -15,7 +15,7 @@ public class Organisation {
       throw new AlreadyExistingCollaborator("Collaborator already exists with username: " + credentials.getUsernameContent());
 
     Collaborator newCollaborator = Collaborator.from(credentials);
-    humanResourceAdministrator.saveCollaborator(newCollaborator);
+    humanResourceAdministrator.createNewCollaborator(newCollaborator);
   }
 
   private boolean collaboratorExists(Username username) {

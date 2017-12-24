@@ -1,7 +1,7 @@
-package fr.sharingcraftsman.user.command.repositories;
+package fr.sharingcraftsman.user.infrastructure.repositories;
 
 
-import fr.sharingcraftsman.user.command.common.User;
+import fr.sharingcraftsman.user.infrastructure.models.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 

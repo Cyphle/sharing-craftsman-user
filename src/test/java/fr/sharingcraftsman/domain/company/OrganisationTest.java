@@ -44,7 +44,7 @@ public class OrganisationTest {
 
     organisation.createNewCollaborator(credentials);
 
-    verify(humanResourceAdministrator).saveCollaborator(Collaborator.from(credentials));
+    verify(humanResourceAdministrator).createNewCollaborator(Collaborator.from(credentials));
   }
 
   @Test
