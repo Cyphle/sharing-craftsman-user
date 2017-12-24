@@ -8,12 +8,16 @@ import fr.sharingcraftsman.acceptance.dsl.LoginDsl;
 import fr.sharingcraftsman.acceptance.dsl.TokenDsl;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.springframework.boot.context.embedded.LocalServerPort;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
   private Response response;
+//
+//  @LocalServerPort
+//  int port;
 
   @Given("The application is setup")
   public void setupApplication() {

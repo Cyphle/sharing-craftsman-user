@@ -6,12 +6,17 @@ import cucumber.api.java.en.When;
 import fr.sharingcraftsman.acceptance.config.SpringAcceptanceTestConfig;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.springframework.boot.context.embedded.LocalServerPort;
 
 import static io.restassured.RestAssured.get;
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MyServiceSteps extends SpringAcceptanceTestConfig {
   private String version;
+
+  @LocalServerPort
+  int port;
 
   @Given("I setup application")
   public void setUp() throws Exception {
@@ -21,7 +26,7 @@ public class MyServiceSteps extends SpringAcceptanceTestConfig {
 
   @Given("^my service exists$")
   public void my_service_exists() throws Throwable {
-    Response response = get("/version");
+    Response response = given().port(port).get("/version");
     String toto = "toto";
   }
 
