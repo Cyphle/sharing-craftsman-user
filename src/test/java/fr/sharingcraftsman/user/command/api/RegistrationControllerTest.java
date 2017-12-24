@@ -3,18 +3,15 @@ package fr.sharingcraftsman.user.command.api;
 import fr.sharingcraftsman.user.UserApplication;
 import fr.sharingcraftsman.user.command.models.Login;
 import fr.sharingcraftsman.user.command.services.RegistrationService;
-import fr.sharingcraftsman.user.infrastructure.adapters.DateService;
-import fr.sharingcraftsman.user.infrastructure.models.User;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import fr.sharingcraftsman.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -22,7 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,6 +47,8 @@ public class RegistrationControllerTest {
 
   @Test
   public void should_register_a_new_user() throws Exception {
+    given(registrationService.registerUser(any(Login.class))).willReturn(ResponseEntity.ok().build());
+
     Login login = new Login("john@doe.fr", "password");
 
     this.mvc.perform(post("/user/register")

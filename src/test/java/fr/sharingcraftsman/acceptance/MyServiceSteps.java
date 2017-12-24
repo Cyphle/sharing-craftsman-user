@@ -4,10 +4,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.acceptance.config.SpringAcceptanceTestConfig;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MyServiceSteps extends SpringAcceptanceTestConfig {
@@ -15,14 +12,14 @@ public class MyServiceSteps extends SpringAcceptanceTestConfig {
 
   @Given("I setup application")
   public void setUp() throws Exception {
-    RestAssured.baseURI = "http://localhost";
-    RestAssured.port = 8080;
+//    RestAssured.baseURI = "http://localhost";
+//    RestAssured.port = 8080;
   }
 
   @Given("^my service exists$")
   public void my_service_exists() throws Throwable {
-    Response response = given().get("/version");
-    String toto = "toto";
+//    Response response = given().get("/version");
+//    String toto = "toto";
   }
 
   @When("^I call my service$")

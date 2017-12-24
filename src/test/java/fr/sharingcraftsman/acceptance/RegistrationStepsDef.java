@@ -6,25 +6,14 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.acceptance.config.SpringAcceptanceTestConfig;
 import fr.sharingcraftsman.acceptance.dsl.LoginDsl;
-import fr.sharingcraftsman.acceptance.dsl.TokenDsl;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static io.restassured.RestAssured.get;
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
   private MockMvc mvc;
