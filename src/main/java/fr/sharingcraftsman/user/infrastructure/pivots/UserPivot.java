@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.infrastructure.pivots;
 
 import fr.sharingcraftsman.user.infrastructure.models.User;
-import fr.sharingcraftsman.user.domain.authentication.CredentialException;
+import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
 
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
@@ -13,7 +13,7 @@ public class UserPivot {
     return new User(collaborator.getUsername(), collaborator.getPassword());
   }
 
-  public static Collaborator fromInfraToDomain(User user) throws CredentialException {
+  public static Collaborator fromInfraToDomain(User user) throws CredentialsException {
     Collaborator collaborator = collaboratorBuilder
             .withUsername(usernameBuilder.from(user.getUsername()))
             .withPassword(passwordBuilder.from(user.getPassword()))

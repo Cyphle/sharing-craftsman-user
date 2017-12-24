@@ -24,7 +24,7 @@ public class Credentials {
     return username.getUsername();
   }
 
-  public static Credentials buildEncryptedCredentials(Username username, Password password) throws CredentialException {
+  public static Credentials buildEncryptedCredentials(Username username, Password password) throws CredentialsException {
     return new Credentials(username, password);
   }
 }

@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.domain.authentication;
 
-import fr.sharingcraftsman.user.domain.authentication.CredentialException;
+import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.utils.AESCrypter;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
@@ -32,7 +32,7 @@ public class CredentialTest {
     try {
       Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from(""), passwordBuilder.from("john@doe.fr"));
       fail("Should have thrown a UsernameException");
-    } catch (CredentialException e) {
+    } catch (CredentialsException e) {
       assertThat(e.getMessage()).isEqualTo("Username cannot be empty");
     }
   }
@@ -42,7 +42,7 @@ public class CredentialTest {
     try {
       Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from(""));
       fail("Should have throws a PasswordException");
-    } catch (CredentialException e) {
+    } catch (CredentialsException e) {
       assertThat(e.getMessage()).isEqualTo("Password cannot be empty");
     }
   }

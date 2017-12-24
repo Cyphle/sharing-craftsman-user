@@ -3,7 +3,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
-import fr.sharingcraftsman.user.domain.authentication.CredentialException;
+import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
@@ -38,7 +38,7 @@ public class UserAdapter implements HumanResourceAdministrator {
 
     try {
       return UserPivot.fromInfraToDomain(foundUser);
-    } catch (CredentialException e) {
+    } catch (CredentialsException e) {
       return new UnkownCollaborator();
     }
   }
