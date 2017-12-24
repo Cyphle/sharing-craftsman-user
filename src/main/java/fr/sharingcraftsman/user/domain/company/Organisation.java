@@ -1,8 +1,7 @@
-package fr.sharingcraftsman.user.domain.model.company;
+package fr.sharingcraftsman.user.domain.company;
 
-import fr.sharingcraftsman.user.domain.exceptions.company.AlreadyExistingCollaborator;
-import fr.sharingcraftsman.user.domain.model.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.model.common.Username;
+import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.common.Username;
 
 public class Organisation {
   private HumanResourceAdministrator humanResourceAdministrator;

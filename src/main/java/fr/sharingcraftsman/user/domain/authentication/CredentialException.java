@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.domain.exceptions.authentication;
+package fr.sharingcraftsman.user.domain.authentication;
 
 public class CredentialException extends Exception {
   public CredentialException(String message) {

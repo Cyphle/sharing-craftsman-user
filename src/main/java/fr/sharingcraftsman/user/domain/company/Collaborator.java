@@ -1,8 +1,8 @@
-package fr.sharingcraftsman.user.domain.model.company;
+package fr.sharingcraftsman.user.domain.company;
 
-import fr.sharingcraftsman.user.domain.model.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.model.common.Password;
-import fr.sharingcraftsman.user.domain.model.common.Username;
+import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.common.Password;
+import fr.sharingcraftsman.user.domain.common.Username;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
@@ -12,6 +12,14 @@ public class Collaborator extends Person {
 
   public Collaborator(Username username) {
     this.username = username;
+  }
+
+  public String getUsername() {
+    return username.getUsername();
+  }
+
+  public String getPassword() {
+    return password.getPassword();
   }
 
   public void setPassword(Password password) {

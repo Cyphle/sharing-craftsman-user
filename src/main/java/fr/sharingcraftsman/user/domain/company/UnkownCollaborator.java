@@ -1,6 +1,6 @@
-package fr.sharingcraftsman.user.domain.model.company;
+package fr.sharingcraftsman.user.domain.company;
 
-import fr.sharingcraftsman.user.domain.model.company.Person;
+import fr.sharingcraftsman.user.domain.company.Person;
 
 public class UnkownCollaborator extends Person {
   @Override

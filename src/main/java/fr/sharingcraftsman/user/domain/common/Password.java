@@ -1,6 +1,5 @@
-package fr.sharingcraftsman.user.domain.model.common;
+package fr.sharingcraftsman.user.domain.common;
 
-import fr.sharingcraftsman.user.domain.exceptions.common.PasswordException;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
 import fr.sharingcraftsman.user.domain.utils.CrypterFactory;
 import lombok.EqualsAndHashCode;

@@ -1,9 +1,7 @@
-package fr.sharingcraftsman.user.domain.model.authentication;
+package fr.sharingcraftsman.user.domain.authentication;
 
-import fr.sharingcraftsman.user.domain.exceptions.authentication.CredentialException;
-import fr.sharingcraftsman.user.domain.model.common.Password;
-import fr.sharingcraftsman.user.domain.model.common.Username;
-import fr.sharingcraftsman.user.domain.utils.Crypter;
+import fr.sharingcraftsman.user.domain.common.Password;
+import fr.sharingcraftsman.user.domain.common.Username;
 
 public class Credentials {
   private Password password;
@@ -26,7 +24,7 @@ public class Credentials {
     return username.getUsername();
   }
 
-  public static Credentials buildEncryptedCredentials(Crypter crypter, Username username, Password password) throws CredentialException {
+  public static Credentials buildEncryptedCredentials(Username username, Password password) throws CredentialException {
     return new Credentials(username, password);
   }
 }

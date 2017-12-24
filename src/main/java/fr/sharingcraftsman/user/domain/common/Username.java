@@ -1,6 +1,4 @@
-package fr.sharingcraftsman.user.domain.model.common;
-
-import fr.sharingcraftsman.user.domain.exceptions.common.UsernameException;
+package fr.sharingcraftsman.user.domain.common;
 
 public class Username {
   public static UsernameBuilder usernameBuilder = new UsernameBuilder();
