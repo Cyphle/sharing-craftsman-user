@@ -29,7 +29,7 @@ github:
     userAuthorizationUri: https://github.com/login/oauth/authorize
     clientAuthenticationScheme: form
   resource:
-    userInfoUri: https://api.github.com/collaborator
+    userInfoUri: https://controllers.github.com/collaborator
 
 # Keep the connection alive if idle for a long time (needed in production)
 spring:

@@ -1,15 +1,10 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "users")
-@EqualsAndHashCode
-@ToString
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -99,5 +94,27 @@ public class User {
 
   public void setLastUpdateDate(Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    User user = (User) o;
+
+    if (username != null ? !username.equals(user.username) : user.username != null) return false;
+    if (lastname != null ? !lastname.equals(user.lastname) : user.lastname != null) return false;
+    if (firstname != null ? !firstname.equals(user.firstname) : user.firstname != null) return false;
+    return password != null ? password.equals(user.password) : user.password == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = username != null ? username.hashCode() : 0;
+    result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
+    result = 31 * result + (firstname != null ? firstname.hashCode() : 0);
+    result = 31 * result + (password != null ? password.hashCode() : 0);
+    return result;
   }
 }

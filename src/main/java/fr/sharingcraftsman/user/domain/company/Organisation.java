@@ -12,7 +12,7 @@ public class Organisation implements Company {
   }
 
   @Override
-  public void createNewCollaborator(Credentials credentials) throws AlreadyExistingCollaboratorException {
+  public void createNewCollaborator(Credentials credentials) throws CollaboratorException {
     if (collaboratorExists(credentials.getUsername()))
       throw new AlreadyExistingCollaboratorException("Collaborator already exists with username: " + credentials.getUsernameContent());
 

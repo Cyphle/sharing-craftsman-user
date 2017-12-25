@@ -6,7 +6,6 @@ import fr.sharingcraftsman.user.domain.company.Collaborator;
 
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
-import static fr.sharingcraftsman.user.domain.company.Collaborator.collaboratorBuilder;
 
 public class UserPivot {
   public static User fromDomainToInfra(Collaborator collaborator) {
@@ -14,7 +13,7 @@ public class UserPivot {
   }
 
   public static Collaborator fromInfraToDomain(User user) throws CredentialsException {
-    Collaborator collaborator = collaboratorBuilder
+    Collaborator collaborator = Collaborator.collaboratorBuilder
             .withUsername(usernameBuilder.from(user.getUsername()))
             .withPassword(passwordBuilder.from(user.getPassword()))
             .build();
