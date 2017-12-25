@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 
 import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
@@ -52,7 +53,7 @@ public class OAuthAuthenticatorTest {
             .expiringThe(dateService.getDayAt(8))
             .build();
 
-    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, 12, 25, 12, 0));
+    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
     given(tokenAdministrator.createNewToken(collaborator, client, true)).willReturn(token);
 

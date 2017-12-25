@@ -5,6 +5,7 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
 import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -17,5 +18,9 @@ public class TokenPivot {
     oAuthToken.setRefreshToken(token.getRefreshToken());
     oAuthToken.setExpirationDate(Date.from(token.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
     return oAuthToken;
+  }
+
+  public static ValidToken fromInfraToDomain(OAuthToken oAuthToken) {
+    return new ValidToken(oAuthToken.getAccessToken(), oAuthToken.getRefreshToken(), LocalDateTime.ofInstant(oAuthToken.getExpirationDate().toInstant(), ZoneId.systemDefault()));
   }
 }

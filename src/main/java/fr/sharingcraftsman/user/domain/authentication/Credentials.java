@@ -14,9 +14,9 @@ public class Credentials {
     this.stayLogged = false;
   }
 
-  public Credentials(Password password, Username username, boolean stayLogged) {
-    this.password = password;
+  public Credentials(Username username, Password password, boolean stayLogged) {
     this.username = username;
+    this.password = password;
     this.stayLogged = stayLogged;
   }
 
@@ -46,5 +46,9 @@ public class Credentials {
 
   public static Credentials buildEncryptedCredentials(Username username, Password password) throws CredentialsException {
     return new Credentials(username, password);
+  }
+
+  public static Credentials buildCredentials(Username username, Password password, boolean stayLogged) {
+    return new Credentials(username, password, stayLogged);
   }
 }

@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -34,7 +35,7 @@ public class TokenRepositoryTest {
     oAuthToken.setUsername("john@doe.fr");
     oAuthToken.setAccessToken("aaa");
     oAuthToken.setRefreshToken("bbb");
-    oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, 12, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+    oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
 
     entityManager.persist(oAuthToken);
   }

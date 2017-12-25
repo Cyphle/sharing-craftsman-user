@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -37,7 +38,7 @@ public class RegistrationServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    given(dateService.now()).willReturn(Date.from(LocalDateTime.of(2017, 12, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+    given(dateService.now()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     registrationService = new RegistrationService(userRepository, clientRepository, dateService);
   }
 

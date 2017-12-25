@@ -5,7 +5,7 @@ public class Login {
   private String clientSecret;
   private String username;
   private String password;
-  // TODO Add stay logged info
+  private boolean stayLogged;
 
   public Login() { }
 
@@ -14,6 +14,15 @@ public class Login {
     this.clientSecret = clientSecret;
     this.username = username;
     this.password = password;
+    this.stayLogged = false;
+  }
+
+  public Login(String client, String clientSecret, String username, String password, boolean stayLogged) {
+    this.client = client;
+    this.clientSecret = clientSecret;
+    this.username = username;
+    this.password = password;
+    this.stayLogged = stayLogged;
   }
 
   public String getClient() {
@@ -46,5 +55,9 @@ public class Login {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public boolean stayLogged() {
+    return stayLogged;
   }
 }

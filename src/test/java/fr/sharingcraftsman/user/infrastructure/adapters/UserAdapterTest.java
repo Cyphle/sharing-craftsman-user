@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -34,7 +35,7 @@ public class UserAdapterTest {
   @Before
   public void setUp() throws Exception {
     userAdapter = new UserAdapter(userRepository, dateService);
-    given(dateService.now()).willReturn(Date.from(LocalDateTime.of(2017, 12, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+    given(dateService.now()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
   }
 
   @Test

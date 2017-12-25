@@ -15,8 +15,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.Date;
 
 import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
@@ -54,7 +57,14 @@ public class TokenAdapterTest {
 
   @Test
   public void should_create_token_for_collaborator() throws Exception {
-    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, 12, 25, 12, 0));
+    OAuthToken oAuthToken = new OAuthToken();
+    oAuthToken.setClient("client");
+    oAuthToken.setUsername("john@doe.fr");
+    oAuthToken.setAccessToken(generateKey("clientjohn@doe.fr"));
+    oAuthToken.setRefreshToken(generateKey("clientjohn@doe.fr"));
+    oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    given(tokenRepository.save(any(OAuthToken.class))).willReturn(oAuthToken);
     Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
     Person collaborator = Collaborator.from(credentials);
     Client client = Client.knownClient("client", "secret");
@@ -63,7 +73,15 @@ public class TokenAdapterTest {
 
     assertThat(token.getAccessToken()).hasSize(128);
     assertThat(token.getRefreshToken()).hasSize(128);
-    assertThat(token.getExpirationDate()).isEqualTo(LocalDateTime.of(2017, 12, 25, 12, 0));
+    assertThat(token.getExpirationDate()).isEqualTo(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     verify(tokenRepository).save(any(OAuthToken.class));
+  }
+
+  private String generateKey(String seed) {
+    SecureRandom random = new SecureRandom(seed.getBytes());
+    byte bytes[] = new byte[96];
+    random.nextBytes(bytes);
+    Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
+    return encoder.encodeToString(bytes);
   }
 }

@@ -4,6 +4,7 @@ import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
 import fr.sharingcraftsman.user.domain.authentication.ValidToken;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
+import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
 import fr.sharingcraftsman.user.infrastructure.pivots.TokenPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +42,9 @@ public class TokenAdapter implements TokenAdministrator {
             .expiringThe(expirationDate)
             .build();
 
-    tokenRepository.save(TokenPivot.fromDomainToInfra(collaborator, client, token));
+    OAuthToken oAuthToken = tokenRepository.save(TokenPivot.fromDomainToInfra(collaborator, client, token));
 
-    return token;
+    return TokenPivot.fromInfraToDomain(oAuthToken);
   }
 
   private String generateKey(String seed) {
