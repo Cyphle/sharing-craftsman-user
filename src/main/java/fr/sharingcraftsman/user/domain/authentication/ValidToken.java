@@ -15,6 +15,18 @@ public class ValidToken extends Token {
     this.expirationDate = expirationDate;
   }
 
+  public String getAccessToken() {
+    return accessToken;
+  }
+
+  public String getRefreshToken() {
+    return refreshToken;
+  }
+
+  public LocalDateTime getExpirationDate() {
+    return expirationDate;
+  }
+
   @Override
   public boolean isValid() {
     return true;
@@ -40,7 +52,7 @@ public class ValidToken extends Token {
       return this;
     }
 
-    public Token build() {
+    public ValidToken build() {
       return new ValidToken(accessToken, refreshToken, expirationDate);
     }
   }

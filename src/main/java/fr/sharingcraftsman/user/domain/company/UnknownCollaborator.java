@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.domain.company;
 
-public class UnkownCollaborator extends Person {
+public class UnknownCollaborator extends Person {
   @Override
   public boolean isKnown() {
     return false;

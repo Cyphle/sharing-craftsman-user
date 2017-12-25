@@ -13,4 +13,9 @@ public class DateTimeService implements DateService {
   public Date now() {
     return Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
   }
+
+  @Override
+  public LocalDateTime getDayAt(int offsetDayes) {
+    return LocalDateTime.now().plusDays(offsetDayes);
+  }
 }

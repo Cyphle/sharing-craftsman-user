@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -38,7 +39,7 @@ public class UserAdapterTest {
 
   @Test
   public void should_save_user_in_repository() throws Exception {
-    Person collaborator = Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), Password.passwordBuilder.from("password")));
+    Person collaborator = Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password")));
 
     userAdapter.createNewCollaborator((Collaborator) collaborator);
 
@@ -54,6 +55,15 @@ public class UserAdapterTest {
 
     Person collaborator = userAdapter.getCollaborator(usernameBuilder.from("john@doe.fr"));
 
-    assertThat((Collaborator) collaborator).isEqualTo(Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), Password.passwordBuilder.from("password"))));
+    assertThat((Collaborator) collaborator).isEqualTo(Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"))));
+  }
+
+  @Test
+  public void should_find_user_by_username_and_password() throws Exception {
+    given(userRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+
+    Person collaborator = userAdapter.findFromCredentials(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password")));
+
+    assertThat((Collaborator) collaborator).isEqualTo(Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"))));
   }
 }

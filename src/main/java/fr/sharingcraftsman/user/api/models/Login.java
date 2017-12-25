@@ -5,6 +5,7 @@ public class Login {
   private String clientSecret;
   private String username;
   private String password;
+  // TODO Add stay logged info
 
   public Login() { }
 
