@@ -1,11 +1,14 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "clients")
-public class ApiClient {
+@EqualsAndHashCode
+public class OAuthClient {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
@@ -21,10 +24,10 @@ public class ApiClient {
   @Column(name = "last_update_date")
   private Date lastUpdateDate;
 
-  public ApiClient() {
+  public OAuthClient() {
   }
 
-  public ApiClient(String name, String secret) {
+  public OAuthClient(String name, String secret) {
     this.name = name;
     this.secret = secret;
   }

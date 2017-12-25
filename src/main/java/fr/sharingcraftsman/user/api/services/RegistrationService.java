@@ -12,6 +12,7 @@ import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.company.Organisation;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
 import fr.sharingcraftsman.user.domain.ports.company.Company;
+import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
 import fr.sharingcraftsman.user.infrastructure.adapters.ClientAdapter;
 import fr.sharingcraftsman.user.infrastructure.adapters.DateService;
 import fr.sharingcraftsman.user.infrastructure.adapters.UserAdapter;
@@ -33,7 +34,7 @@ public class RegistrationService {
     company = new Organisation(humanResourceAdministrator);
 
     ClientStock clientStock = new ClientAdapter(clientRepository);
-    clientManager = new ClientAdministrator(clientStock);
+    clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
   }
 
   public ResponseEntity registerUser(Login login) {

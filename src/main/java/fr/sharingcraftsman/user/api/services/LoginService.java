@@ -14,6 +14,7 @@ import fr.sharingcraftsman.user.domain.company.CollaboratorException;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
+import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
 import fr.sharingcraftsman.user.infrastructure.adapters.ClientAdapter;
 import fr.sharingcraftsman.user.infrastructure.adapters.DateService;
 import fr.sharingcraftsman.user.infrastructure.adapters.TokenAdapter;
@@ -38,7 +39,7 @@ public class LoginService {
     authenticator = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator);
 
     ClientStock clientStock = new ClientAdapter(clientRepository);
-    clientManager = new ClientAdministrator(clientStock);
+    clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
   }
 
   public ResponseEntity login(Login login) {

@@ -2,7 +2,7 @@ package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.Login;
 import fr.sharingcraftsman.user.infrastructure.adapters.DateService;
-import fr.sharingcraftsman.user.infrastructure.models.ApiClient;
+import fr.sharingcraftsman.user.infrastructure.models.OAuthClient;
 import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
 import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
@@ -21,7 +21,6 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -54,7 +53,7 @@ public class LoginServiceTest {
     oAuthToken.setRefreshToken("bbb");
     oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
 
-    given(clientRepository.findByNameAndSecret("client", "secret")).willReturn(new ApiClient("client", "clientsecret"));
+    given(clientRepository.findByNameAndSecret("client", "secret")).willReturn(new OAuthClient("client", "clientsecret"));
     given(userRepository.findByUsernameAndPassword("john@doe.fr", "password")).willReturn(new User("john@doe.fr", "password"));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenRepository.save(any(OAuthToken.class))).willReturn(oAuthToken);

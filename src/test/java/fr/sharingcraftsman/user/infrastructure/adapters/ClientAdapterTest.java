@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.infrastructure.models.ApiClient;
+import fr.sharingcraftsman.user.infrastructure.models.OAuthClient;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +11,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClientAdapterTest {
@@ -25,7 +27,7 @@ public class ClientAdapterTest {
 
   @Test
   public void should_get_client() throws Exception {
-    given(clientRepository.findByNameAndSecret("client", "secret")).willReturn(new ApiClient("client", "secret"));
+    given(clientRepository.findByNameAndSecret("client", "secret")).willReturn(new OAuthClient("client", "secret"));
 
     Client foundClient = clientAdapter.findClient(Client.from("client", "secret"));
 
@@ -37,5 +39,15 @@ public class ClientAdapterTest {
     Client foundClient = clientAdapter.findClient(Client.from("client", "secret"));
 
     assertThat(foundClient.isKnown()).isFalse();
+  }
+
+  @Test
+  public void should_create_new_client() throws Exception {
+    given(clientRepository.save(any(OAuthClient.class))).willReturn(new OAuthClient("sharingcraftsman", "secret"));
+    Client client = Client.from("sharingcraftsman", "secret");
+
+    clientAdapter.createClient(client);
+
+    verify(clientRepository).save(new OAuthClient("sharingcraftsman", "secret"));
   }
 }

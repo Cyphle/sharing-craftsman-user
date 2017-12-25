@@ -24,6 +24,10 @@ public class Client {
     return secret;
   }
 
+  public void setSecret(String secret) {
+    this.secret = secret;
+  }
+
   public boolean isKnown() {
     return isKnown;
   }
