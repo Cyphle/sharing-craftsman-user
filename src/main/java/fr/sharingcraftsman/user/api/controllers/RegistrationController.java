@@ -21,9 +21,6 @@ public class RegistrationController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/register")
   public ResponseEntity registerUser(@RequestBody Login login) {
-//    fdsfdfdsfns
-            // Missing client id and pass
-    // TODO
     return registrationService.registerUser(login);
   }
 }

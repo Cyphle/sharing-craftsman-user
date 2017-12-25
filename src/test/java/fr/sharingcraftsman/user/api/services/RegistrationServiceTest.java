@@ -2,7 +2,9 @@ package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.Login;
 import fr.sharingcraftsman.user.infrastructure.adapters.DateService;
+import fr.sharingcraftsman.user.infrastructure.models.ApiClient;
 import fr.sharingcraftsman.user.infrastructure.models.User;
+import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +29,8 @@ public class RegistrationServiceTest {
   @Mock
   private UserRepository userRepository;
   @Mock
+  private ClientRepository clientRepository;
+  @Mock
   private DateService dateService;
 
   private RegistrationService registrationService;
@@ -34,11 +38,12 @@ public class RegistrationServiceTest {
   @Before
   public void setUp() throws Exception {
     given(dateService.now()).willReturn(Date.from(LocalDateTime.of(2017, 12, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
-    registrationService = new RegistrationService(userRepository, dateService);
+    registrationService = new RegistrationService(userRepository, clientRepository, dateService);
   }
 
   @Test
   public void should_register_user() throws Exception {
+    given(clientRepository.findByNameAndSecret("client", "clientsecret")).willReturn(new ApiClient("client", "clientsecret"));
     Login login = new Login("client", "clientsecret", "john@doe.fr", "password");
 
     ResponseEntity response = registrationService.registerUser(login);
@@ -52,6 +57,7 @@ public class RegistrationServiceTest {
 
   @Test
   public void should_get_invalid_credential_username_when_username_is_not_specified() throws Exception {
+    given(clientRepository.findByNameAndSecret("client", "clientsecret")).willReturn(new ApiClient("client", "clientsecret"));
     Login login = new Login("client", "clientsecret", "", "password");
 
     ResponseEntity response = registrationService.registerUser(login);
@@ -63,6 +69,7 @@ public class RegistrationServiceTest {
 
   @Test
   public void should_get_invalid_credential_password_when_username_is_not_specified() throws Exception {
+    given(clientRepository.findByNameAndSecret("client", "clientsecret")).willReturn(new ApiClient("client", "clientsecret"));
     Login login = new Login("client", "clientsecret", "john@doe.fr", "");
 
     ResponseEntity response = registrationService.registerUser(login);
@@ -74,6 +81,7 @@ public class RegistrationServiceTest {
 
   @Test
   public void should_get_user_already_exists_when_using_already_existing_username() throws Exception {
+    given(clientRepository.findByNameAndSecret("client", "clientsecret")).willReturn(new ApiClient("client", "clientsecret"));
     given(userRepository.findByUsername("john@doe.fr")).willReturn(new User("john@doe.fr", "password"));
     Login login = new Login("client", "clientsecret", "john@doe.fr", "password");
 
@@ -85,7 +93,8 @@ public class RegistrationServiceTest {
   }
 
   @Test
-  public void should_get_unkown_client_response_when_client_is_not_known() throws Exception {
+  public void should_get_unknown_client_response_when_client_is_not_known() throws Exception {
+    given(clientRepository.findByNameAndSecret("client", "clientsecret")).willReturn(null);
     Login login = new Login("client", "clientsecret", "john@doe.fr", "password");
 
     ResponseEntity response = registrationService.registerUser(login);
