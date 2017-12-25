@@ -38,7 +38,7 @@ public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
   public void register(String email, String password) throws Exception {
     LoginDsl login = new LoginDsl(email, password);
     response = this.mvc
-            .perform(post(getBaseUri() + "/user/register")
+            .perform(post(getBaseUri() + "/users/register")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(Mapper.fromObjectToJsonString(login))
             )

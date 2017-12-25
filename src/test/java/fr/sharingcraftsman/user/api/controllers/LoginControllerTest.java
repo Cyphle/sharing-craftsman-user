@@ -59,7 +59,7 @@ public class LoginControllerTest {
 
     Login login = new Login("client", "clientSecret", "john@doe.fr", "password", true);
 
-    this.mvc.perform(post("/user/login")
+    this.mvc.perform(post("/users/login")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(login)))
             .andExpect(status().isOk())

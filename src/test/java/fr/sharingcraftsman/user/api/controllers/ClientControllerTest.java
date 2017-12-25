@@ -1,8 +1,9 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.api.services.RegistrationService;
+import fr.sharingcraftsman.user.api.models.ClientRegistration;
+import fr.sharingcraftsman.user.api.services.ClientService;
+import fr.sharingcraftsman.user.api.services.LoginService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,16 +20,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {UserApplication.class})
-@WebMvcTest(RegistrationController.class)
+@WebMvcTest(ClientController.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class RegistrationControllerTest {
+public class ClientControllerTest {
   @Autowired
   private MockMvc mvc;
 
@@ -36,7 +39,7 @@ public class RegistrationControllerTest {
   private WebApplicationContext context;
 
   @MockBean
-  private RegistrationService registrationService;
+  private ClientService clientService;
 
   @Before
   public void setup() {
@@ -46,14 +49,26 @@ public class RegistrationControllerTest {
   }
 
   @Test
-  public void should_register_a_new_user() throws Exception {
-    given(registrationService.registerUser(any(Login.class))).willReturn(ResponseEntity.ok().build());
+  public void should_register_client() throws Exception {
+    ClientRegistration client = new ClientRegistration();
+    client.setName("sharingcraftsman");
+    given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
 
-    Login login = new Login("client", "clientSecret", "john@doe.fr", "password");
-
-    this.mvc.perform(post("/users/register")
+    this.mvc.perform(post("/client/register")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(Mapper.fromObjectToJsonString(login)))
+            .content(Mapper.fromObjectToJsonString(client)))
             .andExpect(status().isOk());
+  }
+
+  @Test
+  public void should_return_unauthorized_if_client_name_is_not_correct() throws Exception {
+    ClientRegistration client = new ClientRegistration();
+    client.setName("toto");
+    given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
+
+    this.mvc.perform(post("/client/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(client)))
+            .andExpect(status().isUnauthorized());
   }
 }
