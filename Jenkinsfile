@@ -37,7 +37,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId:'test', passwordVariable:'PASSWORD', usernameVariable:'USER')]) {
                    echo '${password}'
                 }
-                echo ${password}'
+                sh 'echo ${password}'
             }
         }
     }
