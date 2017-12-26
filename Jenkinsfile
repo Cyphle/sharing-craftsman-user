@@ -20,7 +20,7 @@ pipeline {
                     echo "My password is '${PW1}'!"
                 }
                 withCredentials([usernamePassword(credentialsId:'test', passwordVariable:'PASSWORD', usernameVariable:'USER')]) {
-                    echo '${password}'
+                    echo '${PASSWORD}'
                     sh './jenkins/scripts/deliver.sh caca'
                 }
                 sh 'echo ${password}'
