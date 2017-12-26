@@ -1,48 +1,16 @@
-# Custom Oauth2 authorization server
-security:
-  oauth2:
-    client:
-      client-id: acme
-      client-secret: acmesecret
-      scope: read,write
-      auto-approve-scopes: '.*'
-
-# Oauth2 with facebook
-facebook:
-  client:
-    clientId: 233668646673605
-    clientSecret: 33b17e044ee6a4fa383f46ec6e28ea1d
-    accessTokenUri: https://graph.facebook.com/oauth/access_token
-    userAuthorizationUri: https://www.facebook.com/dialog/oauth
-    tokenName: oauth_token
-    authenticationScheme: query
-    clientAuthenticationScheme: form
-  resource:
-    userInfoUri: https://graph.facebook.com/me
-
-# Oauth2 with Github
-github:
-  client:
-    clientId: bd1c0a783ccdd1c9b9e4
-    clientSecret: 1a9030fbca47a5b2c28e92f19050bb77824b5ad1
-    accessTokenUri: https://github.com/login/oauth/access_token
-    userAuthorizationUri: https://github.com/login/oauth/authorize
-    clientAuthenticationScheme: form
-  resource:
-    userInfoUri: https://controllers.github.com/collaborator
-
 # Keep the connection alive if idle for a long time (needed in production)
 spring:
   datasource:
     testWhileIdle: true
     validationQuery: SELECT 1
+    initialize: false
   cache:
     type: NONE
 # JPA
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
