@@ -7,7 +7,7 @@ echo 'To complete this script. It will have to copy files somewhere on a server 
 echo 'deploy.sh will be a script that search for container names and image names, destroy them and run docker-compose up'
 echo 'To allow jenkins to connect to server as ssh, create key and add to server'
 echo 'See to deploy over ssh: https://wiki.jenkins.io/display/JENKINS/Publish+Over+SSH+Plugin'
-
+echo 'http://www.baeldung.com/spring-boot-app-as-a-service'
 
 #echo 'The following Maven infrastructure installs your Maven-built Java application'
 #echo 'into the local Maven repository, which will ultimately be stored in'
