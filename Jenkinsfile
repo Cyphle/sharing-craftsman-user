@@ -16,8 +16,10 @@ pipeline {
             }
         }
         stage('test') {
-            def testVar='foo'
-            sh "echo $testVar"
+            steps {
+                def testVar='foo'
+                sh "echo $testVar"
+            }
         }
         stage('Build') {
             steps {
