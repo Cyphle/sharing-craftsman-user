@@ -15,12 +15,6 @@ pipeline {
                 sh 'printenv hello'
             }
         }
-        stage('test') {
-            steps {
-                def testVar='foo'
-                sh "echo $testVar"
-            }
-        }
         stage('Build') {
             steps {
                 sh 'mvn -B -DskipTests clean package'
@@ -35,6 +29,7 @@ pipeline {
             steps {
                 sh 'chmod +x ./jenkins/scripts/deliver.sh'
                 sh './jenkins/scripts/deliver.sh'
+                sh 'echo ${hello}'
             }
         }
     }
