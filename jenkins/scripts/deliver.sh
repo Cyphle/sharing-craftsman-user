@@ -13,6 +13,8 @@ echo "Le 1er paramètre est : $1"
 echo "Le 2e paramètre est : $2"
 echo "Le 3e paramètre est : $3"
 
+ssh $1@my.server.com
+
 #echo 'The following Maven infrastructure installs your Maven-built Java application'
 #echo 'into the local Maven repository, which will ultimately be stored in'
 #echo 'Jenkins''s local Maven repository (and the "maven-repository" Docker data'
