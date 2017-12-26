@@ -1,10 +1,12 @@
 package fr.sharingcraftsman.user.acceptance;
 
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.user.acceptance.config.SpringAcceptanceTestConfig;
 import fr.sharingcraftsman.user.acceptance.dsl.LoginDsl;
+import fr.sharingcraftsman.user.api.models.ClientRegistration;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -34,9 +36,22 @@ public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
     }
   }
 
+  @And("A client <(.*)> is registered")
+  public void createClient(String clientName) throws Exception {
+    ClientRegistration client = new ClientRegistration();
+    client.setName(clientName);
+
+    this.mvc
+            .perform(post(getBaseUri() + "/clients/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(Mapper.fromObjectToJsonString(client))
+            )
+            .andExpect(status().isOk());
+  }
+
   @Given("I register to the application with my credentials <(.*)> and password <(.*)>")
   public void register(String email, String password) throws Exception {
-    LoginDsl login = new LoginDsl(email, password);
+    LoginDsl login = new LoginDsl("sharingcraftsman", "secret", email, password);
     response = this.mvc
             .perform(post(getBaseUri() + "/users/register")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -68,6 +83,4 @@ public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
 //    assertThat(token.getRefreshToken()).isNotEmpty();
     System.out.println(response.getResponse().getContentAsString());
   }
-
-
 }

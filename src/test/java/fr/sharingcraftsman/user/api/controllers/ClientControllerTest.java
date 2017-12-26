@@ -54,7 +54,7 @@ public class ClientControllerTest {
     client.setName("sharingcraftsman");
     given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
 
-    this.mvc.perform(post("/client/register")
+    this.mvc.perform(post("/clients/register")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(client)))
             .andExpect(status().isOk());
@@ -66,7 +66,7 @@ public class ClientControllerTest {
     client.setName("toto");
     given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
 
-    this.mvc.perform(post("/client/register")
+    this.mvc.perform(post("/clients/register")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(client)))
             .andExpect(status().isUnauthorized());

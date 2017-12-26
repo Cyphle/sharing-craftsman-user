@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/client")
+@RequestMapping("/clients")
 public class ClientController {
   private ClientService clientService;
 
