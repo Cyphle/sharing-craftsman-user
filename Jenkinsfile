@@ -19,6 +19,7 @@ pipeline {
                 withCredentials([usernameColonPassword(credentialsId: 'test', variable: 'PW1')]) {
                     echo "My password is '${PW1}'!"
                 }
+                sh 'echo ${PW1}'
                 withCredentials([usernamePassword(credentialsId:'test', passwordVariable:'PASSWORD', usernameVariable:'USER')]) {
                     echo '${PASSWORD}'
                     sh './jenkins/scripts/deliver.sh caca'
