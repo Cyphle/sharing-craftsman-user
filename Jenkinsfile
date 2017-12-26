@@ -31,7 +31,7 @@ pipeline {
                 sh 'chmod +x ./jenkins/scripts/deliver.sh'
                 sh './jenkins/scripts/deliver.sh ${SAUCE_ACCESS_USR} ${SAUCE_ACCESS} ${SAUCE_ACCESS_PSW}'
                 sh 'echo ${hello}'
-                withCredentials([string(credentialsId: 'test', variable: 'PW1')]) {
+                withCredentials([usernameColonPassword(credentialsId: 'test', variable: 'PW1')]) {
                     echo "My password is '${PW1}'!"
                 }
             }
