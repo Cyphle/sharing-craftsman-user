@@ -20,7 +20,7 @@ public class CollaboratorTest {
 
   @Test
   public void should_create_user_from_valid_credentials() throws Exception {
-    Collaborator collaborator = Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), Password.passwordBuilder.from("password")));
+    Collaborator collaborator = Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), Password.passwordBuilder.from("password"), false));
 
     assertThat(collaborator).isNotNull();
   }

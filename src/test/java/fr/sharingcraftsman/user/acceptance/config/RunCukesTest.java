@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
         features = "src/test/resources/features",
-        glue = "fr.sharingcraftsman.acceptance"
+        glue = "fr.sharingcraftsman.user.acceptance"
 )
 public class RunCukesTest {
 }

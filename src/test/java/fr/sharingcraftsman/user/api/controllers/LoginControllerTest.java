@@ -22,6 +22,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
@@ -54,7 +56,8 @@ public class LoginControllerTest {
 
   @Test
   public void should_log_in_and_get_token() throws Exception {
-    OAuthToken oAuthToken = new OAuthToken("aaa", "bbb", LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0));
+    ZonedDateTime zdt = LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0).atZone(ZoneId.systemDefault());
+    OAuthToken oAuthToken = new OAuthToken("aaa", "bbb", zdt.toInstant().toEpochMilli());
     given(loginService.login(any(Login.class))).willReturn(ResponseEntity.ok(oAuthToken));
 
     Login login = new Login("client", "clientSecret", "john@doe.fr", "password", true);

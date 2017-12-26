@@ -54,7 +54,7 @@ public class LoginServiceTest {
     oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
 
     given(clientRepository.findByNameAndSecret("client", "secret")).willReturn(new OAuthClient("client", "clientsecret"));
-    given(userRepository.findByUsernameAndPassword("john@doe.fr", "password")).willReturn(new User("john@doe.fr", "password"));
+    given(userRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(new User("john@doe.fr", "password"));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenRepository.save(any(OAuthToken.class))).willReturn(oAuthToken);
     Login login = new Login("client", "secret", "john@doe.fr", "password", true);

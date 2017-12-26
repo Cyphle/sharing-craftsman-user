@@ -1,16 +1,17 @@
 package fr.sharingcraftsman.user.api.models;
 
-import java.time.LocalDateTime;
+import lombok.ToString;
 
+@ToString
 public class OAuthToken {
   private String accessToken;
   private String refreshToken;
-  private LocalDateTime expirationDate;
+  private long expirationDate;
 
   public OAuthToken() {
   }
 
-  public OAuthToken(String accessToken, String refreshToken, LocalDateTime expirationDate) {
+  public OAuthToken(String accessToken, String refreshToken, long expirationDate) {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     this.expirationDate = expirationDate;
@@ -32,11 +33,11 @@ public class OAuthToken {
     this.refreshToken = refreshToken;
   }
 
-  public LocalDateTime getExpirationDate() {
+  public long getExpirationDate() {
     return expirationDate;
   }
 
-  public void setExpirationDate(LocalDateTime expirationDate) {
+  public void setExpirationDate(long expirationDate) {
     this.expirationDate = expirationDate;
   }
 }

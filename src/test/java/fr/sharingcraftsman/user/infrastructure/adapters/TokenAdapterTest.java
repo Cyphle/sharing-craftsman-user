@@ -22,7 +22,6 @@ import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +45,7 @@ public class TokenAdapterTest {
   @Test
   public void should_delete_tokens_of_collaborator() throws Exception {
     Mockito.doNothing().when(tokenRepository).deleteByUsername(any(String.class), any(String.class));
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     Person collaborator = Collaborator.from(credentials);
     Client client = Client.knownClient("client", "secret");
 
@@ -65,7 +64,7 @@ public class TokenAdapterTest {
     oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenRepository.save(any(OAuthToken.class))).willReturn(oAuthToken);
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     Person collaborator = Collaborator.from(credentials);
     Client client = Client.knownClient("client", "secret");
 

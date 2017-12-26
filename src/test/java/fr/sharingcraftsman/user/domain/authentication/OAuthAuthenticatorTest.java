@@ -57,7 +57,7 @@ public class OAuthAuthenticatorTest {
     given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
     given(tokenAdministrator.createNewToken(collaborator, client, true)).willReturn(token);
 
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     credentials.setStayLogged(true);
 
     Token expectedToken = identifier.login(credentials, client);

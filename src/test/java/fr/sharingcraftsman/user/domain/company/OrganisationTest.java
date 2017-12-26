@@ -35,7 +35,7 @@ public class OrganisationTest {
   public void should_save_user_when_registering() throws Exception {
     given(humanResourceAdministrator.getCollaborator(any(Username.class))).willReturn(new UnknownCollaborator());
 
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
 
     organisation.createNewCollaborator(credentials);
 
@@ -48,7 +48,7 @@ public class OrganisationTest {
       given(humanResourceAdministrator.getCollaborator(any(Username.class))).willReturn(
         new Collaborator(usernameBuilder.from("john@doe.fr"))
       );
-      Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
+      Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
 
       organisation.createNewCollaborator(credentials);
       fail("Should throw CollaboratorException");

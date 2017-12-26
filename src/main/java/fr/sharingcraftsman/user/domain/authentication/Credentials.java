@@ -44,7 +44,7 @@ public class Credentials {
     this.stayLogged = stayLogged;
   }
 
-  public static Credentials buildEncryptedCredentials(Username username, Password password) throws CredentialsException {
+  public static Credentials buildEncryptedCredentials(Username username, Password password, boolean stayLogged) throws CredentialsException {
     return new Credentials(username, password);
   }
 

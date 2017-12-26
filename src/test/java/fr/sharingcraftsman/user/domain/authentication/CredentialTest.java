@@ -2,6 +2,8 @@ package fr.sharingcraftsman.user.domain.authentication;
 
 import fr.sharingcraftsman.user.domain.utils.AESCrypter;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
+import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
+import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +22,7 @@ public class CredentialTest {
 
   @Test
   public void should_crypt_password_when_created() throws Exception {
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"));
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
 
     assertThat(credentials.getPassword()).isEqualTo(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="));
   }
@@ -28,7 +30,7 @@ public class CredentialTest {
   @Test
   public void should_throw_username_exception_when_username_is_empty() throws Exception {
     try {
-      Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from(""), passwordBuilder.from("john@doe.fr"));
+      Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from(""), passwordBuilder.from("john@doe.fr"), false);
       fail("Should have thrown a UsernameException");
     } catch (CredentialsException e) {
       assertThat(e.getMessage()).isEqualTo("Username cannot be empty");
@@ -38,7 +40,7 @@ public class CredentialTest {
   @Test
   public void should_throw_password_exception_when_password_is_empty() throws Exception {
     try {
-      Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from(""));
+      Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from(""), false);
       fail("Should have throws a PasswordException");
     } catch (CredentialsException e) {
       assertThat(e.getMessage()).isEqualTo("Password cannot be empty");

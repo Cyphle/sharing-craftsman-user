@@ -1,12 +1,11 @@
 package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.Login;
+import fr.sharingcraftsman.user.api.models.OAuthToken;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.api.pivots.LoginPivot;
-import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
-import fr.sharingcraftsman.user.domain.authentication.OAuthAuthenticator;
-import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
+import fr.sharingcraftsman.user.api.pivots.TokenPivot;
+import fr.sharingcraftsman.user.domain.authentication.*;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
@@ -48,9 +47,10 @@ public class LoginService {
     }
 
     try {
-      Credentials credentials = LoginPivot.fromApiToDomain(login);
+      Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(login);
       Client client = ClientPivot.fromApiToDomain(login);
-      return ResponseEntity.ok(authenticator.login(credentials, client));
+      OAuthToken token = TokenPivot.fromDomainToApi((ValidToken) authenticator.login(credentials, client));
+      return ResponseEntity.ok(token);
     } catch (CredentialsException | CollaboratorException e) {
       return ResponseEntity
               .badRequest()
