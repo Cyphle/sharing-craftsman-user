@@ -1,4 +1,8 @@
 pipeline {
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('test')
+    }
+
     agent {
         docker {
             image 'maven:3-alpine'
@@ -6,6 +10,11 @@ pipeline {
         }
     }
     stages {
+        stage('Toto') {
+            steps {
+                sh 'printenv'
+            }
+        }
         stage('Build') {
             steps {
                 sh 'mvn -B -DskipTests clean package'
@@ -18,7 +27,6 @@ pipeline {
         }
         stage('Deliver') {
             steps {
-                credentials('test')
                 sh 'chmod +x ./jenkins/scripts/deliver.sh'
                 sh './jenkins/scripts/deliver.sh'
             }
