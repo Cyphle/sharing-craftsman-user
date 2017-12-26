@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        hello     = credentials('test')
+        SAUCE_ACCESS     = credentials('test')
         test = 'blablable'
     }
 
@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Toto') {
             steps {
-                sh 'printenv hello'
+                sh 'printenv'
             }
         }
         stage('Build') {
@@ -29,7 +29,7 @@ pipeline {
         stage('Deliver') {
             steps {
                 sh 'chmod +x ./jenkins/scripts/deliver.sh'
-                sh './jenkins/scripts/deliver.sh ${hello}'
+                sh './jenkins/scripts/deliver.sh ${SAUCE_ACCESS_USR} ${SAUCE_ACCESS} ${SAUCE_ACCESS_PSW}'
                 sh 'echo ${hello}'
             }
         }
