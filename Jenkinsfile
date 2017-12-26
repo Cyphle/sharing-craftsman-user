@@ -34,6 +34,10 @@ pipeline {
                 withCredentials([usernameColonPassword(credentialsId: 'test', variable: 'PW1')]) {
                     echo "My password is '${PW1}'!"
                 }
+                withCredentials([usernamePassword(credentialsId:'test', passwordVariable:'PASSWORD', usernameVariable:'USER')]) {
+                   echo '${password}'
+                }
+                echo ${password}'
             }
         }
     }
