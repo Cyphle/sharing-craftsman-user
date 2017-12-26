@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        AWS_ACCESS_KEY_ID     = credentials('test')
+        hello     = credentials('test')
     }
 
     agent {
@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Toto') {
             steps {
-                sh 'printenv'
+                sh 'printenv hello'
             }
         }
         stage('Build') {
