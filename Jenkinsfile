@@ -11,9 +11,19 @@ pipeline {
         }
     }
     stages {
-        stage('Toto') {
+        stage('Deliver') {
             steps {
-                sh 'printenv'
+                sh 'chmod +x ./jenkins/scripts/deliver.sh'
+                sh './jenkins/scripts/deliver.sh ${SAUCE_ACCESS_USR} ${SAUCE_ACCESS} ${SAUCE_ACCESS_PSW}'
+                sh 'echo ${hello}'
+                withCredentials([usernameColonPassword(credentialsId: 'test', variable: 'PW1')]) {
+                    echo "My password is '${PW1}'!"
+                }
+                withCredentials([usernamePassword(credentialsId:'test', passwordVariable:'PASSWORD', usernameVariable:'USER')]) {
+                    echo '${password}'
+                    './jenkins/scripts/deliver.sh ${password}'
+                }
+                sh 'echo ${password}'
             }
         }
         stage('Build') {
