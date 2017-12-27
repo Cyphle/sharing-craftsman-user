@@ -49,6 +49,7 @@ pipeline {
                     sh 'echo $PASSWORD'
                     echo "$USERNAME"
                 }
+                echo "$USERNAME"
             }
         }
     }
