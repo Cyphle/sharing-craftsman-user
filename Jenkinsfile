@@ -1,3 +1,5 @@
+def myvar
+
 pipeline {
     environment {
         SAUCE_ACCESS     = credentials('test')
@@ -47,9 +49,10 @@ pipeline {
                 echo 'AAAAAAAAA'
                 withCredentials([usernamePassword(credentialsId: 'test', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh 'echo $PASSWORD'
-                    echo "$USERNAME"
+                    myvar = "$USERNAME"
                     echo '${PASSWORD}'
                 }
+                echo myvar
             }
         }
     }
