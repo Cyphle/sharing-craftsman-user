@@ -1,10 +1,17 @@
 package fr.sharingcraftsman.user.api.models;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class Login {
+  @ApiModelProperty(example = "client")
   private String client;
+  @ApiModelProperty(example = "client")
   private String clientSecret;
+  @ApiModelProperty(example = "client")
   private String username;
+  @ApiModelProperty(example = "client")
   private String password;
+  @ApiModelProperty(example = "true, false")
   private boolean stayLogged;
 
   public Login() { }

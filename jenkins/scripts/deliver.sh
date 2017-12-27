@@ -9,6 +9,15 @@ echo 'To allow jenkins to connect to server as ssh, create key and add to server
 echo 'See to deploy over ssh: https://wiki.jenkins.io/display/JENKINS/Publish+Over+SSH+Plugin'
 echo 'http://www.baeldung.com/spring-boot-app-as-a-service'
 
+echo "Le 1er paramètre est : $1"
+echo "Le 2e paramètre est : $2"
+echo "Le 3e paramètre est : $3"
+
+curl --request GET "http://51.254.131.44:8080/users/version/$1/$2"
+# 51.254.131.44
+
+#ssh $1@my.server.com
+
 #echo 'The following Maven infrastructure installs your Maven-built Java application'
 #echo 'into the local Maven repository, which will ultimately be stored in'
 #echo 'Jenkins''s local Maven repository (and the "maven-repository" Docker data'

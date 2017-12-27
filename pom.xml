@@ -45,6 +45,11 @@
       <version>0.8.0.RELEASE</version>
     </dependency>
     <dependency>
+      <groupId>org.liquibase</groupId>
+      <artifactId>liquibase-core</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
     </dependency>
@@ -54,6 +59,18 @@
       <artifactId>lombok</artifactId>
       <version>1.16.18</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+      <version>RELEASE</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger2</artifactId>
+      <version>RELEASE</version>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
