@@ -45,11 +45,9 @@ pipeline {
                     echo "My password is '${PW1}'!"
                 }
                 echo 'AAAAAAAAA'
-                withCredentials([usernamePassword(credentialsId: 'test', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh 'echo $PASSWORD'
-                    echo "$USERNAME"
+                withCredentials([usernamePassword(credentialsId:'test', passwordVariable:'PASSWORD', usernameVariable:'USER')]) {
+                   echo '${PASSWORD}' // password is masked
                 }
-                echo "$USERNAME"
             }
         }
     }
