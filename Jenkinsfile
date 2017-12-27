@@ -20,6 +20,10 @@ pipeline {
                     echo "My password is '${PW1}'!"
                 }
                 sh 'echo ${PW1}'
+                withCredentials([usernamePassword(credentialsId: 'test', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh 'echo $PASSWORD'
+                    echo "$USERNAME"
+                }
             }
         }
         stage('Build') {
