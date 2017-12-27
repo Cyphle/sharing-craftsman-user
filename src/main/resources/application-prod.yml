@@ -1,4 +1,4 @@
-# Keep the connection alive if idle for a long time (needed in production)
+# Spring
 spring:
   datasource:
     testWhileIdle: true
@@ -6,6 +6,16 @@ spring:
     initialize: false
   cache:
     type: NONE
+
+# Logging
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+      hibernate: ERROR
+  file: /logs/app.log
+
 # JPA
   jpa:
     show-sql: true
