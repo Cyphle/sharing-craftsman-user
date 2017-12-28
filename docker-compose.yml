@@ -6,3 +6,5 @@ services:
     container_name: sc_user
     ports:
       - 8080:8080
+    volumes:
+     - /root/home/apps/logs:/logs
