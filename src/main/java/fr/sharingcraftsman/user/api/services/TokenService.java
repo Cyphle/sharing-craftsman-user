@@ -10,6 +10,7 @@ import fr.sharingcraftsman.user.domain.authentication.*;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
+import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.company.CollaboratorException;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
@@ -76,6 +77,17 @@ public class TokenService {
   }
 
   public ResponseEntity logout(OAuthToken token) {
-    throw new UnsupportedOperationException();
+    try {
+      log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
+      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(token.getUsername()), null, false);
+      Client client = new Client(token.getClient(), "", false);
+      authenticator.logout(credentials, client, TokenPivot.fromApiToDomain(token));
+      return ResponseEntity.ok().build();
+    } catch (CredentialsException e) {
+      log.warn("Error with log out " + token.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
   }
 }

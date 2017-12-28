@@ -133,4 +133,26 @@ public class TokenServiceTest {
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
+
+  @Test
+  public void should_return_ok_when_logout() throws Exception {
+    fr.sharingcraftsman.user.api.models.OAuthToken token = new fr.sharingcraftsman.user.api.models.OAuthToken();
+    token.setUsername("john@doe.fr");
+    token.setClient("client");
+    token.setAccessToken("aaa");
+    token.setRefreshToken("bbb");
+    token.setExpirationDate(0);
+
+    ValidToken validToken = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(dateService.getDayAt(8))
+            .build();
+    given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
+    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+
+    ResponseEntity response = tokenService.logout(token);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
 }

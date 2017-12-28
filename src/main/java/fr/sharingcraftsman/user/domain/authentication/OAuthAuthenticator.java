@@ -56,6 +56,14 @@ public class OAuthAuthenticator implements Authenticator {
     return foundToken.isValid();
   }
 
+  @Override
+  public void logout(Credentials credentials, Client client, ValidToken token) {
+    if (isTokenValid(credentials, client, token)) {
+      Collaborator collaborator = (Collaborator) humanResourceAdministrator.findFromCredentials(credentials);
+      tokenAdministrator.deleteTokensOf(collaborator, client);
+    }
+  }
+
   private String generateKey(String seed) {
     SecureRandom random = new SecureRandom(seed.getBytes());
     byte bytes[] = new byte[96];

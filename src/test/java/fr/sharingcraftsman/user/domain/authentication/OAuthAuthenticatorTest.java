@@ -21,6 +21,7 @@ import static fr.sharingcraftsman.user.domain.company.Collaborator.collaboratorB
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OAuthAuthenticatorTest {
@@ -118,5 +119,27 @@ public class OAuthAuthenticatorTest {
     boolean isValid = identifier.isTokenValid(credentials, client, token);
 
     assertThat(isValid).isFalse();
+  }
+
+  @Test
+  public void should_delete_token_when_logout() throws Exception {
+    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    ValidToken token = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
+            .build();
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+    Client client = Client.knownClient("client", "secret");
+    given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(token);
+    Collaborator collaborator = collaboratorBuilder
+            .withUsername(usernameBuilder.from("john@doe.fr"))
+            .withPassword(passwordBuilder.from("password"))
+            .build();
+    given(humanResourceAdministrator.findFromCredentials(credentials)).willReturn(collaborator);
+
+    identifier.logout(credentials, client, token);
+
+    verify(tokenAdministrator).deleteTokensOf(collaborator, client);
   }
 }

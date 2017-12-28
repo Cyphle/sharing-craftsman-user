@@ -10,4 +10,6 @@ public interface Authenticator {
   Token login(Credentials credentials, Client client) throws CollaboratorException;
 
   boolean isTokenValid(Credentials credentials, Client client, ValidToken token);
+
+  void logout(Credentials credentials, Client client, ValidToken token);
 }
