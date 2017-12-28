@@ -7,4 +7,6 @@ public interface TokenAdministrator {
   void deleteTokensOf(Collaborator collaborator, Client client);
 
   ValidToken createNewToken(Collaborator collaborator, Client client, boolean isLongToken);
+
+  Token findTokenFor(ValidToken token, Credentials credentials);
 }

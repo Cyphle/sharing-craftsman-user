@@ -57,7 +57,7 @@ public class LoginControllerTest {
   @Test
   public void should_log_in_and_get_token() throws Exception {
     ZonedDateTime zdt = LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0).atZone(ZoneId.systemDefault());
-    OAuthToken oAuthToken = new OAuthToken("aaa", "bbb", zdt.toInstant().toEpochMilli());
+    OAuthToken oAuthToken = new OAuthToken("john@doe.fr", "aaa", "bbb", zdt.toInstant().toEpochMilli());
     given(loginService.login(any(Login.class))).willReturn(ResponseEntity.ok(oAuthToken));
 
     Login login = new Login("client", "clientSecret", "john@doe.fr", "password", true);
@@ -66,6 +66,7 @@ public class LoginControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(login)))
             .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username", not(empty())))
             .andExpect(jsonPath("$.accessToken", not(empty())));
   }
 }

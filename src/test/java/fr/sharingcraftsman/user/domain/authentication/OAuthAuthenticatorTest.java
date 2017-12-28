@@ -64,4 +64,34 @@ public class OAuthAuthenticatorTest {
 
     assertThat(expectedToken).isEqualTo(expectedToken);
   }
+
+  @Test
+  public void should_validate_token() throws Exception {
+    ValidToken token = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
+            .build();
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+    given(tokenAdministrator.findTokenFor(token, credentials)).willReturn(token);
+
+    boolean isValid = identifier.isTokenValid(credentials, token);
+
+    assertThat(isValid).isTrue();
+  }
+
+  @Test
+  public void should_not_validate_token() throws Exception {
+    ValidToken token = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
+            .build();
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+    given(tokenAdministrator.findTokenFor(token, credentials)).willReturn(new InvalidToken());
+
+    boolean isValid = identifier.isTokenValid(credentials, token);
+
+    assertThat(isValid).isFalse();
+  }
 }

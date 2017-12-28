@@ -54,7 +54,7 @@ public class LoginService {
       log.info("User " + login.getUsername() + " is logging");
       Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(login);
       Client client = ClientPivot.fromApiToDomain(login);
-      OAuthToken token = TokenPivot.fromDomainToApi((ValidToken) authenticator.login(credentials, client));
+      OAuthToken token = TokenPivot.fromDomainToApi((ValidToken) authenticator.login(credentials, client), credentials);
       return ResponseEntity.ok(token);
     } catch (CredentialsException | CollaboratorException e) {
       log.warn("Error with login " + login.getUsername() + ": " + e.getMessage());

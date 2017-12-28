@@ -25,6 +25,12 @@ public class OAuthAuthenticator implements Authenticator {
     return tokenAdministrator.createNewToken((Collaborator) collaborator, client, credentials.stayLogged());
   }
 
+  @Override
+  public boolean isTokenValid(Credentials credentials, ValidToken token) {
+    Token foundToken = tokenAdministrator.findTokenFor(token, credentials);
+    return foundToken.isValid();
+  }
+
   // Need verify token
 
   // Need refresh token from refresh token
