@@ -16,6 +16,7 @@ echo "Le 3e paramètre est : $3"
 curl --request GET "http://51.254.131.44:8080/users/version/$1/$2"
 # 51.254.131.44
 
+ls
 echo ls
 
 #ssh $1@my.server.com
