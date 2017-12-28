@@ -3,15 +3,17 @@ package fr.sharingcraftsman.user.domain.authentication;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
-import fr.sharingcraftsman.user.domain.utils.DateService;
+import fr.sharingcraftsman.user.domain.utils.DateHelper;
 
 public class OAuthAuthenticator implements Authenticator {
   private HumanResourceAdministrator humanResourceAdministrator;
   private TokenAdministrator tokenAdministrator;
+  private DateHelper dateHelper;
 
-  public OAuthAuthenticator(HumanResourceAdministrator humanResourceAdministrator, TokenAdministrator tokenAdministrator) {
+  public OAuthAuthenticator(HumanResourceAdministrator humanResourceAdministrator, TokenAdministrator tokenAdministrator, DateHelper dateHelper) {
     this.humanResourceAdministrator = humanResourceAdministrator;
     this.tokenAdministrator = tokenAdministrator;
+    this.dateHelper = dateHelper;
   }
 
   @Override
@@ -26,8 +28,15 @@ public class OAuthAuthenticator implements Authenticator {
   }
 
   @Override
-  public boolean isTokenValid(Credentials credentials, ValidToken token) {
-    Token foundToken = tokenAdministrator.findTokenFor(token, credentials);
+  public boolean isTokenValid(Credentials credentials, Client client, ValidToken token) {
+    Token foundToken = tokenAdministrator.findTokenFor(client, credentials, token);
+
+    if (foundToken.isValid()) {
+      ValidToken validToken = (ValidToken) foundToken;
+      if (validToken.getExpirationDate().isBefore(dateHelper.now()))
+        return false;
+    }
+
     return foundToken.isValid();
   }
 

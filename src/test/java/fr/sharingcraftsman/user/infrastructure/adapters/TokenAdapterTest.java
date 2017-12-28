@@ -1,8 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
-import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
-import fr.sharingcraftsman.user.domain.authentication.ValidToken;
+import fr.sharingcraftsman.user.domain.authentication.*;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
 import fr.sharingcraftsman.user.domain.company.Person;
@@ -22,6 +20,7 @@ import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 
+import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,6 +73,22 @@ public class TokenAdapterTest {
     assertThat(token.getRefreshToken()).hasSize(128);
     assertThat(token.getExpirationDate()).isEqualTo(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     verify(tokenRepository).save(any(OAuthToken.class));
+  }
+
+  @Test
+  public void should_return_a_valid_token_when_found() throws Exception {
+    ValidToken token = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
+            .build();
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+    Client client = Client.knownClient("client", "secret");
+    given(tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(new OAuthToken("john@doe.fr", "client", "aaa", "bbb", Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant())));
+
+    Token foundToken = tokenAdapter.findTokenFor(client, credentials, token);
+
+    assertThat(foundToken.isValid()).isTrue();
   }
 
   private String generateKey(String seed) {

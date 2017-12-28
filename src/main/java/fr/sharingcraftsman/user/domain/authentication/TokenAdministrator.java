@@ -8,5 +8,5 @@ public interface TokenAdministrator {
 
   ValidToken createNewToken(Collaborator collaborator, Client client, boolean isLongToken);
 
-  Token findTokenFor(ValidToken token, Credentials credentials);
+  Token findTokenFor(Client client, Credentials credentials, ValidToken token);
 }

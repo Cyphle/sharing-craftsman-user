@@ -1,9 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
-import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.authentication.Token;
-import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
-import fr.sharingcraftsman.user.domain.authentication.ValidToken;
+import fr.sharingcraftsman.user.domain.authentication.*;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
 import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
@@ -50,8 +47,13 @@ public class TokenAdapter implements TokenAdministrator {
   }
 
   @Override
-  public Token findTokenFor(ValidToken token, Credentials credentials) {
-    throw new UnsupportedOperationException();
+  public Token findTokenFor(Client client, Credentials credentials, ValidToken token) {
+    OAuthToken foundToken = tokenRepository.findByUsernameClientAndAccessToken(credentials.getUsernameContent(), client.getName(), token.getAccessToken());
+
+    if (foundToken == null)
+      return new InvalidToken();
+
+    return TokenPivot.fromInfraToDomain(foundToken);
   }
 
   private String generateKey(String seed) {

@@ -9,5 +9,5 @@ import fr.sharingcraftsman.user.domain.company.CollaboratorException;
 public interface Authenticator {
   Token login(Credentials credentials, Client client) throws CollaboratorException;
 
-  boolean isTokenValid(Credentials credentials, ValidToken token);
+  boolean isTokenValid(Credentials credentials, Client client, ValidToken token);
 }

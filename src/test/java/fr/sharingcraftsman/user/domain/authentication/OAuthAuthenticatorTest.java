@@ -4,7 +4,7 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
-import fr.sharingcraftsman.user.domain.utils.DateService;
+import fr.sharingcraftsman.user.domain.utils.DateHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +27,7 @@ public class OAuthAuthenticatorTest {
   private Authenticator identifier;
 
   @Mock
-  private DateService dateService;
+  private DateHelper dateHelper;
 
   @Mock
   private HumanResourceAdministrator humanResourceAdministrator;
@@ -37,7 +37,7 @@ public class OAuthAuthenticatorTest {
 
   @Before
   public void setUp() throws Exception {
-    identifier = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator);
+    identifier = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateHelper);
   }
 
   @Test
@@ -50,10 +50,10 @@ public class OAuthAuthenticatorTest {
     ValidToken token = validTokenBuilder
             .withAccessToken("aaa")
             .withRefreshToken("bbb")
-            .expiringThe(dateService.getDayAt(8))
+            .expiringThe(dateHelper.getDayAt(8))
             .build();
 
-    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    given(dateHelper.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
     given(tokenAdministrator.createNewToken(collaborator, client, true)).willReturn(token);
 
@@ -73,9 +73,11 @@ public class OAuthAuthenticatorTest {
             .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
             .build();
     Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    given(tokenAdministrator.findTokenFor(token, credentials)).willReturn(token);
+    Client client = Client.knownClient("client", "secret");
+    given(dateHelper.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(token);
 
-    boolean isValid = identifier.isTokenValid(credentials, token);
+    boolean isValid = identifier.isTokenValid(credentials, client, token);
 
     assertThat(isValid).isTrue();
   }
@@ -88,9 +90,32 @@ public class OAuthAuthenticatorTest {
             .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
             .build();
     Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    given(tokenAdministrator.findTokenFor(token, credentials)).willReturn(new InvalidToken());
+    Client client = Client.knownClient("client", "secret");
+    given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(new InvalidToken());
 
-    boolean isValid = identifier.isTokenValid(credentials, token);
+    boolean isValid = identifier.isTokenValid(credentials, client, token);
+
+    assertThat(isValid).isFalse();
+  }
+
+  @Test
+  public void should_not_validate_token_if_is_expired() throws Exception {
+    ValidToken token = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("")
+            .expiringThe(null)
+            .build();
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+    ValidToken fetchedToken = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 10, 12, 0))
+            .build();
+    Client client = Client.knownClient("client", "secret");
+    given(dateHelper.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(fetchedToken);
+
+    boolean isValid = identifier.isTokenValid(credentials, client, token);
 
     assertThat(isValid).isFalse();
   }
