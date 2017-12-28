@@ -14,7 +14,7 @@ logging:
       springframework:
         web: DEBUG
       hibernate: ERROR
-  file: /logs/app.log
+  file: /logs/user.log
 
 # JPA
   jpa:
