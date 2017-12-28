@@ -2,8 +2,7 @@ package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
 import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.api.models.OAuthToken;
-import fr.sharingcraftsman.user.api.services.LoginService;
+import fr.sharingcraftsman.user.api.services.UserService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,24 +19,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.not;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {UserApplication.class})
-@WebMvcTest(LoginController.class)
+@WebMvcTest(UserController.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class LoginControllerTest {
+public class UserControllerTest {
   @Autowired
   private MockMvc mvc;
 
@@ -45,7 +36,7 @@ public class LoginControllerTest {
   private WebApplicationContext context;
 
   @MockBean
-  private LoginService loginService;
+  private UserService userService;
 
   @Before
   public void setup() {
@@ -55,18 +46,14 @@ public class LoginControllerTest {
   }
 
   @Test
-  public void should_log_in_and_get_token() throws Exception {
-    ZonedDateTime zdt = LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0).atZone(ZoneId.systemDefault());
-    OAuthToken oAuthToken = new OAuthToken("john@doe.fr", "aaa", "bbb", zdt.toInstant().toEpochMilli());
-    given(loginService.login(any(Login.class))).willReturn(ResponseEntity.ok(oAuthToken));
+  public void should_register_a_new_user() throws Exception {
+    given(userService.registerUser(any(Login.class))).willReturn(ResponseEntity.ok().build());
 
-    Login login = new Login("client", "clientSecret", "john@doe.fr", "password", true);
+    Login login = new Login("client", "clientSecret", "john@doe.fr", "password");
 
-    this.mvc.perform(post("/users/login")
+    this.mvc.perform(post("/users/register")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(login)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.username", not(empty())))
-            .andExpect(jsonPath("$.accessToken", not(empty())));
+            .andExpect(status().isOk());
   }
 }

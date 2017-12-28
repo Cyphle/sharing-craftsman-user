@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.api.services.RegistrationService;
+import fr.sharingcraftsman.user.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/users")
 @Api(description = "Endpoints to register in the application")
-public class RegistrationController {
-  private RegistrationService registrationService;
+public class UserController {
+  private UserService userService;
 
   @Autowired
-  public RegistrationController(RegistrationService registrationService) {
-    this.registrationService = registrationService;
+  public UserController(UserService userService) {
+    this.userService = userService;
   }
 
   @ApiOperation(value = "Post information to create a new client", response = ResponseEntity.class)
@@ -32,6 +32,6 @@ public class RegistrationController {
   })
   @RequestMapping(method = RequestMethod.POST, value = "/register")
   public ResponseEntity registerUser(@RequestBody Login login) {
-    return registrationService.registerUser(login);
+    return userService.registerUser(login);
   }
 }

@@ -26,7 +26,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RegistrationServiceTest {
+public class UserServiceTest {
   @Mock
   private UserRepository userRepository;
   @Mock
@@ -34,12 +34,12 @@ public class RegistrationServiceTest {
   @Mock
   private DateService dateService;
 
-  private RegistrationService registrationService;
+  private UserService userService;
 
   @Before
   public void setUp() throws Exception {
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
-    registrationService = new RegistrationService(userRepository, clientRepository, dateService);
+    userService = new UserService(userRepository, clientRepository, dateService);
   }
 
   @Test
@@ -47,7 +47,7 @@ public class RegistrationServiceTest {
     given(clientRepository.findByNameAndSecret("client", "clientsecret")).willReturn(new OAuthClient("client", "clientsecret"));
     Login login = new Login("client", "clientsecret", "john@doe.fr", "password");
 
-    ResponseEntity response = registrationService.registerUser(login);
+    ResponseEntity response = userService.registerUser(login);
 
     User expectedUser = new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     expectedUser.setCreationDate(dateService.nowInDate());
@@ -61,7 +61,7 @@ public class RegistrationServiceTest {
     given(clientRepository.findByNameAndSecret("client", "clientsecret")).willReturn(new OAuthClient("client", "clientsecret"));
     Login login = new Login("client", "clientsecret", "", "password");
 
-    ResponseEntity response = registrationService.registerUser(login);
+    ResponseEntity response = userService.registerUser(login);
 
     verify(userRepository, never()).save(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -73,7 +73,7 @@ public class RegistrationServiceTest {
     given(clientRepository.findByNameAndSecret("client", "clientsecret")).willReturn(new OAuthClient("client", "clientsecret"));
     Login login = new Login("client", "clientsecret", "john@doe.fr", "");
 
-    ResponseEntity response = registrationService.registerUser(login);
+    ResponseEntity response = userService.registerUser(login);
 
     verify(userRepository, never()).save(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -86,7 +86,7 @@ public class RegistrationServiceTest {
     given(userRepository.findByUsername("john@doe.fr")).willReturn(new User("john@doe.fr", "password"));
     Login login = new Login("client", "clientsecret", "john@doe.fr", "password");
 
-    ResponseEntity response = registrationService.registerUser(login);
+    ResponseEntity response = userService.registerUser(login);
 
     verify(userRepository, never()).save(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -98,7 +98,7 @@ public class RegistrationServiceTest {
     given(clientRepository.findByNameAndSecret("client", "clientsecret")).willReturn(null);
     Login login = new Login("client", "clientsecret", "john@doe.fr", "password");
 
-    ResponseEntity response = registrationService.registerUser(login);
+    ResponseEntity response = userService.registerUser(login);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     assertThat(response.getBody()).isEqualTo("Unknown client");

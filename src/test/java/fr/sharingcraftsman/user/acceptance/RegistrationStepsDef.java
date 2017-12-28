@@ -67,7 +67,7 @@ public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
   public void connect(String email, String password) throws Exception {
     LoginDsl login = new LoginDsl("sharingcraftsman", "secret", email, password);
     response = this.mvc
-            .perform(post(getBaseUri() + "/users/login")
+            .perform(post(getBaseUri() + "/tokens/login")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(Mapper.fromObjectToJsonString(login))
             )
