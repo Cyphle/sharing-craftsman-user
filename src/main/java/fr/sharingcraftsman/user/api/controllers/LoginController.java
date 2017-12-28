@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.api.models.Login;
+import fr.sharingcraftsman.user.api.models.OAuthToken;
 import fr.sharingcraftsman.user.api.services.LoginService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +22,13 @@ public class LoginController {
     this.loginService = loginService;
   }
 
-  @ApiOperation(value = "Post log in information", response = ResponseEntity.class)
+  @ApiOperation(value = "Post log in information", response = OAuthToken.class)
   @ApiResponses(value = {
-          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 200, message = "Response with token containing username, client, access token, refresh token and expiration date"),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.POST, value = "/login")
-  public ResponseEntity registerUser(@RequestBody Login login) {
+  public ResponseEntity logIn(@RequestBody Login login) {
     return loginService.login(login);
   }
 }

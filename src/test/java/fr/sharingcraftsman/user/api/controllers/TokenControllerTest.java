@@ -1,0 +1,62 @@
+package fr.sharingcraftsman.user.api.controllers;
+
+import fr.sharingcraftsman.user.UserApplication;
+import fr.sharingcraftsman.user.api.models.OAuthToken;
+import fr.sharingcraftsman.user.api.services.TokenService;
+import fr.sharingcraftsman.user.utils.Mapper;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {UserApplication.class})
+@WebMvcTest(TokenController.class)
+@TestPropertySource(locations = "classpath:application-test.properties")
+public class TokenControllerTest {
+  @Autowired
+  private MockMvc mvc;
+
+  @Autowired
+  private WebApplicationContext context;
+
+  @MockBean
+  private TokenService tokenService;
+
+  @Before
+  public void setup() {
+    this.mvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .build();
+  }
+
+  @Test
+  public void should_verify_token() throws Exception {
+    given(tokenService.checkToken(any(OAuthToken.class))).willReturn(ResponseEntity.ok().build());
+
+    OAuthToken token = new OAuthToken();
+    token.setUsername("john@doe.fr");
+    token.setClient("client");
+    token.setAccessToken("aaa");
+
+    this.mvc.perform(post("/tokens/verify")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(token)))
+            .andExpect(status().isOk());
+  }
+}

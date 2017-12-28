@@ -63,28 +63,4 @@ public class LoginServiceTest {
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
-
-  @Test
-  public void should_return_true_if_token_is_valid() throws Exception {
-    fr.sharingcraftsman.user.api.models.OAuthToken token = new fr.sharingcraftsman.user.api.models.OAuthToken();
-    token.setUsername("john@doe.fr");
-    token.setClient("client");
-    token.setAccessToken("aaa");
-    token.setRefreshToken("bbb");
-    token.setExpirationDate(0);
-
-    OAuthToken oAuthToken = new OAuthToken();
-    oAuthToken.setClient("client");
-    oAuthToken.setUsername("john@doe.fr");
-    oAuthToken.setAccessToken("aaa");
-    oAuthToken.setRefreshToken("bbb");
-    oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
-
-    given(tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(oAuthToken);
-    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-
-    ResponseEntity response = loginService.checkToken(token);
-
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-  }
 }
