@@ -4,19 +4,18 @@ RUN apk add --no-cache bash
 RUN apk add --no-cache vim
 
 VOLUME /tmp
-ADD target/user.jar app.jar
+ADD user.jar user.jar
 
 ENV JAVA_OPTS=""
 
-ENV SPRING_ACTIVE_PROFILE="prod"
+ENV SPRING_ACTIVE_PROFILE=<PROFILE>
 
-ENV DATABASE_HOST="192.168.1.18"
-ENV DATABASE_USER="root"
-ENV DATABASE_PASSWORD="root"
-ENV DATABASE_PORT="3306"
-ENV DATABASE_NAME="sharingcraftsmanuser"
+ENV DATABASE_HOST=<DB_HOST>
+ENV DATABASE_USER=<DB_USER>
+ENV DATABASE_PASSWORD=<DB_PASSWORD>
+ENV DATABASE_PORT=<DB_PORT>
+ENV DATABASE_NAME=<DB_NAME>
 
 EXPOSE 8080
 
-ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar
-
+ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /user.jar
