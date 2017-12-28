@@ -1,7 +1,10 @@
 package fr.sharingcraftsman.user.domain.authentication;
 
+import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode
 public class ValidToken extends Token {
   public static final ValidTokenBuilder validTokenBuilder = new ValidTokenBuilder();
 

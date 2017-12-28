@@ -63,8 +63,4 @@ public class OAuthAuthenticator implements Authenticator {
     Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
     return encoder.encodeToString(bytes);
   }
-
-  // Need verify token
-
-  // Need refresh token from refresh token
 }

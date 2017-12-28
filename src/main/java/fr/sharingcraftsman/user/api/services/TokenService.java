@@ -15,12 +15,6 @@ import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
-import fr.sharingcraftsman.user.infrastructure.adapters.ClientAdapter;
-import fr.sharingcraftsman.user.infrastructure.adapters.TokenAdapter;
-import fr.sharingcraftsman.user.infrastructure.adapters.UserAdapter;
-import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
-import fr.sharingcraftsman.user.infrastructure.repositories.TokenRepository;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +31,8 @@ public class TokenService {
   private Authenticator authenticator;
 
   @Autowired
-  public TokenService(UserRepository userRepository, TokenRepository tokenRepository, ClientRepository clientRepository, DateService dateService) {
-    HumanResourceAdministrator humanResourceAdministrator = new UserAdapter(userRepository, dateService);
-    TokenAdministrator tokenAdministrator = new TokenAdapter(tokenRepository);
+  public TokenService(HumanResourceAdministrator humanResourceAdministrator, TokenAdministrator tokenAdministrator, ClientStock clientStock, DateService dateService) {
     authenticator = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateService);
-
-    ClientStock clientStock = new ClientAdapter(clientRepository);
     clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
   }
 

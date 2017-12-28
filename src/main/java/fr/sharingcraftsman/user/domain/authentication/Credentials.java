@@ -2,7 +2,9 @@ package fr.sharingcraftsman.user.domain.authentication;
 
 import fr.sharingcraftsman.user.domain.common.Password;
 import fr.sharingcraftsman.user.domain.common.Username;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode
 public class Credentials {
   private Password password;
   private Username username;
