@@ -7,7 +7,9 @@ import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
 import fr.sharingcraftsman.user.infrastructure.pivots.TokenPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TokenAdapter implements TokenAdministrator {
   private TokenRepository tokenRepository;
 

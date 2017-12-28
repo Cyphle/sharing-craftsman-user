@@ -12,7 +12,9 @@ import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.company.Person;
 import fr.sharingcraftsman.user.domain.company.UnknownCollaborator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserAdapter implements HumanResourceAdministrator {
   private UserRepository userRepository;
   private DateService dateService;

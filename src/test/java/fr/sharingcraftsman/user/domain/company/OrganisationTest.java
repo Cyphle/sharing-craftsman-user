@@ -2,8 +2,6 @@ package fr.sharingcraftsman.user.domain.company;
 
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.utils.AESCrypter;
-import fr.sharingcraftsman.user.domain.utils.Crypter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,12 +20,10 @@ import static org.mockito.Mockito.verify;
 public class OrganisationTest {
   @Mock
   HumanResourceAdministrator humanResourceAdministrator;
-  private Crypter crypter;
   private Organisation organisation;
 
   @Before
   public void setUp() throws Exception {
-    crypter = new AESCrypter();
     organisation = new Organisation(humanResourceAdministrator);
   }
 

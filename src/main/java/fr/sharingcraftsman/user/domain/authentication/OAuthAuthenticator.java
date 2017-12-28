@@ -6,7 +6,6 @@ import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 import java.util.Base64;
 
 import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;

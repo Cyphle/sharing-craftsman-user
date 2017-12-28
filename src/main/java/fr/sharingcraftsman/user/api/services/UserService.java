@@ -32,11 +32,8 @@ public class UserService {
   private ClientManager clientManager;
 
   @Autowired
-  public UserService(UserRepository userRepository, ClientRepository clientRepository, DateService dateService) {
-    HumanResourceAdministrator humanResourceAdministrator = new UserAdapter(userRepository, dateService);
+  public UserService(HumanResourceAdministrator humanResourceAdministrator, ClientStock clientStock) {
     company = new Organisation(humanResourceAdministrator);
-
-    ClientStock clientStock = new ClientAdapter(clientRepository);
     clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
   }
 
@@ -50,12 +47,12 @@ public class UserService {
       log.info("User is registering with username:" + login.getUsername());
       Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(login);
       company.createNewCollaborator(credentials);
+      return ResponseEntity.ok().build();
     } catch (CredentialsException | CollaboratorException e) {
       log.warn("Error with registering " + login.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());
     }
-    return ResponseEntity.ok().build();
   }
 }

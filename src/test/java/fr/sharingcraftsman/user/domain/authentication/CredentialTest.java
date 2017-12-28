@@ -1,10 +1,5 @@
 package fr.sharingcraftsman.user.domain.authentication;
 
-import fr.sharingcraftsman.user.domain.utils.AESCrypter;
-import fr.sharingcraftsman.user.domain.utils.Crypter;
-import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
-import fr.sharingcraftsman.user.utils.Mapper;
-import org.junit.Before;
 import org.junit.Test;
 
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
@@ -13,13 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 public class CredentialTest {
-  private Crypter crypter;
-
-  @Before
-  public void setUp() throws Exception {
-    crypter = new AESCrypter();
-  }
-
   @Test
   public void should_crypt_password_when_created() throws Exception {
     Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
