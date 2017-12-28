@@ -21,8 +21,7 @@ public class ClientService {
   private ClientManager clientManager;
 
   @Autowired
-  public ClientService(ClientRepository clientRepository) {
-    ClientStock clientStock = new ClientAdapter(clientRepository);
+  public ClientService(ClientStock clientStock) {
     clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
   }
 
