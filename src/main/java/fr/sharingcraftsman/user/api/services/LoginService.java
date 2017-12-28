@@ -39,7 +39,7 @@ public class LoginService {
   @Autowired
   public LoginService(UserRepository userRepository, TokenRepository tokenRepository, ClientRepository clientRepository, DateService dateService) {
     HumanResourceAdministrator humanResourceAdministrator = new UserAdapter(userRepository, dateService);
-    TokenAdministrator tokenAdministrator = new TokenAdapter(tokenRepository, dateService);
+    TokenAdministrator tokenAdministrator = new TokenAdapter(tokenRepository);
     authenticator = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateService);
 
     ClientStock clientStock = new ClientAdapter(clientRepository);

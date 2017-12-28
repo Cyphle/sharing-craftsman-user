@@ -39,7 +39,7 @@ public class TokenAdapterTest {
 
   @Before
   public void setUp() throws Exception {
-    tokenAdapter = new TokenAdapter(tokenRepository, dateService);
+    tokenAdapter = new TokenAdapter(tokenRepository);
   }
 
   @Test
@@ -62,17 +62,24 @@ public class TokenAdapterTest {
     oAuthToken.setAccessToken(generateKey("clientjohn@doe.fr"));
     oAuthToken.setRefreshToken(generateKey("clientjohn@doe.fr"));
     oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
-    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenRepository.save(any(OAuthToken.class))).willReturn(oAuthToken);
+
+    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+
     Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    Person collaborator = Collaborator.from(credentials);
+    Collaborator collaborator = Collaborator.from(credentials);
     Client client = Client.knownClient("client", "secret");
+    ValidToken token = validTokenBuilder
+            .withAccessToken(generateKey(client.getName() + collaborator.getUsername()))
+            .withRefreshToken(generateKey(client.getName() + collaborator.getUsername()))
+            .expiringThe(dateService.getDayAt(8))
+            .build();
 
-    ValidToken token = tokenAdapter.createNewToken((Collaborator) collaborator, client, false);
+    ValidToken createdToken = tokenAdapter.createNewToken(client, collaborator, token);
 
-    assertThat(token.getAccessToken()).hasSize(128);
-    assertThat(token.getRefreshToken()).hasSize(128);
-    assertThat(token.getExpirationDate()).isEqualTo(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    assertThat(createdToken.getAccessToken()).hasSize(128);
+    assertThat(createdToken.getRefreshToken()).hasSize(128);
+    assertThat(createdToken.getExpirationDate()).isEqualTo(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     verify(tokenRepository).save(any(OAuthToken.class));
   }
 

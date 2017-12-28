@@ -6,7 +6,7 @@ import fr.sharingcraftsman.user.domain.company.Collaborator;
 public interface TokenAdministrator {
   void deleteTokensOf(Collaborator collaborator, Client client);
 
-  ValidToken createNewToken(Collaborator collaborator, Client client, boolean isLongToken);
+  ValidToken createNewToken(Client client, Collaborator collaborator, ValidToken token);
 
   Token findTokenFor(Client client, Credentials credentials, ValidToken token);
 }

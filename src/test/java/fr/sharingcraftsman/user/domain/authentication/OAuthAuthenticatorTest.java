@@ -55,7 +55,7 @@ public class OAuthAuthenticatorTest {
 
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
-    given(tokenAdministrator.createNewToken(collaborator, client, true)).willReturn(token);
+    given(tokenAdministrator.createNewToken(client, collaborator, token)).willReturn(token);
 
     Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     credentials.setStayLogged(true);
