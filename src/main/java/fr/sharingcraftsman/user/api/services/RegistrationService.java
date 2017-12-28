@@ -18,6 +18,8 @@ import fr.sharingcraftsman.user.infrastructure.adapters.DateService;
 import fr.sharingcraftsman.user.infrastructure.adapters.UserAdapter;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RegistrationService {
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
   private Company company;
   private ClientManager clientManager;
 
@@ -39,13 +42,16 @@ public class RegistrationService {
 
   public ResponseEntity registerUser(Login login) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(login))) {
+      log.warn("User " + login.getUsername() + " is trying to log in with unauthorized client: " + login.getClient());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
     try {
+      log.info("User is registering with username:" + login.getUsername());
       Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(login);
       company.createNewCollaborator(credentials);
     } catch (CredentialsException | CollaboratorException e) {
+      log.warn("Error with registering " + login.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());

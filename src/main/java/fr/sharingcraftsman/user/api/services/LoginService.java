@@ -21,6 +21,8 @@ import fr.sharingcraftsman.user.infrastructure.adapters.UserAdapter;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
 import fr.sharingcraftsman.user.infrastructure.repositories.TokenRepository;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LoginService {
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
   private ClientManager clientManager;
   private Authenticator authenticator;
 
@@ -43,15 +46,18 @@ public class LoginService {
 
   public ResponseEntity login(Login login) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(login))) {
+      log.warn("User " + login.getUsername() + " is trying to log in with unauthorized client: " + login.getClient());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
     try {
+      log.info("User " + login.getUsername() + " is logging");
       Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(login);
       Client client = ClientPivot.fromApiToDomain(login);
       OAuthToken token = TokenPivot.fromDomainToApi((ValidToken) authenticator.login(credentials, client));
       return ResponseEntity.ok(token);
     } catch (CredentialsException | CollaboratorException e) {
+      log.warn("Error with login " + login.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());

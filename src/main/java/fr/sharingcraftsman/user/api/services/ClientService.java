@@ -9,12 +9,15 @@ import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
 import fr.sharingcraftsman.user.infrastructure.adapters.ClientAdapter;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ClientService {
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
   private ClientManager clientManager;
 
   @Autowired
@@ -24,11 +27,11 @@ public class ClientService {
   }
 
   public ResponseEntity register(ClientRegistration clientRegistration) {
-    // Check if not exists
-    // Otherwise register
     try {
+      log.info("Registering new client: " + clientRegistration.getName());
       clientManager.createNewClient(ClientPivot.fromApiToDomain(clientRegistration));
     } catch (ClientException e) {
+      log.warn("Client already exists: " + clientRegistration.getName());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());

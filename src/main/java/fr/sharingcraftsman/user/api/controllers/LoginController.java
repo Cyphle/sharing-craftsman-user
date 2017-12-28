@@ -2,10 +2,7 @@ package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.api.models.Login;
 import fr.sharingcraftsman.user.api.services.LoginService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
-@Api(description = "API to log in")
+@Api(description = "Endpoints to log in")
 public class LoginController {
   private LoginService loginService;
 
