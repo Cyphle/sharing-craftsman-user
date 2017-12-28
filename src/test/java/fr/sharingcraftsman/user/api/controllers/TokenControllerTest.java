@@ -84,4 +84,19 @@ public class TokenControllerTest {
             .content(Mapper.fromObjectToJsonString(token)))
             .andExpect(status().isOk());
   }
+
+  @Test
+  public void should_log_out() throws Exception {
+    given(tokenService.logout(any(OAuthToken.class))).willReturn(ResponseEntity.ok().build());
+
+    OAuthToken token = new OAuthToken();
+    token.setUsername("john@doe.fr");
+    token.setClient("client");
+    token.setAccessToken("aaa");
+
+    this.mvc.perform(post("/tokens/logout")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(token)))
+            .andExpect(status().isOk());
+  }
 }

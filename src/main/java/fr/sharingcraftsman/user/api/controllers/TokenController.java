@@ -52,6 +52,6 @@ public class TokenController {
   })
   @RequestMapping(method = RequestMethod.POST, value = "/logout")
   public ResponseEntity logOut(@RequestBody OAuthToken token) {
-    return tokenService.checkToken(token);
+    return tokenService.logout(token);
   }
 }

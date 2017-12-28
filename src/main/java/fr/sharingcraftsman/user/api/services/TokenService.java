@@ -74,4 +74,8 @@ public class TokenService {
               .body(e.getMessage());
     }
   }
+
+  public ResponseEntity logout(OAuthToken token) {
+    throw new UnsupportedOperationException();
+  }
 }
