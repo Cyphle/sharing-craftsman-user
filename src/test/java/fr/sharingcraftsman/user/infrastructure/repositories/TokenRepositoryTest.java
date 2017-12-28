@@ -1,7 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.repositories;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.acceptance.dsl.TokenDsl;
 import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
 import org.junit.Before;
 import org.junit.Test;

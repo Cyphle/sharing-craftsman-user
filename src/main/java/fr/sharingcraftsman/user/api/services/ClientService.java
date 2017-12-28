@@ -7,8 +7,6 @@ import fr.sharingcraftsman.user.domain.client.ClientException;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
-import fr.sharingcraftsman.user.infrastructure.adapters.ClientAdapter;
-import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

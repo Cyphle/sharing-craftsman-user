@@ -3,8 +3,6 @@ package fr.sharingcraftsman.user.api.services;
 import fr.sharingcraftsman.user.api.models.ClientRegistration;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
-import fr.sharingcraftsman.user.infrastructure.models.OAuthClient;
-import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClientServiceTest {
