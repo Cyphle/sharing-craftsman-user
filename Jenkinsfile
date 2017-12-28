@@ -1,7 +1,6 @@
 pipeline {
     environment {
-        SAUCE_ACCESS     = credentials('test')
-        test = 'blablable'
+        TARGET_PATH     = '/home/apps/user'
     }
 
     agent {
@@ -24,7 +23,7 @@ pipeline {
         stage('Deliver') {
             steps {
                 sh 'chmod +x ./jenkins/scripts/deliver.sh'
-                sh './jenkins/scripts/deliver.sh ${SAUCE_ACCESS_USR} ${SAUCE_ACCESS} ${SAUCE_ACCESS_PSW}'
+                sh './jenkins/scripts/deliver.sh ${TARGET_PATH}'
             }
         }
     }
