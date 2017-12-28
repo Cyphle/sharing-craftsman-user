@@ -21,3 +21,14 @@ Example file containing infos: <b>user-infos.yml</b>
 
 ### Note
 <b>Script also launch a docker-compose up -d</b>
+
+## Informations
+To install jenkins:
+
+docker run -d -u root -p 8088:8080 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v /Users/cyrilpham-le/Documents/Projets/Docker/jenkins/apps:/home/apps --name jenkins jenkinsci/blueocean
+
+Update mapped volumes:
+ - to correspond to system host
+ - to correspond to Jenkins folder
+
+Update Jenkinsfile of project to setup TARGET_PATH variable to correspond to Jenkins mapped volume
