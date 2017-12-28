@@ -91,6 +91,22 @@ public class TokenAdapterTest {
     assertThat(foundToken.isValid()).isTrue();
   }
 
+  @Test
+  public void should_return_an_invalid_token_when_not_found() throws Exception {
+    ValidToken token = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
+            .build();
+    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+    Client client = Client.knownClient("client", "secret");
+    given(tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(null);
+
+    Token foundToken = tokenAdapter.findTokenFor(client, credentials, token);
+
+    assertThat(foundToken.isValid()).isFalse();
+  }
+
   private String generateKey(String seed) {
     SecureRandom random = new SecureRandom(seed.getBytes());
     byte bytes[] = new byte[96];
