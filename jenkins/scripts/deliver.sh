@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-path = "/home/apps/user"
+path='/home/apps/user'
 
 echo "Copying deployable files in app folder"
 cp docker-compose.yml $path/docker-compose.yml
