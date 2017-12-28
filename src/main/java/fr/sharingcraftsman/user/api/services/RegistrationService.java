@@ -14,7 +14,7 @@ import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
 import fr.sharingcraftsman.user.domain.ports.company.Company;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
 import fr.sharingcraftsman.user.infrastructure.adapters.ClientAdapter;
-import fr.sharingcraftsman.user.infrastructure.adapters.DateService;
+import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.infrastructure.adapters.UserAdapter;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;

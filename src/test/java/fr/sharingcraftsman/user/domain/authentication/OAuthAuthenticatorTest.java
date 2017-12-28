@@ -1,10 +1,10 @@
 package fr.sharingcraftsman.user.domain.authentication;
 
+import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
-import fr.sharingcraftsman.user.domain.utils.DateHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +27,7 @@ public class OAuthAuthenticatorTest {
   private Authenticator identifier;
 
   @Mock
-  private DateHelper dateHelper;
+  private DateService dateService;
 
   @Mock
   private HumanResourceAdministrator humanResourceAdministrator;
@@ -37,7 +37,7 @@ public class OAuthAuthenticatorTest {
 
   @Before
   public void setUp() throws Exception {
-    identifier = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateHelper);
+    identifier = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateService);
   }
 
   @Test
@@ -50,10 +50,10 @@ public class OAuthAuthenticatorTest {
     ValidToken token = validTokenBuilder
             .withAccessToken("aaa")
             .withRefreshToken("bbb")
-            .expiringThe(dateHelper.getDayAt(8))
+            .expiringThe(dateService.getDayAt(8))
             .build();
 
-    given(dateHelper.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
     given(tokenAdministrator.createNewToken(collaborator, client, true)).willReturn(token);
 
@@ -74,7 +74,7 @@ public class OAuthAuthenticatorTest {
             .build();
     Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     Client client = Client.knownClient("client", "secret");
-    given(dateHelper.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(token);
 
     boolean isValid = identifier.isTokenValid(credentials, client, token);
@@ -112,7 +112,7 @@ public class OAuthAuthenticatorTest {
             .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 10, 12, 0))
             .build();
     Client client = Client.knownClient("client", "secret");
-    given(dateHelper.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(fetchedToken);
 
     boolean isValid = identifier.isTokenValid(credentials, client, token);

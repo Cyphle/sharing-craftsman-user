@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.infrastructure.adapters.DateService;
+import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.infrastructure.models.OAuthClient;
 import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
 import fr.sharingcraftsman.user.infrastructure.models.User;
@@ -40,7 +40,7 @@ public class LoginServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    given(dateService.now()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+    given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     loginService = new LoginService(userRepository, tokenRepository, clientRepository, dateService);
   }
 
@@ -60,6 +60,30 @@ public class LoginServiceTest {
     Login login = new Login("client", "secret", "john@doe.fr", "password", true);
 
     ResponseEntity response = loginService.login(login);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  @Test
+  public void should_return_true_if_token_is_valid() throws Exception {
+    fr.sharingcraftsman.user.api.models.OAuthToken token = new fr.sharingcraftsman.user.api.models.OAuthToken();
+    token.setUsername("john@doe.fr");
+    token.setClient("client");
+    token.setAccessToken("aaa");
+    token.setRefreshToken("bbb");
+    token.setExpirationDate(0);
+
+    OAuthToken oAuthToken = new OAuthToken();
+    oAuthToken.setClient("client");
+    oAuthToken.setUsername("john@doe.fr");
+    oAuthToken.setAccessToken("aaa");
+    oAuthToken.setRefreshToken("bbb");
+    oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+
+    given(tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(oAuthToken);
+    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+
+    ResponseEntity response = loginService.checkToken(token);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

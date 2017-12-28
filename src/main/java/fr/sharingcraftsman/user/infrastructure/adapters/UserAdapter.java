@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
@@ -25,8 +26,8 @@ public class UserAdapter implements HumanResourceAdministrator {
   @Override
   public void createNewCollaborator(Collaborator collaborator) {
     User user = UserPivot.fromDomainToInfra(collaborator);
-    user.setCreationDate(dateService.now());
-    user.setLastUpdateDate(dateService.now());
+    user.setCreationDate(dateService.nowInDate());
+    user.setLastUpdateDate(dateService.nowInDate());
     userRepository.save(user);
   }
 

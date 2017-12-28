@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
@@ -34,7 +35,7 @@ public class UserAdapterTest {
   @Before
   public void setUp() throws Exception {
     userAdapter = new UserAdapter(userRepository, dateService);
-    given(dateService.now()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+    given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
   }
 
   @Test
@@ -44,8 +45,8 @@ public class UserAdapterTest {
     userAdapter.createNewCollaborator((Collaborator) collaborator);
 
     User expectedUser = new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
-    expectedUser.setCreationDate(dateService.now());
-    expectedUser.setLastUpdateDate(dateService.now());
+    expectedUser.setCreationDate(dateService.nowInDate());
+    expectedUser.setLastUpdateDate(dateService.nowInDate());
     verify(userRepository).save(expectedUser);
   }
 

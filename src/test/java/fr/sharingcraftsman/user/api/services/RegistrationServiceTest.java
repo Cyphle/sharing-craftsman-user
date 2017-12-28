@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.infrastructure.adapters.DateService;
+import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.infrastructure.models.OAuthClient;
 import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
@@ -38,7 +38,7 @@ public class RegistrationServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    given(dateService.now()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+    given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     registrationService = new RegistrationService(userRepository, clientRepository, dateService);
   }
 
@@ -50,8 +50,8 @@ public class RegistrationServiceTest {
     ResponseEntity response = registrationService.registerUser(login);
 
     User expectedUser = new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
-    expectedUser.setCreationDate(dateService.now());
-    expectedUser.setLastUpdateDate(dateService.now());
+    expectedUser.setCreationDate(dateService.nowInDate());
+    expectedUser.setLastUpdateDate(dateService.nowInDate());
     verify(userRepository).save(expectedUser);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
