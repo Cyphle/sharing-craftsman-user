@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.infrastructure.repositories;
 
 import fr.sharingcraftsman.user.UserApplication;
+import fr.sharingcraftsman.user.acceptance.dsl.TokenDsl;
 import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,5 +48,12 @@ public class TokenRepositoryTest {
     tokenRepository.deleteByUsername("john@doe.fr", "client");
 
     assertThat(tokenRepository.findAll()).isEmpty();
+  }
+
+  @Test
+  public void should_find_token_by_username_client_and_access_token() throws Exception {
+    OAuthToken foundToken = tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa");
+
+    assertThat(foundToken.getAccessToken()).isEqualTo("aaa");
   }
 }
