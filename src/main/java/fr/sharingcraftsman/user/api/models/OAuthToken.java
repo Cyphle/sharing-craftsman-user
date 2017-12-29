@@ -5,7 +5,6 @@ import lombok.ToString;
 @ToString
 public class OAuthToken {
   private String username;
-  private String client;
   private String accessToken;
   private String refreshToken;
   private long expirationDate;
@@ -20,20 +19,17 @@ public class OAuthToken {
     this.expirationDate = expirationDate;
   }
 
+  public OAuthToken(String username, String accessToken) {
+    this.username = username;
+    this.accessToken = accessToken;
+  }
+
   public String getUsername() {
     return username;
   }
 
   public void setUsername(String username) {
     this.username = username;
-  }
-
-  public String getClient() {
-    return client;
-  }
-
-  public void setClient(String client) {
-    this.client = client;
   }
 
   public String getAccessToken() {

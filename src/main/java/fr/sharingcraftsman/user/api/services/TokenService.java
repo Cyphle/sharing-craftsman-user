@@ -58,11 +58,16 @@ public class TokenService {
     }
   }
 
-  public ResponseEntity checkToken(OAuthToken token) {
+  public ResponseEntity checkToken(OAuthClient oAuthClient, OAuthToken token) {
+    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(oAuthClient))) {
+      log.warn("User " + token.getUsername() + " is trying to check token in with unauthorized client: " + oAuthClient.getName());
+      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+    }
+
     try {
       log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
       Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(token.getUsername()), null, false);
-      Client client = new Client(token.getClient(), "", false);
+      Client client = new Client(oAuthClient.getName(), "", false);
 
       if (authenticator.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(token))) {
         return ResponseEntity.ok().build();
@@ -77,11 +82,11 @@ public class TokenService {
     }
   }
 
-  public ResponseEntity logout(OAuthToken token) {
+  public ResponseEntity logout(OAuthClient oAuthClient, OAuthToken token) {
     try {
       log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
       Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(token.getUsername()), null, false);
-      Client client = new Client(token.getClient(), "", false);
+      Client client = new Client(oAuthClient.getName(), "", false);
       authenticator.logout(credentials, client, TokenPivot.fromApiToDomain(token));
       return ResponseEntity.ok().build();
     } catch (CredentialsException e) {

@@ -36,23 +36,33 @@ public class TokenController {
     return tokenService.login(oAuthClient, login);
   }
 
-  @ApiOperation(value = "Post token information to verify its validity", response = ResponseEntity.class)
+  @ApiOperation(value = "Verify token validity", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.POST, value = "/verify")
-  public ResponseEntity verify(@RequestBody OAuthToken token) {
-    return tokenService.checkToken(token);
+  @RequestMapping(method = RequestMethod.GET, value = "/verify")
+  public ResponseEntity verify(@RequestHeader("client") String client,
+                               @RequestHeader("secret") String secret,
+                               @RequestHeader("username") String username,
+                               @RequestHeader("access-token") String accessToken) {
+    OAuthClient oAuthClient = new OAuthClient(client, secret);
+    OAuthToken oAuthToken = new OAuthToken(username, accessToken);
+    return tokenService.checkToken(oAuthClient, oAuthToken);
   }
 
-  @ApiOperation(value = "Post token information to log out", response = ResponseEntity.class)
+  @ApiOperation(value = "Logout - Delete token", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.POST, value = "/logout")
-  public ResponseEntity logOut(@RequestBody OAuthToken token) {
-    return tokenService.logout(token);
+  @RequestMapping(method = RequestMethod.GET, value = "/logout")
+  public ResponseEntity logOut(@RequestHeader("client") String client,
+                               @RequestHeader("secret") String secret,
+                               @RequestHeader("username") String username,
+                               @RequestHeader("access-token") String accessToken) {
+    OAuthClient oAuthClient = new OAuthClient(client, secret);
+    OAuthToken oAuthToken = new OAuthToken(username, accessToken);
+    return tokenService.logout(oAuthClient, oAuthToken);
   }
 }

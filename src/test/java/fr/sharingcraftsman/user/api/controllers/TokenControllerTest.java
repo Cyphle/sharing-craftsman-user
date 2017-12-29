@@ -31,6 +31,7 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,33 +76,29 @@ public class TokenControllerTest {
 
   @Test
   public void should_verify_token() throws Exception {
-    given(tokenService.checkToken(any(OAuthToken.class))).willReturn(ResponseEntity.ok().build());
+    given(tokenService.checkToken(any(OAuthClient.class), any(OAuthToken.class))).willReturn(ResponseEntity.ok().build());
 
     OAuthToken token = new OAuthToken();
     token.setUsername("john@doe.fr");
-    token.setClient("client");
     token.setAccessToken("aaa");
 
-    this.mvc.perform(post("/tokens/verify")
+    this.mvc.perform(get("/tokens/verify")
             .header("client", "client")
             .header("secret", "clientsecret")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(Mapper.fromObjectToJsonString(token)))
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa"))
             .andExpect(status().isOk());
   }
 
   @Test
   public void should_log_out() throws Exception {
-    given(tokenService.logout(any(OAuthToken.class))).willReturn(ResponseEntity.ok().build());
+    given(tokenService.logout(any(OAuthClient.class), any(OAuthToken.class))).willReturn(ResponseEntity.ok().build());
 
-    OAuthToken token = new OAuthToken();
-    token.setUsername("john@doe.fr");
-    token.setClient("client");
-    token.setAccessToken("aaa");
-
-    this.mvc.perform(post("/tokens/logout")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(Mapper.fromObjectToJsonString(token)))
+    this.mvc.perform(get("/tokens/logout")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa"))
             .andExpect(status().isOk());
   }
 }
