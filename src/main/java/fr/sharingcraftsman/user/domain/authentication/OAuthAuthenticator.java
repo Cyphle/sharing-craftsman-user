@@ -45,7 +45,7 @@ public class OAuthAuthenticator implements Authenticator {
 
   @Override
   public boolean isTokenValid(Credentials credentials, Client client, ValidToken token) {
-    Token foundToken = tokenAdministrator.findTokenFor(client, credentials, token);
+    Token foundToken = tokenAdministrator.findTokenFromAccessToken(client, credentials, token);
 
     if (foundToken.isValid()) {
       ValidToken validToken = (ValidToken) foundToken;
@@ -65,8 +65,10 @@ public class OAuthAuthenticator implements Authenticator {
   }
 
   @Override
-  public boolean isRefreshTokenValid(Credentials credentials, Client client, ValidToken validToken) {
-    throw new UnsupportedOperationException();
+  public boolean isRefreshTokenValid(Credentials credentials, Client client, ValidToken token) {
+    Token foundToken = tokenAdministrator.findTokenFromRefreshToken(client, credentials, token);
+
+    return foundToken.isValid();
   }
 
   private String generateKey(String seed) {

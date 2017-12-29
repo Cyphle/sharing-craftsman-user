@@ -94,7 +94,7 @@ public class TokenAdapterTest {
     Client client = Client.knownClient("client", "secret");
     given(tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(new OAuthToken("john@doe.fr", "client", "aaa", "bbb", Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant())));
 
-    Token foundToken = tokenAdapter.findTokenFor(client, credentials, token);
+    Token foundToken = tokenAdapter.findTokenFromAccessToken(client, credentials, token);
 
     assertThat(foundToken.isValid()).isTrue();
   }
@@ -110,7 +110,7 @@ public class TokenAdapterTest {
     Client client = Client.knownClient("client", "secret");
     given(tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(null);
 
-    Token foundToken = tokenAdapter.findTokenFor(client, credentials, token);
+    Token foundToken = tokenAdapter.findTokenFromAccessToken(client, credentials, token);
 
     assertThat(foundToken.isValid()).isFalse();
   }

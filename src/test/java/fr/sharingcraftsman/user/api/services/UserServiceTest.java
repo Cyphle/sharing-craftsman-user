@@ -136,7 +136,7 @@ public class UserServiceTest {
     ChangePasswordKey key = new ChangePasswordKey(collaborator, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
-    given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
+    given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
 
@@ -147,7 +147,7 @@ public class UserServiceTest {
   @Test
   public void should_get_unauthorized_if_access_token_is_invalid_when_requesting_password_change() throws Exception {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
-    given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(new InvalidToken());
+    given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(new InvalidToken());
     TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa");
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
@@ -158,7 +158,7 @@ public class UserServiceTest {
   @Test
   public void should_change_password_when_sending_new_password() throws Exception {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
-    given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
+    given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
     Collaborator collaborator = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))

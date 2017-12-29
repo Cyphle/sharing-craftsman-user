@@ -76,7 +76,7 @@ public class OAuthAuthenticatorTest {
 
   @Test
   public void should_validate_token() throws Exception {
-    given(tokenAdministrator.findTokenFor(client, credentials, oAuthToken)).willReturn(oAuthToken);
+    given(tokenAdministrator.findTokenFromAccessToken(client, credentials, oAuthToken)).willReturn(oAuthToken);
 
     boolean isValid = identifier.isTokenValid(credentials, client, oAuthToken);
 
@@ -85,7 +85,7 @@ public class OAuthAuthenticatorTest {
 
   @Test
   public void should_not_validate_token() throws Exception {
-    given(tokenAdministrator.findTokenFor(client, credentials, oAuthToken)).willReturn(new InvalidToken());
+    given(tokenAdministrator.findTokenFromAccessToken(client, credentials, oAuthToken)).willReturn(new InvalidToken());
 
     boolean isValid = identifier.isTokenValid(credentials, client, oAuthToken);
 
@@ -104,7 +104,7 @@ public class OAuthAuthenticatorTest {
             .withRefreshToken("bbb")
             .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 10, 12, 0))
             .build();
-    given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(fetchedToken);
+    given(tokenAdministrator.findTokenFromAccessToken(client, credentials, token)).willReturn(fetchedToken);
 
     boolean isValid = identifier.isTokenValid(credentials, client, token);
 
@@ -113,11 +113,20 @@ public class OAuthAuthenticatorTest {
 
   @Test
   public void should_delete_token_when_logout() throws Exception {
-    given(tokenAdministrator.findTokenFor(client, credentials, oAuthToken)).willReturn(oAuthToken);
+    given(tokenAdministrator.findTokenFromAccessToken(client, credentials, oAuthToken)).willReturn(oAuthToken);
     given(humanResourceAdministrator.findFromCredentials(credentials)).willReturn(collaborator);
 
     identifier.logout(credentials, client, oAuthToken);
 
     verify(tokenAdministrator).deleteTokensOf(collaborator, client);
+  }
+
+  @Test
+  public void should_validate_refresh_token() throws Exception {
+    given(tokenAdministrator.findTokenFromRefreshToken(client, credentials, oAuthToken)).willReturn(oAuthToken);
+
+    boolean isValid = identifier.isRefreshTokenValid(credentials, client, oAuthToken);
+
+    assertThat(isValid).isTrue();
   }
 }

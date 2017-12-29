@@ -8,5 +8,7 @@ public interface TokenAdministrator {
 
   ValidToken createNewToken(Client client, Collaborator collaborator, ValidToken token);
 
-  Token findTokenFor(Client client, Credentials credentials, ValidToken token);
+  Token findTokenFromAccessToken(Client client, Credentials credentials, ValidToken token);
+
+  Token findTokenFromRefreshToken(Client client, Credentials credentials, ValidToken token);
 }

@@ -30,12 +30,17 @@ public class TokenAdapter implements TokenAdministrator {
   }
 
   @Override
-  public Token findTokenFor(Client client, Credentials credentials, ValidToken token) {
+  public Token findTokenFromAccessToken(Client client, Credentials credentials, ValidToken token) {
     OAuthToken foundToken = tokenRepository.findByUsernameClientAndAccessToken(credentials.getUsernameContent(), client.getName(), token.getAccessToken());
 
     if (foundToken == null)
       return new InvalidToken();
 
     return TokenPivot.fromInfraToDomain(foundToken);
+  }
+
+  @Override
+  public Token findTokenFromRefreshToken(Client client, Credentials credentials, ValidToken token) {
+    throw new UnsupportedOperationException();
   }
 }
