@@ -1,9 +1,6 @@
 package fr.sharingcraftsman.user.api.services;
 
-import fr.sharingcraftsman.user.api.models.ChangePasswordDTO;
-import fr.sharingcraftsman.user.api.models.LoginDTO;
-import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.pivots.*;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
@@ -125,5 +122,9 @@ public class UserService {
     if (!authenticator.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO)))
       return true;
     return false;
+  }
+
+  public ResponseEntity updateProfile(ClientDTO clientDTO, TokenDTO tokenDTO, ProfileDTO profileDTO) {
+    throw new UnsupportedOperationException();
   }
 }

@@ -1,10 +1,7 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.models.ChangePasswordDTO;
-import fr.sharingcraftsman.user.api.models.LoginDTO;
-import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.services.UserService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
@@ -89,6 +86,21 @@ public class UserControllerTest {
             .header("access-token", "aaa")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(changePassword)))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void should_update_profile() throws Exception {
+    ProfileDTO profile = new ProfileDTO("Doe", "John", "john@doe.fr", "www.johndoe.fr", "http://github.com/Johndoe", "linkedin.com/johndoe");
+    given(userService.updateProfile(any(ClientDTO.class), any(TokenDTO.class), any(ProfileDTO.class))).willReturn(ResponseEntity.ok(profile));
+
+    this.mvc.perform(post("/users/change-password")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(profile)))
             .andExpect(status().isOk());
   }
 }

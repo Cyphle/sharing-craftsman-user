@@ -1,9 +1,6 @@
 package fr.sharingcraftsman.user.api.controllers;
 
-import fr.sharingcraftsman.user.api.models.ChangePasswordDTO;
-import fr.sharingcraftsman.user.api.models.LoginDTO;
-import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -68,4 +65,29 @@ public class UserController {
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
   }
+
+  @ApiOperation(value = "Update profile endpoint", response = ProfileDTO.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.POST, value = "/update-profile")
+  public ResponseEntity updateProfile(@RequestHeader("client") String client,
+                                       @RequestHeader("secret") String secret,
+                                       @RequestHeader("username") String username,
+                                       @RequestHeader("access-token") String accessToken,
+                                       @RequestBody ProfileDTO profileDTO) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return userService.updateProfile(clientDTO, tokenDTO, profileDTO);
+  }
+
+  /*
+  POST PROFILE INFOS:
+    private String lastname;
+    private String firstname;
+    email
+    github
+    linkedin
+   */
 }
