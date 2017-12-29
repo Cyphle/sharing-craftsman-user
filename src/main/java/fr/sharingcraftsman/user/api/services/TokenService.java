@@ -11,6 +11,7 @@ import fr.sharingcraftsman.user.domain.authentication.*;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
+import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.company.CollaboratorException;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.company.UnknownCollaboratorException;
@@ -105,6 +106,24 @@ public class TokenService {
   }
 
   public ResponseEntity refreshToken(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
+      log.warn("User " + tokenDTO.getUsername() + " is trying to refresh token with unauthorized client: " + clientDTO.getName());
+      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+    }
+
+    try {
+      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
+      Client client = new Client(clientDTO.getName(), "", false);
+      if (authenticator.isRefreshTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO))) {
+
+      } else {
+
+      }
+    } catch (CredentialsException e) {
+      e.printStackTrace();
+    }
+
+
     /*
       - Verify refresh token is ok
       - Delete existing token

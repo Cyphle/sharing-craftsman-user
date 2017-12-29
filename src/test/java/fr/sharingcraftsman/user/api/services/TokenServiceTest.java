@@ -32,6 +32,7 @@ import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TokenServiceTest {
@@ -122,5 +123,26 @@ public class TokenServiceTest {
     ResponseEntity response = tokenService.logout(clientDTO, token);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  @Test
+  public void should_generate_new_token() throws Exception {
+//    Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="), false);
+//    Collaborator collaborator = (new CollaboratorBuilder())
+//            .withUsername(usernameBuilder.from("john@doe.fr"))
+//            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
+//            .build();
+//    given(humanResourceAdministrator.findFromCredentials(credentials)).willReturn(collaborator);
+//    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+//    given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(validToken);
+    TokenDTO refreshToken = new TokenDTO();
+    refreshToken.setUsername("john@doe.fr");
+    refreshToken.setRefreshToken("bbb");
+
+    ResponseEntity response = tokenService.refreshToken(clientDTO, refreshToken);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isEqualTo(validToken);
+    verify(tokenAdministrator).deleteTokensOf(any(Collaborator.class), any(Client.class));
   }
 }

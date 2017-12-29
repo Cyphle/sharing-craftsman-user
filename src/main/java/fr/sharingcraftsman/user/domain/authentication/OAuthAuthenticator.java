@@ -64,6 +64,11 @@ public class OAuthAuthenticator implements Authenticator {
     }
   }
 
+  @Override
+  public boolean isRefreshTokenValid(Credentials credentials, Client client, ValidToken validToken) {
+    throw new UnsupportedOperationException();
+  }
+
   private String generateKey(String seed) {
     SecureRandom random = new SecureRandom(seed.getBytes());
     byte bytes[] = new byte[96];

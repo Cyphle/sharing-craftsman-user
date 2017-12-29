@@ -12,4 +12,6 @@ public interface Authenticator {
   boolean isTokenValid(Credentials credentials, Client client, ValidToken token);
 
   void logout(Credentials credentials, Client client, ValidToken token);
+
+  boolean isRefreshTokenValid(Credentials credentials, Client client, ValidToken validToken);
 }

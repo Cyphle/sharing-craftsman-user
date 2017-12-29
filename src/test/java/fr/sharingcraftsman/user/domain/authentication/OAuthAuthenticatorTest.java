@@ -35,30 +35,38 @@ public class OAuthAuthenticatorTest {
 
   @Mock
   private TokenAdministrator tokenAdministrator;
+  private ValidToken oAuthToken;
+  private Client client;
+  private Credentials credentials;
+  private Collaborator collaborator;
 
   @Before
   public void setUp() throws Exception {
+    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     identifier = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateService);
+    oAuthToken = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
+            .build();
+    client = Client.knownClient("client", "secret");
+    credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+    collaborator = (new CollaboratorBuilder())
+            .withUsername(usernameBuilder.from("john@doe.fr"))
+            .withPassword(passwordBuilder.from("password"))
+            .build();
   }
 
   @Test
   public void should_generate_token_when_identifying() throws Exception {
-    Collaborator collaborator = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("password"))
-            .build();
-    Client client = Client.knownClient("client", "secret");
     ValidToken token = validTokenBuilder
             .withAccessToken("aaa")
             .withRefreshToken("bbb")
             .expiringThe(dateService.getDayAt(8))
             .build();
-
-    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
     given(tokenAdministrator.createNewToken(client, collaborator, token)).willReturn(token);
-
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     credentials.setStayLogged(true);
 
     Token expectedToken = identifier.login(credentials, client);
@@ -68,33 +76,18 @@ public class OAuthAuthenticatorTest {
 
   @Test
   public void should_validate_token() throws Exception {
-    ValidToken token = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
-            .build();
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    Client client = Client.knownClient("client", "secret");
-    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(token);
+    given(tokenAdministrator.findTokenFor(client, credentials, oAuthToken)).willReturn(oAuthToken);
 
-    boolean isValid = identifier.isTokenValid(credentials, client, token);
+    boolean isValid = identifier.isTokenValid(credentials, client, oAuthToken);
 
     assertThat(isValid).isTrue();
   }
 
   @Test
   public void should_not_validate_token() throws Exception {
-    ValidToken token = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
-            .build();
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    Client client = Client.knownClient("client", "secret");
-    given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(new InvalidToken());
+    given(tokenAdministrator.findTokenFor(client, credentials, oAuthToken)).willReturn(new InvalidToken());
 
-    boolean isValid = identifier.isTokenValid(credentials, client, token);
+    boolean isValid = identifier.isTokenValid(credentials, client, oAuthToken);
 
     assertThat(isValid).isFalse();
   }
@@ -106,14 +99,11 @@ public class OAuthAuthenticatorTest {
             .withRefreshToken("")
             .expiringThe(null)
             .build();
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     ValidToken fetchedToken = validTokenBuilder
             .withAccessToken("aaa")
             .withRefreshToken("bbb")
             .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 10, 12, 0))
             .build();
-    Client client = Client.knownClient("client", "secret");
-    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(fetchedToken);
 
     boolean isValid = identifier.isTokenValid(credentials, client, token);
@@ -123,22 +113,10 @@ public class OAuthAuthenticatorTest {
 
   @Test
   public void should_delete_token_when_logout() throws Exception {
-    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    ValidToken token = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
-            .build();
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    Client client = Client.knownClient("client", "secret");
-    given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(token);
-    Collaborator collaborator = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("password"))
-            .build();
+    given(tokenAdministrator.findTokenFor(client, credentials, oAuthToken)).willReturn(oAuthToken);
     given(humanResourceAdministrator.findFromCredentials(credentials)).willReturn(collaborator);
 
-    identifier.logout(credentials, client, token);
+    identifier.logout(credentials, client, oAuthToken);
 
     verify(tokenAdministrator).deleteTokensOf(collaborator, client);
   }
