@@ -1,8 +1,8 @@
 package fr.sharingcraftsman.user.api.controllers;
 
-import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.api.models.OAuthClient;
-import fr.sharingcraftsman.user.api.models.OAuthToken;
+import fr.sharingcraftsman.user.api.models.LoginDTO;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,9 +32,9 @@ public class UserController {
   @RequestMapping(method = RequestMethod.POST, value = "/register")
   public ResponseEntity registerUser(@RequestHeader("client") String client,
                                      @RequestHeader("secret") String secret,
-                                     @RequestBody Login login) {
-    OAuthClient oAuthClient = new OAuthClient(client, secret);
-    return userService.registerUser(oAuthClient, login);
+                                     @RequestBody LoginDTO loginDTO) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    return userService.registerUser(clientDTO, loginDTO);
   }
 
   @ApiOperation(value = "Request to change password - Send change password token", response = ResponseEntity.class)
@@ -47,9 +47,9 @@ public class UserController {
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken) {
-    OAuthClient oAuthClient = new OAuthClient(client, secret);
-    OAuthToken oAuthToken = new OAuthToken(username, accessToken);
-    return userService.requestChangePassword(oAuthClient, oAuthToken);
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return userService.requestChangePassword(clientDTO, tokenDTO);
   }
 
   /*

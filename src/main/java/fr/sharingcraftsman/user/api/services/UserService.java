@@ -1,8 +1,8 @@
 package fr.sharingcraftsman.user.api.services;
 
-import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.api.models.OAuthClient;
-import fr.sharingcraftsman.user.api.models.OAuthToken;
+import fr.sharingcraftsman.user.api.models.LoginDTO;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.api.pivots.ChangePasswordTokenPivot;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.api.pivots.LoginPivot;
@@ -51,42 +51,42 @@ public class UserService {
     authenticator = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateService);
   }
 
-  public ResponseEntity registerUser(OAuthClient oAuthClient, Login login) {
-    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(oAuthClient))) {
-      log.warn("User " + login.getUsername() + " is trying to log in with unauthorized client: " + oAuthClient.getName());
+  public ResponseEntity registerUser(ClientDTO clientDTO, LoginDTO loginDTO) {
+    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
+      log.warn("User " + loginDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
     try {
-      log.info("User is registering with username:" + login.getUsername());
-      Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(login);
+      log.info("User is registering with username:" + loginDTO.getUsername());
+      Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(loginDTO);
       company.createNewCollaborator(credentials);
       return ResponseEntity.ok().build();
     } catch (CredentialsException | CollaboratorException e) {
-      log.warn("Error with registering " + login.getUsername() + ": " + e.getMessage());
+      log.warn("Error with registering " + loginDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());
     }
   }
 
-  public ResponseEntity requestChangePassword(OAuthClient oAuthClient, OAuthToken oAuthToken) {
-    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(oAuthClient))) {
-      log.warn("User " + oAuthToken.getUsername() + " is trying to log in with unauthorized client: " + oAuthClient.getName());
+  public ResponseEntity requestChangePassword(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
+      log.warn("User " + tokenDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
     try {
-      log.info("Request for a change password token for:" + oAuthToken.getUsername());
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(oAuthToken.getUsername()), null, false);
-      Client client = new Client(oAuthClient.getName(), "", false);
-      if (!authenticator.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(oAuthToken)))
+      log.info("Request for a change password token for:" + tokenDTO.getUsername());
+      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
+      Client client = new Client(clientDTO.getName(), "", false);
+      if (!authenticator.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO)))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
       ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
       return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordKey));
     } catch (UsernameException e) {
-      log.warn("Error with change password request " + oAuthToken.getUsername() + ": " + e.getMessage());
+      log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());

@@ -8,8 +8,8 @@ import fr.sharingcraftsman.user.acceptance.config.SpringAcceptanceTestConfig;
 import fr.sharingcraftsman.user.acceptance.dsl.ChangePasswordTokenDsl;
 import fr.sharingcraftsman.user.acceptance.dsl.LoginDsl;
 import fr.sharingcraftsman.user.acceptance.dsl.TokenDsl;
-import fr.sharingcraftsman.user.api.models.OAuthClient;
-import fr.sharingcraftsman.user.api.models.OAuthToken;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -33,7 +33,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
 
   @And("A client <(.*)> is registered")
   public void createClient(String clientName) throws Exception {
-    OAuthClient client = new OAuthClient();
+    ClientDTO client = new ClientDTO();
     client.setName(clientName);
 
     this.mvc
@@ -107,7 +107,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
   @Then("I am connected")
   public void checkTokenPresent() throws IOException {
     String tokenString = response.getResponse().getContentAsString();
-    OAuthToken token = Mapper.fromJsonStringToObject(tokenString, OAuthToken.class);
+    TokenDTO token = Mapper.fromJsonStringToObject(tokenString, TokenDTO.class);
     assertThat(token.getAccessToken()).isNotEmpty();
     assertThat(token.getRefreshToken()).isNotEmpty();
   }

@@ -2,7 +2,7 @@ package fr.sharingcraftsman.user.api.models;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class Login {
+public class LoginDTO {
   @ApiModelProperty(example = "client")
   private String username;
   @ApiModelProperty(example = "client")
@@ -10,15 +10,15 @@ public class Login {
   @ApiModelProperty(example = "true, false")
   private boolean stayLogged;
 
-  public Login() { }
+  public LoginDTO() { }
 
-  public Login(String username, String password) {
+  public LoginDTO(String username, String password) {
     this.username = username;
     this.password = password;
     this.stayLogged = false;
   }
 
-  public Login(String username, String password, boolean stayLogged) {
+  public LoginDTO(String username, String password, boolean stayLogged) {
     this.username = username;
     this.password = password;
     this.stayLogged = stayLogged;

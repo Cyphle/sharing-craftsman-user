@@ -1,13 +1,13 @@
 package fr.sharingcraftsman.user.api.models;
 
-public class OAuthClient {
+public class ClientDTO {
   private String name;
   private String secret;
 
-  public OAuthClient() {
+  public ClientDTO() {
   }
 
-  public OAuthClient(String name, String secret) {
+  public ClientDTO(String name, String secret) {
     this.name = name;
     this.secret = secret;
   }

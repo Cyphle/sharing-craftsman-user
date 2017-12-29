@@ -3,23 +3,23 @@ package fr.sharingcraftsman.user.api.models;
 import lombok.ToString;
 
 @ToString
-public class OAuthToken {
+public class TokenDTO {
   private String username;
   private String accessToken;
   private String refreshToken;
   private long expirationDate;
 
-  public OAuthToken() {
+  public TokenDTO() {
   }
 
-  public OAuthToken(String username, String accessToken, String refreshToken, long expirationDate) {
+  public TokenDTO(String username, String accessToken, String refreshToken, long expirationDate) {
     this.username = username;
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     this.expirationDate = expirationDate;
   }
 
-  public OAuthToken(String username, String accessToken) {
+  public TokenDTO(String username, String accessToken) {
     this.username = username;
     this.accessToken = accessToken;
   }

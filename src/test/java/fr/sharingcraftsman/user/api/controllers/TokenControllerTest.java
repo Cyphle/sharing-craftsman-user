@@ -1,9 +1,9 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.api.models.OAuthClient;
-import fr.sharingcraftsman.user.api.models.OAuthToken;
+import fr.sharingcraftsman.user.api.models.LoginDTO;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.api.services.TokenService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
@@ -59,16 +59,16 @@ public class TokenControllerTest {
   @Test
   public void should_log_in_and_get_token() throws Exception {
     ZonedDateTime zdt = LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0).atZone(ZoneId.systemDefault());
-    OAuthToken oAuthToken = new OAuthToken("john@doe.fr", "aaa", "bbb", zdt.toInstant().toEpochMilli());
-    given(tokenService.login(any(OAuthClient.class), any(Login.class))).willReturn(ResponseEntity.ok(oAuthToken));
+    TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa", "bbb", zdt.toInstant().toEpochMilli());
+    given(tokenService.login(any(ClientDTO.class), any(LoginDTO.class))).willReturn(ResponseEntity.ok(tokenDTO));
 
-    Login login = new Login("john@doe.fr", "password", true);
+    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password", true);
 
     this.mvc.perform(post("/tokens/login")
             .header("client", "client")
             .header("secret", "clientsecret")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(Mapper.fromObjectToJsonString(login)))
+            .content(Mapper.fromObjectToJsonString(loginDTO)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.username", not(empty())))
             .andExpect(jsonPath("$.accessToken", not(empty())));
@@ -76,9 +76,9 @@ public class TokenControllerTest {
 
   @Test
   public void should_verify_token() throws Exception {
-    given(tokenService.checkToken(any(OAuthClient.class), any(OAuthToken.class))).willReturn(ResponseEntity.ok().build());
+    given(tokenService.checkToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
 
-    OAuthToken token = new OAuthToken();
+    TokenDTO token = new TokenDTO();
     token.setUsername("john@doe.fr");
     token.setAccessToken("aaa");
 
@@ -92,7 +92,7 @@ public class TokenControllerTest {
 
   @Test
   public void should_log_out() throws Exception {
-    given(tokenService.logout(any(OAuthClient.class), any(OAuthToken.class))).willReturn(ResponseEntity.ok().build());
+    given(tokenService.logout(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(get("/tokens/logout")
             .header("client", "client")

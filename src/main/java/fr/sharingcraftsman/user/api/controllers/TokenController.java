@@ -1,8 +1,8 @@
 package fr.sharingcraftsman.user.api.controllers;
 
-import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.api.models.OAuthClient;
-import fr.sharingcraftsman.user.api.models.OAuthToken;
+import fr.sharingcraftsman.user.api.models.LoginDTO;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.api.services.TokenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +23,7 @@ public class TokenController {
     this.tokenService = tokenService;
   }
 
-  @ApiOperation(value = "Post log in information", response = OAuthToken.class)
+  @ApiOperation(value = "Post log in information", response = TokenDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = "Response with token containing username, client, access token, refresh token and expiration date"),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -31,9 +31,9 @@ public class TokenController {
   @RequestMapping(method = RequestMethod.POST, value = "/login")
   public ResponseEntity logIn(@RequestHeader("client") String client,
                               @RequestHeader("secret") String secret,
-                              @RequestBody Login login) {
-    OAuthClient oAuthClient = new OAuthClient(client, secret);
-    return tokenService.login(oAuthClient, login);
+                              @RequestBody LoginDTO loginDTO) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    return tokenService.login(clientDTO, loginDTO);
   }
 
   @ApiOperation(value = "Verify token validity", response = ResponseEntity.class)
@@ -46,9 +46,9 @@ public class TokenController {
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken) {
-    OAuthClient oAuthClient = new OAuthClient(client, secret);
-    OAuthToken oAuthToken = new OAuthToken(username, accessToken);
-    return tokenService.checkToken(oAuthClient, oAuthToken);
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return tokenService.checkToken(clientDTO, tokenDTO);
   }
 
   @ApiOperation(value = "Logout - Delete token", response = ResponseEntity.class)
@@ -61,8 +61,8 @@ public class TokenController {
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken) {
-    OAuthClient oAuthClient = new OAuthClient(client, secret);
-    OAuthToken oAuthToken = new OAuthToken(username, accessToken);
-    return tokenService.logout(oAuthClient, oAuthToken);
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return tokenService.logout(clientDTO, tokenDTO);
   }
 }

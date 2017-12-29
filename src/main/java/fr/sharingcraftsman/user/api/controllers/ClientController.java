@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.api.controllers;
 
-import fr.sharingcraftsman.user.api.models.OAuthClient;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.services.ClientService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,9 +31,9 @@ public class ClientController {
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.POST, value = "/register")
-  public ResponseEntity registerUser(@RequestBody OAuthClient OAuthClient) {
-    if (OAuthClient.getName().equals("sharingcraftsman"))
-      return clientService.register(OAuthClient);
+  public ResponseEntity registerUser(@RequestBody ClientDTO ClientDTO) {
+    if (ClientDTO.getName().equals("sharingcraftsman"))
+      return clientService.register(ClientDTO);
     else
       return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
   }

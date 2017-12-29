@@ -1,7 +1,8 @@
 package fr.sharingcraftsman.user.api.services;
 
-import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.api.models.OAuthClient;
+import fr.sharingcraftsman.user.api.models.LoginDTO;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
@@ -44,9 +45,9 @@ public class TokenServiceTest {
   private DateService dateService;
 
   private TokenService tokenService;
-  private OAuthClient oAuthClient;
+  private ClientDTO clientDTO;
   private ValidToken validToken;
-  private fr.sharingcraftsman.user.api.models.OAuthToken token;
+  private TokenDTO token;
 
   @Before
   public void setUp() throws Exception {
@@ -55,14 +56,14 @@ public class TokenServiceTest {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "secret"));
 
     tokenService = new TokenService(humanResourceAdministrator, tokenAdministrator, clientStock, dateService);
-    oAuthClient = new OAuthClient("client", "secret");
+    clientDTO = new ClientDTO("client", "secret");
     validToken = validTokenBuilder
             .withAccessToken("aaa")
             .withRefreshToken("bbb")
             .expiringThe(dateService.getDayAt(8))
             .build();
 
-    token = new fr.sharingcraftsman.user.api.models.OAuthToken();
+    token = new TokenDTO();
     token.setUsername("john@doe.fr");
     token.setAccessToken("aaa");
   }
@@ -78,8 +79,8 @@ public class TokenServiceTest {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(validToken);
 
-    Login login = new Login("john@doe.fr", "password", true);
-    ResponseEntity response = tokenService.login(oAuthClient, login);
+    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password", true);
+    ResponseEntity response = tokenService.login(clientDTO, loginDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
@@ -89,7 +90,7 @@ public class TokenServiceTest {
     given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
 
-    ResponseEntity response = tokenService.checkToken(oAuthClient, token);
+    ResponseEntity response = tokenService.checkToken(clientDTO, token);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
@@ -98,7 +99,7 @@ public class TokenServiceTest {
   public void should_get_unauthorized_if_token_is_not_valid() throws Exception {
     given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(new InvalidToken());
 
-    ResponseEntity response = tokenService.checkToken(oAuthClient, token);
+    ResponseEntity response = tokenService.checkToken(clientDTO, token);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
@@ -108,7 +109,7 @@ public class TokenServiceTest {
     given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2018, Month.JANUARY, 12, 12, 0));
 
-    ResponseEntity response = tokenService.checkToken(oAuthClient, token);
+    ResponseEntity response = tokenService.checkToken(clientDTO, token);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
@@ -118,7 +119,7 @@ public class TokenServiceTest {
     given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
 
-    ResponseEntity response = tokenService.logout(oAuthClient, token);
+    ResponseEntity response = tokenService.logout(clientDTO, token);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

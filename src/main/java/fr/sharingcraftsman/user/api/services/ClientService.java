@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.api.services;
 
-import fr.sharingcraftsman.user.api.models.OAuthClient;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientException;
@@ -23,12 +23,12 @@ public class ClientService {
     clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
   }
 
-  public ResponseEntity register(OAuthClient OAuthClient) {
+  public ResponseEntity register(ClientDTO ClientDTO) {
     try {
-      log.info("Registering new client: " + OAuthClient.getName());
-      clientManager.createNewClient(ClientPivot.fromApiToDomain(OAuthClient));
+      log.info("Registering new client: " + ClientDTO.getName());
+      clientManager.createNewClient(ClientPivot.fromApiToDomain(ClientDTO));
     } catch (ClientException e) {
-      log.warn("Client already exists: " + OAuthClient.getName());
+      log.warn("Client already exists: " + ClientDTO.getName());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());

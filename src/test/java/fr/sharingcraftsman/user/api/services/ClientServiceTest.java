@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.api.services;
 
-import fr.sharingcraftsman.user.api.models.OAuthClient;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import org.junit.Before;
@@ -31,7 +31,7 @@ public class ClientServiceTest {
   public void should_register_new_client() throws Exception {
     given(clientStock.findClientByName(any(Client.class))).willReturn(Client.unkownClient());
     given(clientStock.createClient(any(Client.class))).willReturn(Client.knownClient("sharingcraftsman", "secret"));
-    OAuthClient client = new OAuthClient();
+    ClientDTO client = new ClientDTO();
     client.setName("sharingcraftsman");
 
     ResponseEntity response = clientService.register(client);

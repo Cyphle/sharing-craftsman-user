@@ -3,10 +3,10 @@ package fr.sharingcraftsman.user.api.models;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
-public class ChangePasswordToken {
+public class ChangePasswordKeyDTO {
   private String token;
 
-  public ChangePasswordToken(String token) {
+  public ChangePasswordKeyDTO(String token) {
     this.token = token;
   }
 

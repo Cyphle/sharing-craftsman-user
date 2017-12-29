@@ -1,9 +1,9 @@
 package fr.sharingcraftsman.user.api.services;
 
-import fr.sharingcraftsman.user.api.models.ChangePasswordToken;
-import fr.sharingcraftsman.user.api.models.Login;
-import fr.sharingcraftsman.user.api.models.OAuthClient;
-import fr.sharingcraftsman.user.api.models.OAuthToken;
+import fr.sharingcraftsman.user.api.models.ChangePasswordKeyDTO;
+import fr.sharingcraftsman.user.api.models.LoginDTO;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
@@ -50,12 +50,12 @@ public class UserServiceTest {
   private TokenAdministrator tokenAdministrator;
 
   private UserService userService;
-  private OAuthClient oAuthClient;
+  private ClientDTO clientDTO;
   private ValidToken validToken;
 
   @Before
   public void setUp() throws Exception {
-    oAuthClient = new OAuthClient("secret", "clientsecret");
+    clientDTO = new ClientDTO("secret", "clientsecret");
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 27, 12, 0));
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
@@ -71,9 +71,9 @@ public class UserServiceTest {
   public void should_register_user() throws Exception {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(humanResourceAdministrator.getCollaborator(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownCollaborator());
-    Login login = new Login("john@doe.fr", "password");
+    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
-    ResponseEntity response = userService.registerUser(oAuthClient, login);
+    ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
     verify(humanResourceAdministrator).createNewCollaborator(Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -82,9 +82,9 @@ public class UserServiceTest {
   @Test
   public void should_get_invalid_credential_username_when_username_is_not_specified() throws Exception {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
-    Login login = new Login("", "password");
+    LoginDTO loginDTO = new LoginDTO("", "password");
 
-    ResponseEntity response = userService.registerUser(oAuthClient, login);
+    ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
     verify(humanResourceAdministrator, never()).createNewCollaborator(any(Collaborator.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -94,9 +94,9 @@ public class UserServiceTest {
   @Test
   public void should_get_invalid_credential_password_when_username_is_not_specified() throws Exception {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
-    Login login = new Login("john@doe.fr", "");
+    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "");
 
-    ResponseEntity response = userService.registerUser(oAuthClient, login);
+    ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
     verify(humanResourceAdministrator, never()).createNewCollaborator(any(Collaborator.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -112,9 +112,9 @@ public class UserServiceTest {
                     .withPassword(passwordBuilder.from("password"))
                     .build()
     );
-    Login login = new Login("john@doe.fr", "password");
+    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
-    ResponseEntity response = userService.registerUser(oAuthClient, login);
+    ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
     verify(humanResourceAdministrator, never()).createNewCollaborator(any(Collaborator.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -124,9 +124,9 @@ public class UserServiceTest {
   @Test
   public void should_get_unknown_client_response_when_client_is_not_known() throws Exception {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.unkownClient());
-    Login login = new Login("john@doe.fr", "password");
+    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
-    ResponseEntity response = userService.registerUser(oAuthClient, login);
+    ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     assertThat(response.getBody()).isEqualTo("Unknown client");
@@ -142,22 +142,22 @@ public class UserServiceTest {
     given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
-    OAuthToken oAuthToken = new OAuthToken("john@doe.fr", "aaa");
+    TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa");
 
-    ResponseEntity response = userService.requestChangePassword(oAuthClient, oAuthToken);
+    ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
 
     System.out.println(response);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(new ChangePasswordToken("aaa"));
+    assertThat(response.getBody()).isEqualTo(new ChangePasswordKeyDTO("aaa"));
   }
 
   @Test
   public void should_get_unauthorized_if_access_token_is_invalid_when_requesting_password_change() throws Exception {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(new InvalidToken());
-    OAuthToken oAuthToken = new OAuthToken("john@doe.fr", "aaa");
+    TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa");
 
-    ResponseEntity response = userService.requestChangePassword(oAuthClient, oAuthToken);
+    ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
