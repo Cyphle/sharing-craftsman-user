@@ -66,18 +66,18 @@ public class TokenController {
     return tokenService.logout(clientDTO, tokenDTO);
   }
 
-//  @ApiOperation(value = "Refresh access token with refresh token", response = TokenDTO.class)
-//  @ApiResponses(value = {
-//          @ApiResponse(code = 200, message = "Response containing new access token and new refresh token"),
-//          @ApiResponse(code = 401, message = "Unauthorized")
-//  })
-//  @RequestMapping(method = RequestMethod.GET, value = "/logout")
-//  public ResponseEntity refreshToken(@RequestHeader("client") String client,
-//                               @RequestHeader("secret") String secret,
-//                               @RequestHeader("username") String username,
-//                               @RequestHeader("refresh-token") String refreshToken) {
-//    ClientDTO clientDTO = new ClientDTO(client, secret);
-//    TokenDTO tokenDTO = new TokenDTO(username, "", refreshToken);
-//    return tokenService.refreshToken(clientDTO, tokenDTO);
-//  }
+  @ApiOperation(value = "Refresh access token with refresh token", response = TokenDTO.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Response containing new access token and new refresh token"),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.GET, value = "/refresh-token")
+  public ResponseEntity refreshToken(@RequestHeader("client") String client,
+                               @RequestHeader("secret") String secret,
+                               @RequestHeader("username") String username,
+                               @RequestHeader("refresh-token") String refreshToken) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, "", refreshToken);
+    return tokenService.refreshToken(clientDTO, tokenDTO);
+  }
 }

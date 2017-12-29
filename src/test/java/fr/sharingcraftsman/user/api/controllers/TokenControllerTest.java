@@ -101,4 +101,18 @@ public class TokenControllerTest {
             .header("access-token", "aaa"))
             .andExpect(status().isOk());
   }
+
+  @Test
+  public void should_request_for_a_new_access_token() throws Exception {
+    ZonedDateTime zdt = LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0).atZone(ZoneId.systemDefault());
+    TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "ddd", "eee", zdt.toInstant().toEpochMilli());
+    given(tokenService.refreshToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(tokenDTO));
+
+    this.mvc.perform(get("/tokens/refresh-token")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("refresh-token", "bbb"))
+            .andExpect(status().isOk());
+  }
 }
