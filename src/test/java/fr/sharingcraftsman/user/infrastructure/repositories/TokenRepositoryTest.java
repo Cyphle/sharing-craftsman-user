@@ -62,4 +62,18 @@ public class TokenRepositoryTest {
 
     assertThat(foundToken).isNull();
   }
+
+  @Test
+  public void should_find_token_by_username_client_and_refresh_token() throws Exception {
+    OAuthToken foundToken = tokenRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb");
+
+    assertThat(foundToken.getAccessToken()).isEqualTo("aaa");
+  }
+
+  @Test
+  public void should_not_find_token_by_username_client_and_refresh_token() throws Exception {
+    OAuthToken foundToken = tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "ccc");
+
+    assertThat(foundToken).isNull();
+  }
 }
