@@ -24,6 +24,12 @@ public class TokenDTO {
     this.accessToken = accessToken;
   }
 
+  public TokenDTO(String username, String accessToken, String refreshToken) {
+    this.username = username;
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
+  }
+
   public String getUsername() {
     return username;
   }

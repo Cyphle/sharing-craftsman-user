@@ -29,7 +29,7 @@ public class SpringAcceptanceTestConfig {
   protected MvcResult response;
   protected LoginDsl login;
   protected TokenDsl token;
-  protected ChangePasswordTokenDsl chnagePasswordToken;
+  protected ChangePasswordTokenDsl changePasswordToken;
 
   @Autowired
   protected WebApplicationContext context;

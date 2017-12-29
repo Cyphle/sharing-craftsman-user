@@ -41,8 +41,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
             .perform(post(getBaseUri() + "/clients/register")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(Mapper.fromObjectToJsonString(client))
-            )
-            .andExpect(status().isOk());
+            );
   }
 
   @Given("I register to the application with my credentials <(.*)> and password <(.*)>")
@@ -87,12 +86,12 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
             .andExpect(status().isOk())
             .andReturn();
 
-    chnagePasswordToken = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), ChangePasswordTokenDsl.class);
+    changePasswordToken = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), ChangePasswordTokenDsl.class);
   }
 
   @And("I change my password with new password <(.*)>")
   public void changePassword(String newPassword) throws Exception {
-    ChangePasswordDsl changePasswordDsl = new ChangePasswordDsl(chnagePasswordToken.getToken(), login.getPassword(), newPassword);
+    ChangePasswordDsl changePasswordDsl = new ChangePasswordDsl(changePasswordToken.getToken(), login.getPassword(), newPassword);
 
     response = this.mvc
             .perform(post(getBaseUri() + "/users/change-password")

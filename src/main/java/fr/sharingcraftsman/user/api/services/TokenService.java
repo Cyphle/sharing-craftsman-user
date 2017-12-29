@@ -103,4 +103,13 @@ public class TokenService {
               .body(e.getMessage());
     }
   }
+
+  public ResponseEntity refreshToken(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    /*
+      - Verify refresh token is ok
+      - Delete existing token
+      - Create new token
+     */
+    throw new UnsupportedOperationException();
+  }
 }
