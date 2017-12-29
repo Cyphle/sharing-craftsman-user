@@ -1,16 +1,13 @@
 package fr.sharingcraftsman.user.acceptance;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.user.acceptance.config.SpringAcceptanceTestConfig;
 import fr.sharingcraftsman.user.acceptance.dsl.LoginDsl;
-import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.api.models.OAuthToken;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
 
@@ -19,28 +16,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
-  @Given("The application is setup")
-  public void setupApplication() {
-    if (this.mvc == null) {
-      this.mvc = MockMvcBuilders
-              .webAppContextSetup(context)
-              .build();
-    }
-  }
-
-  @And("A client <(.*)> is registered")
-  public void createClient(String clientName) throws Exception {
-    OAuthClient client = new OAuthClient();
-    client.setName(clientName);
-
-    this.mvc
-            .perform(post(getBaseUri() + "/clients/register")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(Mapper.fromObjectToJsonString(client))
-            )
-            .andExpect(status().isOk());
-  }
-
   @Given("I register to the application with my credentials <(.*)> and password <(.*)>")
   public void register(String email, String password) throws Exception {
     LoginDsl login = new LoginDsl(email, password);

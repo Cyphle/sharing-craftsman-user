@@ -2,6 +2,7 @@ package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.Login;
 import fr.sharingcraftsman.user.api.models.OAuthClient;
+import fr.sharingcraftsman.user.api.models.OAuthToken;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.api.pivots.LoginPivot;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
@@ -50,5 +51,9 @@ public class UserService {
               .badRequest()
               .body(e.getMessage());
     }
+  }
+
+  public ResponseEntity requestChangePassword(OAuthClient oAuthClient, OAuthToken oAuthToken) {
+    throw new UnsupportedOperationException();
   }
 }

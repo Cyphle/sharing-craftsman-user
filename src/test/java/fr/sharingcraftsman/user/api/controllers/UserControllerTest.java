@@ -3,6 +3,7 @@ package fr.sharingcraftsman.user.api.controllers;
 import fr.sharingcraftsman.user.UserApplication;
 import fr.sharingcraftsman.user.api.models.Login;
 import fr.sharingcraftsman.user.api.models.OAuthClient;
+import fr.sharingcraftsman.user.api.models.OAuthToken;
 import fr.sharingcraftsman.user.api.services.UserService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
@@ -22,6 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -57,6 +59,18 @@ public class UserControllerTest {
             .header("secret", "clientsecret")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(login)))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void should_request_for_a_token_to_change_password() throws Exception {
+    given(userService.requestChangePassword(any(OAuthClient.class), any(OAuthToken.class))).willReturn(ResponseEntity.ok().build());
+
+    this.mvc.perform(get("/users/request-change-password")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa"))
             .andExpect(status().isOk());
   }
 }
