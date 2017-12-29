@@ -33,7 +33,11 @@ public class TokenService {
   private Authenticator authenticator;
 
   @Autowired
-  public TokenService(HumanResourceAdministrator humanResourceAdministrator, TokenAdministrator tokenAdministrator, ClientStock clientStock, DateService dateService) {
+  public TokenService(
+          HumanResourceAdministrator humanResourceAdministrator,
+          TokenAdministrator tokenAdministrator,
+          ClientStock clientStock,
+          DateService dateService) {
     authenticator = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateService);
     clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
   }

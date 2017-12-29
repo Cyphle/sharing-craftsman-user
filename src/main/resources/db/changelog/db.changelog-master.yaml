@@ -5,6 +5,8 @@ databaseChangeLog:
       file: db/changelog/changes/02-create-client-table.yaml
   - include:
       file: db/changelog/changes/03-create-token-table.yaml
+  - include:
+      file: db/changelog/changes/04-update-user-table.yaml
 # Not work when launching jar.
 #  - includeAll:
 #        path: db/changelog/changes/

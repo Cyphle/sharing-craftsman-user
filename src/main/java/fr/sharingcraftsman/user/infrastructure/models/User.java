@@ -1,10 +1,13 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
+import lombok.ToString;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "users")
+@ToString
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,6 +27,10 @@ public class User {
   private Date creationDate;
   @Column(name = "last_update_date")
   private Date lastUpdateDate;
+  @Column(name = "change_password_key")
+  private String changePasswordKey;
+  @Column(name = "change_password_expiration_date")
+  private Date changePasswordExpirationDate;
 
   public User() { }
 
@@ -94,6 +101,22 @@ public class User {
 
   public void setLastUpdateDate(Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
+  }
+
+  public String getChangePasswordKey() {
+    return changePasswordKey;
+  }
+
+  public void setChangePasswordKey(String changePasswordKey) {
+    this.changePasswordKey = changePasswordKey;
+  }
+
+  public Date getChangePasswordExpirationDate() {
+    return changePasswordExpirationDate;
+  }
+
+  public void setChangePasswordExpirationDate(Date changePasswordExpirationDate) {
+    this.changePasswordExpirationDate = changePasswordExpirationDate;
   }
 
   @Override

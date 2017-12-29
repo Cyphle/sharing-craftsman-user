@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.domain.company;
 
+import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.Username;
 import org.junit.Before;
@@ -7,6 +8,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.time.LocalDateTime;
+import java.time.Month;
 
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
@@ -20,11 +24,13 @@ import static org.mockito.Mockito.verify;
 public class OrganisationTest {
   @Mock
   HumanResourceAdministrator humanResourceAdministrator;
+  @Mock
+  DateService dateService;
   private Organisation organisation;
 
   @Before
   public void setUp() throws Exception {
-    organisation = new Organisation(humanResourceAdministrator);
+    organisation = new Organisation(humanResourceAdministrator, dateService);
   }
 
   @Test
@@ -51,5 +57,16 @@ public class OrganisationTest {
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Collaborator already exists with username: john@doe.fr");
     }
+  }
+
+  @Test
+  public void should_delete_change_request_key_and_create_change_request_key() throws Exception {
+    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
+    Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false);
+
+    organisation.createChangePasswordKeyFor(credentials);
+
+    verify(humanResourceAdministrator).deleteChangePasswordKeyOf(credentials);
+    verify(humanResourceAdministrator).createChangePasswordKeyFor(any(ChangePasswordKey.class));
   }
 }

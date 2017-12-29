@@ -9,4 +9,8 @@ public interface HumanResourceAdministrator {
   Person getCollaborator(Username username);
 
   Person findFromCredentials(Credentials credentials);
+
+  void deleteChangePasswordKeyOf(Credentials credentials);
+
+  ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey);
 }

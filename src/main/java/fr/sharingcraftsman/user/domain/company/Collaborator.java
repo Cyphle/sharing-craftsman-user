@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public class Collaborator extends Person {
   public static CollaboratorBuilder collaboratorBuilder = new CollaboratorBuilder();
+
   private Username username;
   private Password password;
 

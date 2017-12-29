@@ -2,17 +2,19 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
-import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
-import fr.sharingcraftsman.user.domain.company.Person;
-import fr.sharingcraftsman.user.domain.company.UnknownCollaborator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Service
 public class UserAdapter implements HumanResourceAdministrator {
@@ -59,5 +61,22 @@ public class UserAdapter implements HumanResourceAdministrator {
     } catch (CredentialsException e) {
       return new UnknownCollaborator();
     }
+  }
+
+  @Override
+  public void deleteChangePasswordKeyOf(Credentials credentials) {
+    User user = userRepository.findByUsername(credentials.getUsernameContent());
+    user.setChangePasswordKey("");
+    user.setChangePasswordExpirationDate(null);
+    userRepository.save(user);
+  }
+
+  @Override
+  public ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey) {
+    User user = userRepository.findByUsername(changePasswordKey.getUsername());
+    user.setChangePasswordKey(changePasswordKey.getKey());
+    user.setChangePasswordExpirationDate(Date.from(changePasswordKey.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
+    userRepository.save(user);
+    return changePasswordKey;
   }
 }
