@@ -11,7 +11,6 @@ import fr.sharingcraftsman.user.domain.authentication.*;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
-import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.company.CollaboratorException;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.company.UnknownCollaboratorException;
@@ -115,12 +114,17 @@ public class TokenService {
       Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
       Client client = new Client(clientDTO.getName(), "", false);
       if (authenticator.isRefreshTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO))) {
-
+        authenticator.deleteToken(credentials, client, TokenPivot.fromApiToDomain(tokenDTO));
+        TokenDTO token = TokenPivot.fromDomainToApi((ValidToken) authenticator.createNewToken(credentials, client), credentials);
+        return ResponseEntity.ok(token);
       } else {
-
+        return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
       }
-    } catch (CredentialsException e) {
-      e.printStackTrace();
+    } catch (CredentialsException | CollaboratorException e) {
+      log.warn("Error with get new token from refresh token " + tokenDTO.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
     }
 
 
@@ -129,6 +133,5 @@ public class TokenService {
       - Delete existing token
       - Create new token
      */
-    throw new UnsupportedOperationException();
   }
 }

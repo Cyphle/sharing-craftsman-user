@@ -2,6 +2,7 @@ package fr.sharingcraftsman.user.domain.authentication;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.client.Client;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
 import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
@@ -66,12 +67,12 @@ public class OAuthAuthenticatorTest {
             .expiringThe(dateService.getDayAt(8))
             .build();
     given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
-    given(tokenAdministrator.createNewToken(client, collaborator, token)).willReturn(token);
+    given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(token);
     credentials.setStayLogged(true);
 
     Token expectedToken = identifier.login(credentials, client);
 
-    assertThat(expectedToken).isEqualTo(expectedToken);
+    assertThat(expectedToken).isEqualTo(token);
   }
 
   @Test
@@ -156,5 +157,21 @@ public class OAuthAuthenticatorTest {
     boolean isValid = identifier.isRefreshTokenValid(credentials, client, token);
 
     assertThat(isValid).isFalse();
+  }
+
+  @Test
+  public void should_generate_new_token_when_request_with_refresh_token() throws Exception {
+    ValidToken token = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(dateService.getDayAt(8))
+            .build();
+    given(humanResourceAdministrator.getCollaborator(any(Username.class))).willReturn(collaborator);
+    given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(token);
+    credentials.setStayLogged(true);
+
+    Token expectedToken = identifier.createNewToken(credentials, client);
+
+    assertThat(expectedToken).isEqualTo(token);
   }
 }

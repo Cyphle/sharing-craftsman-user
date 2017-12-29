@@ -126,15 +126,17 @@ public class TokenServiceTest {
   }
 
   @Test
-  public void should_generate_new_token() throws Exception {
-//    Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="), false);
-//    Collaborator collaborator = (new CollaboratorBuilder())
-//            .withUsername(usernameBuilder.from("john@doe.fr"))
-//            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
-//            .build();
-//    given(humanResourceAdministrator.findFromCredentials(credentials)).willReturn(collaborator);
-//    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-//    given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(validToken);
+  public void should_generate_new_token_from_refresh_token() throws Exception {
+    Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="), false);
+    Collaborator collaborator = (new CollaboratorBuilder())
+            .withUsername(usernameBuilder.from("john@doe.fr"))
+            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
+            .build();
+    given(humanResourceAdministrator.getCollaborator(credentials.getUsername())).willReturn(collaborator);
+    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(validToken);
+    given(tokenAdministrator.findTokenFromRefreshToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
+    given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     TokenDTO refreshToken = new TokenDTO();
     refreshToken.setUsername("john@doe.fr");
     refreshToken.setRefreshToken("bbb");
@@ -142,7 +144,7 @@ public class TokenServiceTest {
     ResponseEntity response = tokenService.refreshToken(clientDTO, refreshToken);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(validToken);
+    assertThat(response.getBody()).isEqualTo(new TokenDTO("john@doe.fr", "aaa", "bbb", 1514631600000L));
     verify(tokenAdministrator).deleteTokensOf(any(Collaborator.class), any(Client.class));
   }
 }

@@ -1,7 +1,9 @@
 package fr.sharingcraftsman.user.api.models;
 
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@EqualsAndHashCode
 @ToString
 public class TokenDTO {
   private String username;

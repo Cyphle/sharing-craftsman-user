@@ -13,5 +13,9 @@ public interface Authenticator {
 
   void logout(Credentials credentials, Client client, ValidToken token);
 
-  boolean isRefreshTokenValid(Credentials credentials, Client client, ValidToken validToken);
+  boolean isRefreshTokenValid(Credentials credentials, Client client, ValidToken token);
+
+  void deleteToken(Credentials credentials, Client client, ValidToken token);
+
+  Token createNewToken(Credentials credentials, Client client) throws CollaboratorException;
 }
