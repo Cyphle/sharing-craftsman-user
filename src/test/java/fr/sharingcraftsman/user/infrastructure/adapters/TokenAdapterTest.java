@@ -36,20 +36,29 @@ public class TokenAdapterTest {
   @Mock
   private DateService dateService;
   private TokenAdministrator tokenAdapter;
+  private ValidToken token;
+  private Credentials credentials;
+  private Client client;
+  private Collaborator collaborator;
 
   @Before
   public void setUp() throws Exception {
     tokenAdapter = new TokenAdapter(tokenRepository);
+    token = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
+            .build();
+    credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+    client = Client.knownClient("client", "secret");
+    collaborator = Collaborator.from(credentials);
   }
 
   @Test
   public void should_delete_tokens_of_collaborator() throws Exception {
     Mockito.doNothing().when(tokenRepository).deleteByUsername(any(String.class), any(String.class));
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    Person collaborator = Collaborator.from(credentials);
-    Client client = Client.knownClient("client", "secret");
 
-    tokenAdapter.deleteTokensOf((Collaborator) collaborator, client);
+    tokenAdapter.deleteTokensOf(collaborator, client);
 
     verify(tokenRepository).deleteByUsername("john@doe.fr", "client");
   }
@@ -63,12 +72,7 @@ public class TokenAdapterTest {
     oAuthToken.setRefreshToken(generateKey("clientjohn@doe.fr"));
     oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(tokenRepository.save(any(OAuthToken.class))).willReturn(oAuthToken);
-
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    Collaborator collaborator = Collaborator.from(credentials);
-    Client client = Client.knownClient("client", "secret");
     ValidToken token = validTokenBuilder
             .withAccessToken(generateKey(client.getName() + collaborator.getUsername()))
             .withRefreshToken(generateKey(client.getName() + collaborator.getUsername()))
@@ -85,13 +89,6 @@ public class TokenAdapterTest {
 
   @Test
   public void should_return_a_valid_token_when_found() throws Exception {
-    ValidToken token = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
-            .build();
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    Client client = Client.knownClient("client", "secret");
     given(tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(new OAuthToken("john@doe.fr", "client", "aaa", "bbb", Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant())));
 
     Token foundToken = tokenAdapter.findTokenFromAccessToken(client, credentials, token);
@@ -101,13 +98,6 @@ public class TokenAdapterTest {
 
   @Test
   public void should_return_an_invalid_token_when_not_found() throws Exception {
-    ValidToken token = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
-            .build();
-    Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    Client client = Client.knownClient("client", "secret");
     given(tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(null);
 
     Token foundToken = tokenAdapter.findTokenFromAccessToken(client, credentials, token);
