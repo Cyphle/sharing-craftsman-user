@@ -14,4 +14,6 @@ public interface TokenRepository extends CrudRepository<OAuthToken, Long> {
   void deleteByUsername(String username, String client);
   @Query("Select t from OAuthToken t where t.username = ?1 and t.client = ?2 and t.accessToken = ?3")
   OAuthToken findByUsernameClientAndAccessToken(String username, String client, String accessToken);
+  @Query("Select t from OAuthToken t where t.username = ?1 and t.client = ?2 and t.refreshToken = ?3")
+  OAuthToken findByUsernameClientAndRefreshToken(String username, String client, String refreshToken);
 }

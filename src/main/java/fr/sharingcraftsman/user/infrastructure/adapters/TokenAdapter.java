@@ -41,6 +41,11 @@ public class TokenAdapter implements TokenAdministrator {
 
   @Override
   public Token findTokenFromRefreshToken(Client client, Credentials credentials, ValidToken token) {
-    throw new UnsupportedOperationException();
+    OAuthToken foundToken = tokenRepository.findByUsernameClientAndRefreshToken(credentials.getUsernameContent(), client.getName(), token.getRefreshToken());
+
+    if (foundToken == null)
+      return new InvalidToken();
+
+    return TokenPivot.fromInfraToDomain(foundToken);
   }
 }
