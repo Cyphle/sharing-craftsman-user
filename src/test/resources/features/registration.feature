@@ -5,6 +5,6 @@ Feature: Registration
     And A client <sharingcraftsman> is registered
 
   Scenario: Register to the application
-    Given I register to the application with my credentials <foo@bar.fr> and password <helloworld>
-    When I connect to the application with my credentials <foo@bar.fr> and password <helloworld>
+    Given I register to the application with my credentials <john@doe.fr> and password <helloworld>
+    When I connect to the application with my credentials <john@doe.fr> and password <helloworld>
     Then I am connected

@@ -41,7 +41,8 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
             .perform(post(getBaseUri() + "/clients/register")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(Mapper.fromObjectToJsonString(client))
-            );
+            )
+            .andExpect(status().isOk());
   }
 
   @Given("I register to the application with my credentials <(.*)> and password <(.*)>")
