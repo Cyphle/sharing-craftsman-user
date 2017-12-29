@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
+import fr.sharingcraftsman.user.api.models.ChangePasswordDTO;
 import fr.sharingcraftsman.user.api.models.LoginDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
@@ -71,6 +72,23 @@ public class UserControllerTest {
             .header("secret", "clientsecret")
             .header("username", "john@doe.fr")
             .header("access-token", "aaa"))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void should_change_password() throws Exception {
+    given(userService.changePassword(any(ClientDTO.class), any(TokenDTO.class), any(ChangePasswordDTO.class))).willReturn(ResponseEntity.ok().build());
+
+    ChangePasswordDTO changePassword = new ChangePasswordDTO();
+    changePassword.setOldPassword("password");
+    changePassword.setNewPassword("newpassword");
+    this.mvc.perform(post("/users/change-password")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(changePassword)))
             .andExpect(status().isOk());
   }
 }

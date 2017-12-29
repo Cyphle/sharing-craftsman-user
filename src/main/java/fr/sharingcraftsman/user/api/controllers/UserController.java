@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.api.controllers;
 
+import fr.sharingcraftsman.user.api.models.ChangePasswordDTO;
 import fr.sharingcraftsman.user.api.models.LoginDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
@@ -43,18 +44,28 @@ public class UserController {
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.GET, value = "/request-change-password")
-  public ResponseEntity verify(@RequestHeader("client") String client,
-                               @RequestHeader("secret") String secret,
-                               @RequestHeader("username") String username,
-                               @RequestHeader("access-token") String accessToken) {
+  public ResponseEntity requestChangePasswordKey(@RequestHeader("client") String client,
+                                                 @RequestHeader("secret") String secret,
+                                                 @RequestHeader("username") String username,
+                                                 @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return userService.requestChangePassword(clientDTO, tokenDTO);
   }
 
-  /*
-  Change password:
-  - Post request with token for change password request -> return change password token (in user table) with validity date
-  - Post request with change password token and oauth token and old and new password, invalidate token -> return OK
-   */
+  @ApiOperation(value = "Change password endpoint", response = ResponseEntity.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.POST, value = "/change-password")
+  public ResponseEntity changePassword(@RequestHeader("client") String client,
+                                       @RequestHeader("secret") String secret,
+                                       @RequestHeader("username") String username,
+                                       @RequestHeader("access-token") String accessToken,
+                                       @RequestBody ChangePasswordDTO changePasswordDTO) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
+  }
 }

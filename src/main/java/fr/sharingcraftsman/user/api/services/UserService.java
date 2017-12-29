@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.api.services;
 
+import fr.sharingcraftsman.user.api.models.ChangePasswordDTO;
 import fr.sharingcraftsman.user.api.models.LoginDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
@@ -91,5 +92,16 @@ public class UserService {
               .badRequest()
               .body(e.getMessage());
     }
+  }
+
+  public ResponseEntity changePassword(ClientDTO clientDTO, TokenDTO tokenDTO, ChangePasswordDTO changePasswordDTO) {
+    throw new UnsupportedOperationException();
+
+
+  /*
+  Change password:
+  - Should verify old password by findByUsernameAndPassword
+  - Post request with change password token and oauth token and old and new password, invalidate token -> return OK
+   */
   }
 }
