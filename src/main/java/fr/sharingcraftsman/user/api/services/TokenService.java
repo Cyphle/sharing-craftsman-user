@@ -13,6 +13,7 @@ import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.company.CollaboratorException;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
+import fr.sharingcraftsman.user.domain.company.UnknownCollaboratorException;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
@@ -53,6 +54,9 @@ public class TokenService {
       Client client = ClientPivot.fromApiToDomain(clientDTO);
       TokenDTO token = TokenPivot.fromDomainToApi((ValidToken) authenticator.login(credentials, client), credentials);
       return ResponseEntity.ok(token);
+    } catch (UnknownCollaboratorException e) {
+      log.warn("Unauthorized user: " + loginDTO.getUsername() + ": " + e.getMessage());
+      return new ResponseEntity<>("Unauthorized collaborator", HttpStatus.UNAUTHORIZED);
     } catch (CredentialsException | CollaboratorException e) {
       log.warn("Error with loginDTO " + loginDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity

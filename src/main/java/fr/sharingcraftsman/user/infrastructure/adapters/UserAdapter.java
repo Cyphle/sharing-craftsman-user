@@ -79,4 +79,11 @@ public class UserAdapter implements HumanResourceAdministrator {
     userRepository.save(user);
     return changePasswordKey;
   }
+
+  @Override
+  public void updateCollaborator(Collaborator collaborator) {
+    User user = userRepository.findByUsername(collaborator.getUsername());
+    user.setPassword(collaborator.getPassword());
+    userRepository.save(user);
+  }
 }

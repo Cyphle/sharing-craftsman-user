@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.api.services;
 
-import fr.sharingcraftsman.user.api.models.LoginDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.LoginDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
@@ -11,6 +11,7 @@ import fr.sharingcraftsman.user.domain.authentication.ValidToken;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
+import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,6 @@ import java.util.Date;
 import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
-import static fr.sharingcraftsman.user.domain.company.Collaborator.collaboratorBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -71,7 +71,7 @@ public class TokenServiceTest {
   @Test
   public void should_login_user() throws Exception {
     Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="), false);
-    Collaborator collaborator = collaboratorBuilder
+    Collaborator collaborator = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
             .build();

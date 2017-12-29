@@ -4,10 +4,7 @@ import fr.sharingcraftsman.user.api.models.ChangePasswordDTO;
 import fr.sharingcraftsman.user.api.models.LoginDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
-import fr.sharingcraftsman.user.api.pivots.ChangePasswordTokenPivot;
-import fr.sharingcraftsman.user.api.pivots.ClientPivot;
-import fr.sharingcraftsman.user.api.pivots.LoginPivot;
-import fr.sharingcraftsman.user.api.pivots.TokenPivot;
+import fr.sharingcraftsman.user.api.pivots.*;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
@@ -32,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 
 @Service
@@ -60,7 +58,7 @@ public class UserService {
 
     try {
       log.info("User is registering with username:" + loginDTO.getUsername());
-      Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(loginDTO);
+      Credentials credentials = LoginPivot.fromApiToDomain(loginDTO);
       company.createNewCollaborator(credentials);
       return ResponseEntity.ok().build();
     } catch (CredentialsException | CollaboratorException e) {
@@ -80,8 +78,8 @@ public class UserService {
     try {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
       Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
-      Client client = new Client(clientDTO.getName(), "", false);
-      if (!authenticator.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO)))
+
+      if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
       ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
@@ -95,13 +93,37 @@ public class UserService {
   }
 
   public ResponseEntity changePassword(ClientDTO clientDTO, TokenDTO tokenDTO, ChangePasswordDTO changePasswordDTO) {
-    throw new UnsupportedOperationException();
+    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
+      log.warn("User " + tokenDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
+      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+    }
 
+    try {
+      log.info("Request for a change password token for:" + tokenDTO.getUsername());
+      Credentials credentials = Credentials.buildEncryptedCredentials(
+              usernameBuilder.from(tokenDTO.getUsername()),
+              passwordBuilder.from(changePasswordDTO.getOldPassword()),
+              false
+      );
 
-  /*
-  Change password:
-  - Should verify old password by findByUsernameAndPassword
-  - Post request with change password token and oauth token and old and new password, invalidate token -> return OK
-   */
+      if (verifyToken(clientDTO, tokenDTO, credentials))
+        return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+
+      authenticator.logout(credentials, new Client(clientDTO.getName(), "", false), TokenPivot.fromApiToDomain(tokenDTO));
+      company.changePassword(credentials, ChangePasswordPivot.fromApiToDomain(changePasswordDTO));
+      return ResponseEntity.ok().build();
+    } catch (CredentialsException | CollaboratorException e) {
+      log.warn("Error with change password " + tokenDTO.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
+  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Credentials credentials) {
+    Client client = new Client(clientDTO.getName(), "", false);
+    if (!authenticator.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO)))
+      return true;
+    return false;
   }
 }

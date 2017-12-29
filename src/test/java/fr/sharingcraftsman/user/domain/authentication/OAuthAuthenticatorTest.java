@@ -3,6 +3,7 @@ package fr.sharingcraftsman.user.domain.authentication;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.company.Collaborator;
+import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 import org.junit.Before;
@@ -17,7 +18,6 @@ import java.time.Month;
 import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
-import static fr.sharingcraftsman.user.domain.company.Collaborator.collaboratorBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -43,7 +43,7 @@ public class OAuthAuthenticatorTest {
 
   @Test
   public void should_generate_token_when_identifying() throws Exception {
-    Collaborator collaborator = collaboratorBuilder
+    Collaborator collaborator = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("password"))
             .build();
@@ -132,7 +132,7 @@ public class OAuthAuthenticatorTest {
     Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     Client client = Client.knownClient("client", "secret");
     given(tokenAdministrator.findTokenFor(client, credentials, token)).willReturn(token);
-    Collaborator collaborator = collaboratorBuilder
+    Collaborator collaborator = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("password"))
             .build();

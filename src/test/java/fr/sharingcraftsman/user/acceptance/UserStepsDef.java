@@ -5,6 +5,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.user.acceptance.config.SpringAcceptanceTestConfig;
+import fr.sharingcraftsman.user.acceptance.dsl.ChangePasswordDsl;
 import fr.sharingcraftsman.user.acceptance.dsl.ChangePasswordTokenDsl;
 import fr.sharingcraftsman.user.acceptance.dsl.LoginDsl;
 import fr.sharingcraftsman.user.acceptance.dsl.TokenDsl;
@@ -90,18 +91,20 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
   }
 
   @And("I change my password with new password <(.*)>")
-  public void changePassword(String newPassword) {
-//    response = this.mvc
-//            .perform(post(getBaseUri() + "/users/change-password")
-//                    .header("client", "sharingcraftsman")
-//                    .header("secret", "secret")
-//                    .header("username", login.getUsername()))
-//                    .header("access-token", token.getAccessToken())
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(Mapper.fromObjectToJsonString(password))
-//            )
-//            .andExpect(status().isOk())
-//            .andReturn();
+  public void changePassword(String newPassword) throws Exception {
+    ChangePasswordDsl changePasswordDsl = new ChangePasswordDsl(chnagePasswordToken.getToken(), login.getPassword(), newPassword);
+
+    response = this.mvc
+            .perform(post(getBaseUri() + "/users/change-password")
+                    .header("client", "sharingcraftsman")
+                    .header("secret", "secret")
+                    .header("username", login.getUsername())
+                    .header("access-token", token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(Mapper.fromObjectToJsonString(changePasswordDsl))
+            )
+            .andExpect(status().isOk())
+            .andReturn();
   }
 
   @Then("I am connected")

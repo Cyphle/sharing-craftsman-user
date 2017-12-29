@@ -1,11 +1,17 @@
-package fr.sharingcraftsman.user.api.models;
+package fr.sharingcraftsman.user.acceptance.dsl;
 
-public class ChangePasswordDTO {
+public class ChangePasswordDsl {
   private String changePasswordKey;
   private String oldPassword;
   private String newPassword;
 
-  public ChangePasswordDTO() {
+  public ChangePasswordDsl() {
+  }
+
+  public ChangePasswordDsl(String changePasswordKey, String oldPassword, String newPassword) {
+    this.changePasswordKey = changePasswordKey;
+    this.oldPassword = oldPassword;
+    this.newPassword = newPassword;
   }
 
   public String getChangePasswordKey() {

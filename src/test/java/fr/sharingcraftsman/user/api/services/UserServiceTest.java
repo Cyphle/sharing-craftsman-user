@@ -1,9 +1,6 @@
 package fr.sharingcraftsman.user.api.services;
 
-import fr.sharingcraftsman.user.api.models.ChangePasswordKeyDTO;
-import fr.sharingcraftsman.user.api.models.LoginDTO;
-import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
@@ -11,10 +8,7 @@ import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
 import fr.sharingcraftsman.user.domain.authentication.ValidToken;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
-import fr.sharingcraftsman.user.domain.company.ChangePasswordKey;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
-import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
-import fr.sharingcraftsman.user.domain.company.UnknownCollaborator;
+import fr.sharingcraftsman.user.domain.company.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +25,6 @@ import java.util.Date;
 import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
-import static fr.sharingcraftsman.user.domain.company.Collaborator.collaboratorBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -52,19 +45,21 @@ public class UserServiceTest {
   private UserService userService;
   private ClientDTO clientDTO;
   private ValidToken validToken;
+  private TokenDTO tokenDTO;
 
   @Before
   public void setUp() throws Exception {
-    clientDTO = new ClientDTO("secret", "clientsecret");
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 27, 12, 0));
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     userService = new UserService(humanResourceAdministrator, clientStock, tokenAdministrator, dateService);
+    clientDTO = new ClientDTO("secret", "clientsecret");
     validToken = validTokenBuilder
             .withAccessToken("aaa")
             .withRefreshToken("bbb")
             .expiringThe(dateService.getDayAt(8))
             .build();
+    tokenDTO = new TokenDTO("john@doe.fr", "aaa");
   }
 
   @Test
@@ -107,7 +102,7 @@ public class UserServiceTest {
   public void should_get_user_already_exists_when_using_already_existing_username() throws Exception {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(humanResourceAdministrator.getCollaborator(usernameBuilder.from("john@doe.fr"))).willReturn(
-            collaboratorBuilder
+            (new CollaboratorBuilder())
                     .withUsername(usernameBuilder.from("john@doe.fr"))
                     .withPassword(passwordBuilder.from("password"))
                     .build()
@@ -134,7 +129,7 @@ public class UserServiceTest {
 
   @Test
   public void should_get_change_password_token_when_requesting_to_change_password() throws Exception {
-    Collaborator collaborator = collaboratorBuilder
+    Collaborator collaborator = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("password"))
             .build();
@@ -142,11 +137,9 @@ public class UserServiceTest {
     given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
-    TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa");
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
 
-    System.out.println(response);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isEqualTo(new ChangePasswordKeyDTO("aaa"));
   }
@@ -160,5 +153,26 @@ public class UserServiceTest {
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+  }
+
+  @Test
+  public void should_change_password_when_sending_new_password() throws Exception {
+    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
+    given(tokenAdministrator.findTokenFor(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
+    Collaborator collaborator = (new CollaboratorBuilder())
+            .withUsername(usernameBuilder.from("john@doe.fr"))
+            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
+            .withChangePasswordKey("aaa")
+            .withChangePasswordKeyExpirationDate(LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0))
+            .build();
+    given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
+
+    ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
+    changePasswordDTO.setOldPassword("password");
+    changePasswordDTO.setNewPassword("newpassword");
+    changePasswordDTO.setChangePasswordKey("aaa");
+    ResponseEntity response = userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 }

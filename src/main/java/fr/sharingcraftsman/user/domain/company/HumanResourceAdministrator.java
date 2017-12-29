@@ -13,4 +13,6 @@ public interface HumanResourceAdministrator {
   void deleteChangePasswordKeyOf(Credentials credentials);
 
   ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey);
+
+  void updateCollaborator(Collaborator collaborator);
 }
