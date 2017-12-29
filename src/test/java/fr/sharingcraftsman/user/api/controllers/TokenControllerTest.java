@@ -2,6 +2,7 @@ package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
 import fr.sharingcraftsman.user.api.models.Login;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.api.models.OAuthToken;
 import fr.sharingcraftsman.user.api.services.TokenService;
 import fr.sharingcraftsman.user.utils.Mapper;
@@ -58,11 +59,13 @@ public class TokenControllerTest {
   public void should_log_in_and_get_token() throws Exception {
     ZonedDateTime zdt = LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0).atZone(ZoneId.systemDefault());
     OAuthToken oAuthToken = new OAuthToken("john@doe.fr", "aaa", "bbb", zdt.toInstant().toEpochMilli());
-    given(tokenService.login(any(Login.class))).willReturn(ResponseEntity.ok(oAuthToken));
+    given(tokenService.login(any(OAuthClient.class), any(Login.class))).willReturn(ResponseEntity.ok(oAuthToken));
 
-    Login login = new Login("client", "clientSecret", "john@doe.fr", "password", true);
+    Login login = new Login("john@doe.fr", "password", true);
 
     this.mvc.perform(post("/tokens/login")
+            .header("client", "client")
+            .header("secret", "clientsecret")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(login)))
             .andExpect(status().isOk())
@@ -80,6 +83,8 @@ public class TokenControllerTest {
     token.setAccessToken("aaa");
 
     this.mvc.perform(post("/tokens/verify")
+            .header("client", "client")
+            .header("secret", "clientsecret")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(token)))
             .andExpect(status().isOk());

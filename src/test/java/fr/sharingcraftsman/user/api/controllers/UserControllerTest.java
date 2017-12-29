@@ -2,6 +2,7 @@ package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
 import fr.sharingcraftsman.user.api.models.Login;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.api.services.UserService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
@@ -47,11 +48,13 @@ public class UserControllerTest {
 
   @Test
   public void should_register_a_new_user() throws Exception {
-    given(userService.registerUser(any(Login.class))).willReturn(ResponseEntity.ok().build());
+    given(userService.registerUser(any(OAuthClient.class), any(Login.class))).willReturn(ResponseEntity.ok().build());
 
-    Login login = new Login("client", "clientSecret", "john@doe.fr", "password");
+    Login login = new Login("john@doe.fr", "password");
 
     this.mvc.perform(post("/users/register")
+            .header("client", "client")
+            .header("secret", "clientsecret")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(login)))
             .andExpect(status().isOk());

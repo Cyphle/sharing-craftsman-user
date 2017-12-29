@@ -1,10 +1,15 @@
 package fr.sharingcraftsman.user.api.models;
 
-public class ClientRegistration {
+public class OAuthClient {
   private String name;
   private String secret;
 
-  public ClientRegistration() {
+  public OAuthClient() {
+  }
+
+  public OAuthClient(String name, String secret) {
+    this.name = name;
+    this.secret = secret;
   }
 
   public String getName() {

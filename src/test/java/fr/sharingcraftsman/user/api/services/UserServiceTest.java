@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.Login;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.client.Client;
@@ -40,20 +41,22 @@ public class UserServiceTest {
   private DateService dateService;
 
   private UserService userService;
+  private OAuthClient oAuthClient;
 
   @Before
   public void setUp() throws Exception {
+    oAuthClient = new OAuthClient("secret", "clientsecret");
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     userService = new UserService(humanResourceAdministrator, clientStock);
   }
 
   @Test
   public void should_register_user() throws Exception {
-    given(clientStock.findClient(Client.from("client", "clientsecret"))).willReturn(Client.knownClient("client", "clietnsercret"));
+    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(humanResourceAdministrator.getCollaborator(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownCollaborator());
-    Login login = new Login("client", "clientsecret", "john@doe.fr", "password");
+    Login login = new Login("john@doe.fr", "password");
 
-    ResponseEntity response = userService.registerUser(login);
+    ResponseEntity response = userService.registerUser(oAuthClient, login);
 
     verify(humanResourceAdministrator).createNewCollaborator(Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -61,10 +64,10 @@ public class UserServiceTest {
 
   @Test
   public void should_get_invalid_credential_username_when_username_is_not_specified() throws Exception {
-    given(clientStock.findClient(Client.from("client", "clientsecret"))).willReturn(Client.knownClient("client", "clietnsercret"));
-    Login login = new Login("client", "clientsecret", "", "password");
+    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
+    Login login = new Login("", "password");
 
-    ResponseEntity response = userService.registerUser(login);
+    ResponseEntity response = userService.registerUser(oAuthClient, login);
 
     verify(humanResourceAdministrator, never()).createNewCollaborator(any(Collaborator.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -73,10 +76,10 @@ public class UserServiceTest {
 
   @Test
   public void should_get_invalid_credential_password_when_username_is_not_specified() throws Exception {
-    given(clientStock.findClient(Client.from("client", "clientsecret"))).willReturn(Client.knownClient("client", "clietnsercret"));
-    Login login = new Login("client", "clientsecret", "john@doe.fr", "");
+    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
+    Login login = new Login("john@doe.fr", "");
 
-    ResponseEntity response = userService.registerUser(login);
+    ResponseEntity response = userService.registerUser(oAuthClient, login);
 
     verify(humanResourceAdministrator, never()).createNewCollaborator(any(Collaborator.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -85,16 +88,16 @@ public class UserServiceTest {
 
   @Test
   public void should_get_user_already_exists_when_using_already_existing_username() throws Exception {
-    given(clientStock.findClient(Client.from("client", "clientsecret"))).willReturn(Client.knownClient("client", "clietnsercret"));
+    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(humanResourceAdministrator.getCollaborator(usernameBuilder.from("john@doe.fr"))).willReturn(
             collaboratorBuilder
                     .withUsername(usernameBuilder.from("john@doe.fr"))
                     .withPassword(passwordBuilder.from("password"))
                     .build()
     );
-    Login login = new Login("client", "clientsecret", "john@doe.fr", "password");
+    Login login = new Login("john@doe.fr", "password");
 
-    ResponseEntity response = userService.registerUser(login);
+    ResponseEntity response = userService.registerUser(oAuthClient, login);
 
     verify(humanResourceAdministrator, never()).createNewCollaborator(any(Collaborator.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -103,10 +106,10 @@ public class UserServiceTest {
 
   @Test
   public void should_get_unknown_client_response_when_client_is_not_known() throws Exception {
-    given(clientStock.findClient(Client.from("client", "clientsecret"))).willReturn(Client.unkownClient());
-    Login login = new Login("client", "clientsecret", "john@doe.fr", "password");
+    given(clientStock.findClient(any(Client.class))).willReturn(Client.unkownClient());
+    Login login = new Login("john@doe.fr", "password");
 
-    ResponseEntity response = userService.registerUser(login);
+    ResponseEntity response = userService.registerUser(oAuthClient, login);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     assertThat(response.getBody()).isEqualTo("Unknown client");

@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.models.ClientRegistration;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.api.services.ClientService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class ClientControllerTest {
 
   @Test
   public void should_register_client() throws Exception {
-    ClientRegistration client = new ClientRegistration();
+    OAuthClient client = new OAuthClient();
     client.setName("sharingcraftsman");
     given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
 
@@ -58,7 +58,7 @@ public class ClientControllerTest {
 
   @Test
   public void should_return_unauthorized_if_client_name_is_not_correct() throws Exception {
-    ClientRegistration client = new ClientRegistration();
+    OAuthClient client = new OAuthClient();
     client.setName("toto");
     given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
 

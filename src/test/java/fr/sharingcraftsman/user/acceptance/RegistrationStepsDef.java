@@ -6,15 +6,11 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.user.acceptance.config.SpringAcceptanceTestConfig;
 import fr.sharingcraftsman.user.acceptance.dsl.LoginDsl;
-import fr.sharingcraftsman.user.api.models.ClientRegistration;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.api.models.OAuthToken;
 import fr.sharingcraftsman.user.utils.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 
@@ -23,12 +19,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
-  private MockMvc mvc;
-  private MvcResult response;
-
-  @Autowired
-  private WebApplicationContext context;
-
   @Given("The application is setup")
   public void setupApplication() {
     if (this.mvc == null) {
@@ -40,7 +30,7 @@ public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
 
   @And("A client <(.*)> is registered")
   public void createClient(String clientName) throws Exception {
-    ClientRegistration client = new ClientRegistration();
+    OAuthClient client = new OAuthClient();
     client.setName(clientName);
 
     this.mvc
@@ -53,9 +43,11 @@ public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
 
   @Given("I register to the application with my credentials <(.*)> and password <(.*)>")
   public void register(String email, String password) throws Exception {
-    LoginDsl login = new LoginDsl("sharingcraftsman", "secret", email, password);
+    LoginDsl login = new LoginDsl(email, password);
     response = this.mvc
             .perform(post(getBaseUri() + "/users/register")
+                    .header("client", "sharingcraftsman")
+                    .header("secret", "secret")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(Mapper.fromObjectToJsonString(login))
             )
@@ -65,9 +57,11 @@ public class RegistrationStepsDef extends SpringAcceptanceTestConfig {
 
   @When("I connect to the application with my credentials <(.*)> and password <(.*)>")
   public void connect(String email, String password) throws Exception {
-    LoginDsl login = new LoginDsl("sharingcraftsman", "secret", email, password);
+    LoginDsl login = new LoginDsl(email, password);
     response = this.mvc
             .perform(post(getBaseUri() + "/tokens/login")
+                    .header("client", "sharingcraftsman")
+                    .header("secret", "secret")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(Mapper.fromObjectToJsonString(login))
             )

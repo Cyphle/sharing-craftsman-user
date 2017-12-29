@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.Login;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.api.pivots.LoginPivot;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
@@ -32,9 +33,9 @@ public class UserService {
     clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
   }
 
-  public ResponseEntity registerUser(Login login) {
-    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(login))) {
-      log.warn("User " + login.getUsername() + " is trying to log in with unauthorized client: " + login.getClient());
+  public ResponseEntity registerUser(OAuthClient oAuthClient, Login login) {
+    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(oAuthClient))) {
+      log.warn("User " + login.getUsername() + " is trying to log in with unauthorized client: " + oAuthClient.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 

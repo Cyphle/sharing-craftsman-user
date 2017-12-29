@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.api.services;
 
-import fr.sharingcraftsman.user.api.models.ClientRegistration;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import org.junit.Before;
@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClientServiceTest {
@@ -28,9 +29,9 @@ public class ClientServiceTest {
 
   @Test
   public void should_register_new_client() throws Exception {
-    given(clientStock.findClientByName(Client.from("sharingcraftsman", ""))).willReturn(Client.unkownClient());
-    given(clientStock.createClient(Client.from("sharingcraftsman", ""))).willReturn(Client.knownClient("sharingcraftsman", "secret"));
-    ClientRegistration client = new ClientRegistration();
+    given(clientStock.findClientByName(any(Client.class))).willReturn(Client.unkownClient());
+    given(clientStock.createClient(any(Client.class))).willReturn(Client.knownClient("sharingcraftsman", "secret"));
+    OAuthClient client = new OAuthClient();
     client.setName("sharingcraftsman");
 
     ResponseEntity response = clientService.register(client);

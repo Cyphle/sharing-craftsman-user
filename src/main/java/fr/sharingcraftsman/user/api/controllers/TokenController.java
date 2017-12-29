@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.api.models.Login;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.api.models.OAuthToken;
 import fr.sharingcraftsman.user.api.services.TokenService;
 import io.swagger.annotations.Api;
@@ -9,10 +10,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tokens")
@@ -31,8 +29,11 @@ public class TokenController {
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.POST, value = "/login")
-  public ResponseEntity logIn(@RequestBody Login login) {
-    return tokenService.login(login);
+  public ResponseEntity logIn(@RequestHeader("client") String client,
+                              @RequestHeader("secret") String secret,
+                              @RequestBody Login login) {
+    OAuthClient oAuthClient = new OAuthClient(client, secret);
+    return tokenService.login(oAuthClient, login);
   }
 
   @ApiOperation(value = "Post token information to verify its validity", response = ResponseEntity.class)

@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.api.models.Login;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -8,10 +9,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -31,7 +29,16 @@ public class UserController {
           @ApiResponse(code = 400, message = "Error with the request")
   })
   @RequestMapping(method = RequestMethod.POST, value = "/register")
-  public ResponseEntity registerUser(@RequestBody Login login) {
-    return userService.registerUser(login);
+  public ResponseEntity registerUser(@RequestHeader("client") String client,
+                                     @RequestHeader("secret") String secret,
+                                     @RequestBody Login login) {
+    OAuthClient oAuthClient = new OAuthClient(client, secret);
+    return userService.registerUser(oAuthClient, login);
   }
+
+  /*
+  Change password:
+  - Post request with token for change password request -> return change password token (in user table) with validity date
+  - Post request with change password token and oauth token and old and new password, invalidate token -> return OK
+   */
 }

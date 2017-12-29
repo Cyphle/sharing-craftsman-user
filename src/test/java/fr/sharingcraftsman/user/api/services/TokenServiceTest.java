@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.Login;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
@@ -43,12 +44,14 @@ public class TokenServiceTest {
   private DateService dateService;
 
   private TokenService tokenService;
+  private OAuthClient oAuthClient;
 
   @Before
   public void setUp() throws Exception {
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 30, 12, 0));
     tokenService = new TokenService(humanResourceAdministrator, tokenAdministrator, clientStock, dateService);
+    oAuthClient = new OAuthClient("client", "secret");
   }
 
   @Test
@@ -69,8 +72,8 @@ public class TokenServiceTest {
             .build();
     given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(token);
 
-    Login login = new Login("client", "secret", "john@doe.fr", "password", true);
-    ResponseEntity response = tokenService.login(login);
+    Login login = new Login("john@doe.fr", "password", true);
+    ResponseEntity response = tokenService.login(oAuthClient, login);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

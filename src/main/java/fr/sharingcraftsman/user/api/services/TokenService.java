@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.Login;
+import fr.sharingcraftsman.user.api.models.OAuthClient;
 import fr.sharingcraftsman.user.api.models.OAuthToken;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.api.pivots.LoginPivot;
@@ -37,16 +38,16 @@ public class TokenService {
     clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
   }
 
-  public ResponseEntity login(Login login) {
-    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(login))) {
-      log.warn("User " + login.getUsername() + " is trying to log in with unauthorized client: " + login.getClient());
+  public ResponseEntity login(OAuthClient oAuthClient, Login login) {
+    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(oAuthClient))) {
+      log.warn("User " + login.getUsername() + " is trying to log in with unauthorized client: " + oAuthClient.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
     try {
       log.info("User " + login.getUsername() + " is logging");
       Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(login);
-      Client client = ClientPivot.fromApiToDomain(login);
+      Client client = ClientPivot.fromApiToDomain(oAuthClient);
       OAuthToken token = TokenPivot.fromDomainToApi((ValidToken) authenticator.login(credentials, client), credentials);
       return ResponseEntity.ok(token);
     } catch (CredentialsException | CollaboratorException e) {
