@@ -36,7 +36,7 @@ public class OrganisationTest {
 
   @Test
   public void should_save_user_when_registering() throws Exception {
-    given(humanResourceAdministrator.getCollaborator(any(Username.class))).willReturn(new UnknownCollaborator());
+    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(new UnknownCollaborator());
     Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
 
     organisation.createNewCollaborator(credentials);
@@ -52,7 +52,7 @@ public class OrganisationTest {
   @Test
   public void should_throw_collaborator_exception_if_user_already_exists() throws Exception {
     try {
-      given(humanResourceAdministrator.getCollaborator(any(Username.class))).willReturn(
+      given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(
         new Collaborator(usernameBuilder.from("john@doe.fr"))
       );
       Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
@@ -88,7 +88,7 @@ public class OrganisationTest {
             .withChangePasswordKey("aaa")
             .withChangePasswordKeyExpirationDate(LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0))
             .build();
-    given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(collaborator);
     ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
     organisation.changePassword(credentials, changePassword);
@@ -110,7 +110,7 @@ public class OrganisationTest {
               passwordBuilder.from("password"),
               false
       );
-      given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(new UnknownCollaborator());
+      given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(new UnknownCollaborator());
       ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
       organisation.changePassword(credentials, changePassword);
@@ -129,7 +129,7 @@ public class OrganisationTest {
               false
       );
       Collaborator collaborator = Collaborator.from(credentials);
-      given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
+      given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(collaborator);
       ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
       organisation.changePassword(credentials, changePassword);
@@ -153,7 +153,7 @@ public class OrganisationTest {
               .withChangePasswordKey("aaa")
               .withChangePasswordKeyExpirationDate(LocalDateTime.of(2017, 12, 10, 12, 0))
               .build();
-      given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
+      given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(collaborator);
       ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
       organisation.changePassword(credentials, changePassword);

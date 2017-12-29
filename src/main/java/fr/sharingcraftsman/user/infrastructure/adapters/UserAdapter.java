@@ -36,7 +36,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public Person getCollaborator(Username username) {
+  public Person findCollaboratorFromUsername(Username username) {
     User foundUser = userRepository.findByUsername(username.getUsername());
 
     if (foundUser == null)
@@ -50,7 +50,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public Person findFromCredentials(Credentials credentials) {
+  public Person findCollaboratorFromCredentials(Credentials credentials) {
     User foundUser = userRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
 
     if (foundUser == null)

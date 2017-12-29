@@ -26,7 +26,7 @@ public class OAuthAuthenticator implements Authenticator {
 
   @Override
   public Token login(Credentials credentials, Client client) throws CollaboratorException {
-    Person person = humanResourceAdministrator.findFromCredentials(credentials);
+    Person person = humanResourceAdministrator.findCollaboratorFromCredentials(credentials);
     verifyCollaboratorIsKnown(person);
     Collaborator collaborator = (Collaborator) person;
     tokenAdministrator.deleteTokensOf(collaborator, client);
@@ -59,7 +59,7 @@ public class OAuthAuthenticator implements Authenticator {
 
   @Override
   public Token createNewToken(Credentials credentials, Client client) throws CollaboratorException {
-    Person person = humanResourceAdministrator.getCollaborator(credentials.getUsername());
+    Person person = humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername());
     verifyCollaboratorIsKnown(person);
     Collaborator collaborator = (Collaborator) person;
     return generateToken(credentials, client, collaborator);
@@ -81,7 +81,7 @@ public class OAuthAuthenticator implements Authenticator {
   }
 
   private void deleteToken(Credentials credentials, Client client) {
-    Collaborator collaborator = (Collaborator) humanResourceAdministrator.findFromCredentials(credentials);
+    Collaborator collaborator = (Collaborator) humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername());
     tokenAdministrator.deleteTokensOf(collaborator, client);
   }
 

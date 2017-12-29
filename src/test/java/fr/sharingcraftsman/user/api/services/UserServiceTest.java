@@ -65,7 +65,7 @@ public class UserServiceTest {
   @Test
   public void should_register_user() throws Exception {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
-    given(humanResourceAdministrator.getCollaborator(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownCollaborator());
+    given(humanResourceAdministrator.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownCollaborator());
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
@@ -101,7 +101,7 @@ public class UserServiceTest {
   @Test
   public void should_get_user_already_exists_when_using_already_existing_username() throws Exception {
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
-    given(humanResourceAdministrator.getCollaborator(usernameBuilder.from("john@doe.fr"))).willReturn(
+    given(humanResourceAdministrator.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(
             (new CollaboratorBuilder())
                     .withUsername(usernameBuilder.from("john@doe.fr"))
                     .withPassword(passwordBuilder.from("password"))
@@ -165,7 +165,7 @@ public class UserServiceTest {
             .withChangePasswordKey("aaa")
             .withChangePasswordKeyExpirationDate(LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0))
             .build();
-    given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(collaborator);
 
     ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
     changePasswordDTO.setOldPassword("password");

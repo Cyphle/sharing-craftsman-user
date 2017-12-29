@@ -66,7 +66,7 @@ public class OAuthAuthenticatorTest {
             .withRefreshToken("bbb")
             .expiringThe(dateService.getDayAt(8))
             .build();
-    given(humanResourceAdministrator.findFromCredentials(any(Credentials.class))).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(collaborator);
     given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(token);
     credentials.setStayLogged(true);
 
@@ -115,7 +115,7 @@ public class OAuthAuthenticatorTest {
   @Test
   public void should_delete_token_when_logout() throws Exception {
     given(tokenAdministrator.findTokenFromAccessToken(client, credentials, oAuthToken)).willReturn(oAuthToken);
-    given(humanResourceAdministrator.findFromCredentials(credentials)).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername())).willReturn(collaborator);
 
     identifier.logout(credentials, client, oAuthToken);
 
@@ -166,7 +166,7 @@ public class OAuthAuthenticatorTest {
             .withRefreshToken("bbb")
             .expiringThe(dateService.getDayAt(8))
             .build();
-    given(humanResourceAdministrator.getCollaborator(any(Username.class))).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(collaborator);
     given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(token);
     credentials.setStayLogged(true);
 

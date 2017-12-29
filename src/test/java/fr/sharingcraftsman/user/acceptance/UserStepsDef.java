@@ -23,6 +23,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserStepsDef extends SpringAcceptanceTestConfig {
+  private TokenDsl newToken;
+
   @Given("The application is setup")
   public void setupApplication() {
     if (this.mvc == null) {
@@ -107,10 +109,31 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
             .andReturn();
   }
 
+  @And("I refresh my token")
+  public void refreshToken() throws Exception {
+    response = this.mvc
+            .perform(get(getBaseUri() + "/tokens/refresh-token")
+                    .header("client", "sharingcraftsman")
+                    .header("secret", "secret")
+                    .header("username", login.getUsername())
+                    .header("refresh-token", token.getRefreshToken())
+            )
+            .andExpect(status().isOk())
+            .andReturn();
+
+    newToken = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), TokenDsl.class);
+  }
+
+  @Then("I have a new token")
+  public void checkNewToken() throws IOException {
+    assertThat(newToken.getAccessToken()).isNotEmpty();
+    assertThat(newToken.getRefreshToken()).isNotEmpty();
+    assertThat(newToken.getAccessToken()).isNotEqualTo(token.getAccessToken());
+    assertThat(newToken.getRefreshToken()).isNotEqualTo(token.getRefreshToken());
+  }
+
   @Then("I am connected")
   public void checkTokenPresent() throws IOException {
-    String tokenString = response.getResponse().getContentAsString();
-    TokenDTO token = Mapper.fromJsonStringToObject(tokenString, TokenDTO.class);
     assertThat(token.getAccessToken()).isNotEmpty();
     assertThat(token.getRefreshToken()).isNotEmpty();
   }

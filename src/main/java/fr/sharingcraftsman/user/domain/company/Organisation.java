@@ -44,7 +44,7 @@ public class Organisation implements Company {
 
   @Override
   public void changePassword(Credentials credentials, ChangePassword changePassword) throws CollaboratorException {
-    Person person = humanResourceAdministrator.findFromCredentials(credentials);
+    Person person = humanResourceAdministrator.findCollaboratorFromCredentials(credentials);
 
     if (!person.isKnown())
       throw new UnknownCollaboratorException("Unknown collaborator");
@@ -62,6 +62,6 @@ public class Organisation implements Company {
   }
 
   private boolean collaboratorExists(Username username) {
-    return humanResourceAdministrator.getCollaborator(username).isKnown();
+    return humanResourceAdministrator.findCollaboratorFromUsername(username).isKnown();
   }
 }

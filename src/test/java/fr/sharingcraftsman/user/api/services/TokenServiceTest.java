@@ -80,7 +80,7 @@ public class TokenServiceTest {
 
   @Test
   public void should_login_user() throws Exception {
-    given(humanResourceAdministrator.findFromCredentials(credentials)).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromCredentials(credentials)).willReturn(collaborator);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(validToken);
 
@@ -131,7 +131,7 @@ public class TokenServiceTest {
 
   @Test
   public void should_generate_new_token_from_refresh_token() throws Exception {
-    given(humanResourceAdministrator.getCollaborator(credentials.getUsername())).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername())).willReturn(collaborator);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(validToken);
     given(tokenAdministrator.findTokenFromRefreshToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);

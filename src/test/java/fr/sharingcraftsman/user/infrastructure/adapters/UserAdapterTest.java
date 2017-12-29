@@ -52,7 +52,7 @@ public class UserAdapterTest {
   public void should_get_user_by_username() throws Exception {
     given(userRepository.findByUsername("john@doe.fr")).willReturn(new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    Person collaborator = userAdapter.getCollaborator(usernameBuilder.from("john@doe.fr"));
+    Person collaborator = userAdapter.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"));
 
     Collaborator expected = Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
     assertThat((Collaborator) collaborator).isEqualTo(expected);
@@ -62,7 +62,7 @@ public class UserAdapterTest {
   public void should_find_user_by_username_and_password() throws Exception {
     given(userRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    Person collaborator = userAdapter.findFromCredentials(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
+    Person collaborator = userAdapter.findCollaboratorFromCredentials(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
 
     assertThat((Collaborator) collaborator).isEqualTo(Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
   }
