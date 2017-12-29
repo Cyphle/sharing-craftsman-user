@@ -49,6 +49,8 @@ public class TokenServiceTest {
   private ClientDTO clientDTO;
   private ValidToken validToken;
   private TokenDTO token;
+  private Collaborator collaborator;
+  private Credentials credentials;
 
   @Before
   public void setUp() throws Exception {
@@ -67,15 +69,17 @@ public class TokenServiceTest {
     token = new TokenDTO();
     token.setUsername("john@doe.fr");
     token.setAccessToken("aaa");
+
+    collaborator = (new CollaboratorBuilder())
+            .withUsername(usernameBuilder.from("john@doe.fr"))
+            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
+            .build();
+
+    credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="), false);
   }
 
   @Test
   public void should_login_user() throws Exception {
-    Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="), false);
-    Collaborator collaborator = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
-            .build();
     given(humanResourceAdministrator.findFromCredentials(credentials)).willReturn(collaborator);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(validToken);
@@ -127,11 +131,6 @@ public class TokenServiceTest {
 
   @Test
   public void should_generate_new_token_from_refresh_token() throws Exception {
-    Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="), false);
-    Collaborator collaborator = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
-            .build();
     given(humanResourceAdministrator.getCollaborator(credentials.getUsername())).willReturn(collaborator);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(validToken);
