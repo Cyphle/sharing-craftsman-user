@@ -46,14 +46,7 @@ public class OAuthAuthenticator implements Authenticator {
   @Override
   public boolean isTokenValid(Credentials credentials, Client client, ValidToken token) {
     Token foundToken = tokenAdministrator.findTokenFromAccessToken(client, credentials, token);
-
-    if (foundToken.isValid()) {
-      ValidToken validToken = (ValidToken) foundToken;
-      if (validToken.getExpirationDate().isBefore(dateService.now()))
-        return false;
-    }
-
-    return foundToken.isValid();
+    return verifyTokenValidity(foundToken);
   }
 
   @Override
@@ -67,6 +60,15 @@ public class OAuthAuthenticator implements Authenticator {
   @Override
   public boolean isRefreshTokenValid(Credentials credentials, Client client, ValidToken token) {
     Token foundToken = tokenAdministrator.findTokenFromRefreshToken(client, credentials, token);
+    return verifyTokenValidity(foundToken);
+  }
+
+  private boolean verifyTokenValidity(Token foundToken) {
+    if (foundToken.isValid()) {
+      ValidToken validToken = (ValidToken) foundToken;
+      if (validToken.getExpirationDate().isBefore(dateService.now()))
+        return false;
+    }
 
     return foundToken.isValid();
   }

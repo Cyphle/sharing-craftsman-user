@@ -84,7 +84,7 @@ public class OAuthAuthenticatorTest {
   }
 
   @Test
-  public void should_not_validate_token() throws Exception {
+  public void should_not_validate_access_token_if_does_not_exists() throws Exception {
     given(tokenAdministrator.findTokenFromAccessToken(client, credentials, oAuthToken)).willReturn(new InvalidToken());
 
     boolean isValid = identifier.isTokenValid(credentials, client, oAuthToken);
@@ -128,5 +128,33 @@ public class OAuthAuthenticatorTest {
     boolean isValid = identifier.isRefreshTokenValid(credentials, client, oAuthToken);
 
     assertThat(isValid).isTrue();
+  }
+
+  @Test
+  public void should_not_validate_refresh_token_if_does_not_exists() throws Exception {
+    given(tokenAdministrator.findTokenFromRefreshToken(client, credentials, oAuthToken)).willReturn(new InvalidToken());
+
+    boolean isValid = identifier.isRefreshTokenValid(credentials, client, oAuthToken);
+
+    assertThat(isValid).isFalse();
+  }
+
+  @Test
+  public void should_not_validate_refresh_token_if_is_expired() throws Exception {
+    ValidToken token = validTokenBuilder
+            .withAccessToken("")
+            .withRefreshToken("bbb")
+            .expiringThe(null)
+            .build();
+    ValidToken fetchedToken = validTokenBuilder
+            .withAccessToken("aaa")
+            .withRefreshToken("bbb")
+            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 10, 12, 0))
+            .build();
+    given(tokenAdministrator.findTokenFromRefreshToken(client, credentials, token)).willReturn(fetchedToken);
+
+    boolean isValid = identifier.isRefreshTokenValid(credentials, client, token);
+
+    assertThat(isValid).isFalse();
   }
 }
