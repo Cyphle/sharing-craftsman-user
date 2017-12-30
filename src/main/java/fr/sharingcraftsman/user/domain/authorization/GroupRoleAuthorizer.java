@@ -16,17 +16,11 @@ public class GroupRoleAuthorizer implements Authorizer {
 
   @Override
   public Authorizations getAuthorizationsOf(Credentials credentials) {
-    /*
-      -> get groups of user
-      -> get roles linked to groups
-      -> build authorizations
-     */
     List<Group> groups = groupAdministrator.findGroupsOf(credentials.getUsername());
     for (Group group : groups) {
       List<Role> roles = roleAdministrator.getRolesOf(group.getName());
       group.addRoles(roles);
     }
-
     return new Authorizations(groups);
   }
 }
