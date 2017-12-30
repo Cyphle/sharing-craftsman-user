@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.models.AuthorizationDTO;
+import fr.sharingcraftsman.user.api.models.AuthorizationsDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.api.services.RoleService;
@@ -47,7 +47,7 @@ public class RoleControllerTest {
 
   @Test
   public void should_get_authorizations_in_groups_and_roles() throws Exception {
-    AuthorizationDTO authorization = new AuthorizationDTO();
+    AuthorizationsDTO authorization = new AuthorizationsDTO();
     given(roleService.getAuthorizations(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(authorization));
 
     this.mvc.perform(get("/roles")

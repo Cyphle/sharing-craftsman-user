@@ -22,4 +22,8 @@ public class Authorizations {
   public void addGroup(Group group) {
     this.groups.add(group);
   }
+
+  public List<Group> getGroups() {
+    return groups;
+  }
 }

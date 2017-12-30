@@ -28,4 +28,8 @@ public class Group {
   public String getName() {
     return name;
   }
+
+  public List<Role> getRoles() {
+    return roles;
+  }
 }
