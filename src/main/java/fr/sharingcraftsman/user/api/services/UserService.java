@@ -7,12 +7,17 @@ import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.authentication.OAuthAuthenticator;
 import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
+import fr.sharingcraftsman.user.domain.authorization.GroupAdministrator;
+import fr.sharingcraftsman.user.domain.authorization.GroupRoleAuthorizer;
+import fr.sharingcraftsman.user.domain.authorization.Groups;
+import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
+import fr.sharingcraftsman.user.domain.ports.authorization.Authorizer;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
 import fr.sharingcraftsman.user.domain.ports.company.Company;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
@@ -32,16 +37,20 @@ public class UserService {
   private final Authenticator authenticator;
   private Company company;
   private ClientManager clientManager;
+  private Authorizer authorizer;
 
   @Autowired
   public UserService(
           HumanResourceAdministrator humanResourceAdministrator,
           ClientStock clientStock,
           TokenAdministrator tokenAdministrator,
+          GroupAdministrator groupAdministrator,
+          RoleAdministrator roleAdministrator,
           DateService dateService) {
     company = new Organisation(humanResourceAdministrator, dateService);
     clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
     authenticator = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateService);
+    authorizer = new GroupRoleAuthorizer(groupAdministrator, roleAdministrator);
   }
 
   public ResponseEntity registerUser(ClientDTO clientDTO, LoginDTO loginDTO) {
@@ -54,6 +63,7 @@ public class UserService {
       log.info("User is registering with username:" + loginDTO.getUsername());
       Credentials credentials = LoginPivot.fromApiToDomain(loginDTO);
       company.createNewCollaborator(credentials);
+      authorizer.addGroup(credentials, Groups.USERS);
       return ResponseEntity.ok().build();
     } catch (CredentialsException | CollaboratorException e) {
       log.warn("Error with registering " + loginDTO.getUsername() + ": " + e.getMessage());

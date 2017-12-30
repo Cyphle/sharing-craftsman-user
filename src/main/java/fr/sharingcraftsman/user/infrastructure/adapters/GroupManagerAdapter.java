@@ -2,6 +2,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.GroupAdministrator;
+import fr.sharingcraftsman.user.domain.authorization.Groups;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.infrastructure.pivots.GroupPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserGroupRepository;
@@ -22,5 +23,10 @@ public class GroupManagerAdapter implements GroupAdministrator {
   @Override
   public List<Group> findGroupsOf(Username username) {
     return GroupPivot.fromInfraToDomain(userGroupRepository.findByUsername(username.getUsername()));
+  }
+
+  @Override
+  public void addGroup(Username username, Groups groups) {
+    throw new UnsupportedOperationException();
   }
 }

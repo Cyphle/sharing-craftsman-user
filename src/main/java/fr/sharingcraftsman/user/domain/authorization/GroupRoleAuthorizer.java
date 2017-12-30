@@ -23,4 +23,20 @@ public class GroupRoleAuthorizer implements Authorizer {
     }
     return new Authorizations(groups);
   }
+
+  @Override
+  public void addGroup(Credentials credentials, Groups groupToAdd) {
+    List<Group> groups = groupAdministrator.findGroupsOf(credentials.getUsername());
+    if (isNotAdminGroup(groupToAdd) && doesNotAlreadyHaveGroup(groupToAdd, groups)) {
+      groupAdministrator.addGroup(credentials.getUsername(), groupToAdd);
+    }
+  }
+
+  private boolean doesNotAlreadyHaveGroup(Groups groupToAdd, List<Group> groups) {
+    return groups.stream().noneMatch(group -> group.getName().equals(groupToAdd.name()));
+  }
+
+  private boolean isNotAdminGroup(Groups groupToAdd) {
+    return !groupToAdd.name().contains("ADMIN");
+  }
 }

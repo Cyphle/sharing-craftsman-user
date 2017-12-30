@@ -5,10 +5,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.user.acceptance.config.SpringAcceptanceTestConfig;
-import fr.sharingcraftsman.user.acceptance.dsl.ChangePasswordDsl;
-import fr.sharingcraftsman.user.acceptance.dsl.ChangePasswordTokenDsl;
-import fr.sharingcraftsman.user.acceptance.dsl.LoginDsl;
-import fr.sharingcraftsman.user.acceptance.dsl.TokenDsl;
+import fr.sharingcraftsman.user.acceptance.dsl.*;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.utils.Mapper;
@@ -16,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -24,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class UserStepsDef extends SpringAcceptanceTestConfig {
   private TokenDsl newToken;
+  private AuthorizationDsl authorization;
 
   @Given("The application is setup")
   public void setupApplication() {
@@ -122,6 +122,32 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
             .andReturn();
 
     newToken = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), TokenDsl.class);
+  }
+
+  @And("I ask for my groups")
+  public void getAuthorizations() throws Exception {
+    response = this.mvc
+            .perform(get(getBaseUri() + "/roles")
+                    .header("client", "sharingcraftsman")
+                    .header("secret", "secret")
+                    .header("username", login.getUsername())
+                    .header("access-token", token.getAccessToken())
+            )
+            .andExpect(status().isOk())
+            .andReturn();
+
+    authorization = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), AuthorizationDsl.class);
+  }
+
+  @And("I have the group <(.*)>")
+  public void verifyGroup(String group) {
+    if (group.equals("USERS")) {
+      List<String> groupNames = authorization.getGroups()
+              .stream()
+              .map(GroupDsl::getName)
+              .collect(Collectors.toList());
+      assertThat(groupNames).contains(group);
+    }
   }
 
   @Then("I have a new token")

@@ -6,6 +6,8 @@ import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
 import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
 import fr.sharingcraftsman.user.domain.authentication.ValidToken;
+import fr.sharingcraftsman.user.domain.authorization.GroupAdministrator;
+import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.common.Email;
@@ -45,6 +47,10 @@ public class UserServiceTest {
   private DateService dateService;
   @Mock
   private TokenAdministrator tokenAdministrator;
+  @Mock
+  private GroupAdministrator groupAdministrator;
+  @Mock
+  private RoleAdministrator roleAdministrator;
 
   private UserService userService;
   private ClientDTO clientDTO;
@@ -57,7 +63,7 @@ public class UserServiceTest {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 27, 12, 0));
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
-    userService = new UserService(humanResourceAdministrator, clientStock, tokenAdministrator, dateService);
+    userService = new UserService(humanResourceAdministrator, clientStock, tokenAdministrator, groupAdministrator, roleAdministrator, dateService);
     clientDTO = new ClientDTO("secret", "clientsecret");
     validToken = validTokenBuilder
             .withAccessToken("aaa")
