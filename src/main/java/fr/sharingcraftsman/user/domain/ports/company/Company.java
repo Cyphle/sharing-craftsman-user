@@ -11,5 +11,5 @@ public interface Company {
 
   void changePassword(Credentials credentials, ChangePassword changePassword) throws CollaboratorException;
 
-  Profile updateProfile(Profile profile) throws ProfileException;
+  Profile updateProfile(Profile profile) throws CollaboratorException;
 }

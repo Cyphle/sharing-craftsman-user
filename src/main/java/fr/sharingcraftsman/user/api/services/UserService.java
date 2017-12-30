@@ -130,16 +130,16 @@ public class UserService {
 
       Profile updatedProfile = company.updateProfile(ProfilePivot.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
       return ResponseEntity.ok(ProfilePivot.fromDomainToApi(updatedProfile));
-     } catch (CredentialsException e) {
-      log.warn("Error with update profile " + tokenDTO.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
-    } catch (ProfileException e) {
+     } catch (ProfileException e) {
       log.warn("Validation errors with update profile:" + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getErrors());
+    } catch (CredentialsException | CollaboratorException e) {
+      log.warn("Error with update profile " + tokenDTO.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
     }
   }
 

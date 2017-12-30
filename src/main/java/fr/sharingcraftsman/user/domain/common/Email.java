@@ -25,4 +25,19 @@ public class Email {
     matcher = pattern.matcher(email);
     return matcher.matches();
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Email email1 = (Email) o;
+
+    return email != null ? email.equals(email1.email) : email1.email == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return email != null ? email.hashCode() : 0;
+  }
 }

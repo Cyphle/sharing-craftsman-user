@@ -11,8 +11,6 @@ import fr.sharingcraftsman.user.domain.common.Username;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -93,7 +91,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public Profile updateProfileOf(Profile profileToUpdate) {
+  public KnownProfile updateProfileOf(KnownProfile profileToUpdate) {
     throw new UnsupportedOperationException();
   }
 }

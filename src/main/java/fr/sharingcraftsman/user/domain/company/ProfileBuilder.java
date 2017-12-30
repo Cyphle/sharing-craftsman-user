@@ -49,7 +49,7 @@ public class ProfileBuilder {
     return this;
   }
 
-  public Profile build() {
-    return new Profile(username, firstname, lastname, email, website, github, linkedin);
+  public KnownProfile build() {
+    return new KnownProfile(username, firstname, lastname, email, website, github, linkedin);
   }
 }

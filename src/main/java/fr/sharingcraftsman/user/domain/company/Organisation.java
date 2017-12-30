@@ -60,22 +60,18 @@ public class Organisation implements Company {
   }
 
   @Override
-  public Profile updateProfile(Profile profile) throws ProfileException {
-    Profile profileToUpdate = humanResourceAdministrator.findProfileOf(profile.getUsername());
+  public KnownProfile updateProfile(Profile profile) throws CollaboratorException {
+    Profile profileToUpdate = humanResourceAdministrator.findProfileOf(((KnownProfile) profile).getUsername());
 
-    List<ValidationError> errors = profile.validate();
+    if (!profileToUpdate.isKnown())
+      throw new UnknownCollaboratorException("Unknown collaborator");
+
+    List<ValidationError> errors = ((KnownProfile) profile).validate();
     if (!errors.isEmpty())
       throw new ProfileException("Invalid profile", errors);
 
-    profileToUpdate.updateFrom(profile);
-    return humanResourceAdministrator.updateProfileOf(profileToUpdate);
-
-    /*
-    - Find collaborator findCollaboratorFromUsername
-    - Validate profile (check email)
-    - Update profile
-    - Save
-     */
+    ((KnownProfile) profileToUpdate).updateFrom((KnownProfile) profile);
+    return humanResourceAdministrator.updateProfileOf((KnownProfile) profileToUpdate);
   }
 
   private void checkChangePasswordKeyValidity(ChangePassword changePassword, Collaborator person) throws InvalidChangePasswordKeyException {
