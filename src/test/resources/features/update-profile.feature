@@ -1,4 +1,4 @@
-Feature: Registration
+Feature: Update profile
 
   Background: Setup application
     Given The application is initialized with client
