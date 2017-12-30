@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 06-create-role-table.yaml
+      author: cphamle
+      changes:
+      - sqlFile:
+          encoding: utf8
+          path: ../sql/06-create-role-table.sql
+          relativeToChangelogFile: true
+          splitStatements: true
+          stripComments: true

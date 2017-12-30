@@ -5,14 +5,14 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "group_roles")
+@Table(name = "group_roles_mapping")
 @ToString
 public class GroupRole {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
   private long id;
-  @Column(name = "group")
+  @Column(name = "access_group")
   private String group;
   @Column(name = "role")
   private String role;

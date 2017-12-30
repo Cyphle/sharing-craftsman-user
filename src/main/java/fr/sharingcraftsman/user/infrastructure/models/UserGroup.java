@@ -14,7 +14,7 @@ public class UserGroup {
   private long id;
   @Column(name = "username")
   private String username;
-  @Column(name = "group")
+  @Column(name = "access_group")
   private String group;
 
   public UserGroup() {
