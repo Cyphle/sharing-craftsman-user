@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "user_groups")
 @ToString
+@EqualsAndHashCode
 public class UserGroup {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)

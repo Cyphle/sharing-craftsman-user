@@ -1,10 +1,10 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.models.AuthorizationsDTO;
-import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.acceptance.dsl.AuthorizationDsl;
+import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.services.RoleService;
+import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,9 +16,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -47,14 +49,21 @@ public class RoleControllerTest {
 
   @Test
   public void should_get_authorizations_in_groups_and_roles() throws Exception {
+    GroupDTO group = new GroupDTO("USERS");
+    group.addRole(new RoleDTO("ROLE_USER"));
     AuthorizationsDTO authorization = new AuthorizationsDTO();
+    authorization.addGroup(group);
     given(roleService.getAuthorizations(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(authorization));
 
-    this.mvc.perform(get("/roles")
+    MvcResult mvcResult = this.mvc.perform(get("/roles")
             .header("client", "client")
             .header("secret", "clientsecret")
             .header("username", "john@doe.fr")
             .header("access-token", "aaa"))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andReturn();
+
+    AuthorizationsDTO authorizationsDTO = Mapper.fromJsonStringToObject(mvcResult.getResponse().getContentAsString(), AuthorizationsDTO.class);
+    assertThat(authorizationsDTO.getGroups().get(0).getName()).isEqualTo("USERS");
   }
 }

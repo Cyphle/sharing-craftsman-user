@@ -1,7 +1,6 @@
 package fr.sharingcraftsman.user.api.controllers;
 
-import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.services.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,10 +38,4 @@ public class RoleController {
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return roleService.getAuthorizations(clientDTO, tokenDTO);
   }
-
-  // TODO toread below
-  /*
-  ASSIGN group endpoint (only authorized for user who has GROUP_ADMIN -> In Admin controller
-  Get groups and roles endpoint
-   */
 }

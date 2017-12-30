@@ -21,6 +21,10 @@ public class GroupDTO {
     this.roles = new ArrayList<>();
   }
 
+  public String getName() {
+    return name;
+  }
+
   public List<RoleDTO> getRoles() {
     return roles;
   }
@@ -31,5 +35,9 @@ public class GroupDTO {
 
   public void addRoles(List<RoleDTO> roles) {
     this.roles.addAll(roles);
+  }
+
+  public void addRole(RoleDTO role) {
+    roles.add(role);
   }
 }

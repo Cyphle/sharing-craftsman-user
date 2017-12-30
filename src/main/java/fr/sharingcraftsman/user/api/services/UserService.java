@@ -62,6 +62,7 @@ public class UserService {
     try {
       log.info("User is registering with username:" + loginDTO.getUsername());
       Credentials credentials = LoginPivot.fromApiToDomain(loginDTO);
+
       company.createNewCollaborator(credentials);
       authorizer.addGroup(credentials, Groups.USERS);
       return ResponseEntity.ok().build();

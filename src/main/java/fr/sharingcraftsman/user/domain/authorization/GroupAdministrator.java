@@ -7,5 +7,5 @@ import java.util.List;
 public interface GroupAdministrator {
   List<Group> findGroupsOf(Username username);
 
-  void addGroup(Username username, Groups groups);
+  void addGroup(Username username, Groups group);
 }
