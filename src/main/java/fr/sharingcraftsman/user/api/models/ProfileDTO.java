@@ -1,8 +1,8 @@
 package fr.sharingcraftsman.user.api.models;
 
 public class ProfileDTO {
-  private String lastname;
   private String firstname;
+  private String lastname;
   private String email;
   private String website;
   private String github;
@@ -11,7 +11,7 @@ public class ProfileDTO {
   public ProfileDTO() {
   }
 
-  public ProfileDTO(String lastname, String firstname, String email, String website, String github, String linkedin) {
+  public ProfileDTO(String firstname, String lastname, String email, String website, String github, String linkedin) {
     this.lastname = lastname;
     this.firstname = firstname;
     this.email = email;

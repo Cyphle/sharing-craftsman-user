@@ -86,4 +86,14 @@ public class UserAdapter implements HumanResourceAdministrator {
     user.setPassword(collaborator.getPassword());
     userRepository.save(user);
   }
+
+  @Override
+  public Profile findProfileOf(Username username) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Profile updateProfileOf(Profile profileToUpdate) {
+    throw new UnsupportedOperationException();
+  }
 }

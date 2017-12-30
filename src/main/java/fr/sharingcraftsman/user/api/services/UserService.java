@@ -11,10 +11,7 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.company.ChangePasswordKey;
-import fr.sharingcraftsman.user.domain.company.CollaboratorException;
-import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
-import fr.sharingcraftsman.user.domain.company.Organisation;
+import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
 import fr.sharingcraftsman.user.domain.ports.company.Company;
@@ -118,33 +115,32 @@ public class UserService {
   }
 
   public ResponseEntity updateProfile(ClientDTO clientDTO, TokenDTO tokenDTO, ProfileDTO profileDTO) {
-    /*
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
+      log.warn("User " + tokenDTO.getUsername() + " is trying to change profile with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
+
     try {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.buildEncryptedCredentials(
-              usernameBuilder.from(tokenDTO.getUsername()),
-              null,
-              false
-      );
+      Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
 
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      Profile updatedProfile = company.updateProfile(ProfileDTO.fromApiToDomain(profileDTO);
-      return ResponseEntity.ok(ProfileDTO.fromDomainToApi(updatedProfile);
-     } catch (CredentialsException | CollaboratorException e) {
-      log.warn("Error with change password " + tokenDTO.getUsername() + ": " + e.getMessage());
+      Profile updatedProfile = company.updateProfile(ProfilePivot.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
+      return ResponseEntity.ok(ProfilePivot.fromDomainToApi(updatedProfile));
+     } catch (CredentialsException e) {
+      log.warn("Error with update profile " + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());
+    } catch (ProfileException e) {
+      log.warn("Validation errors with update profile:" + tokenDTO.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getErrors());
     }
-     */
-    throw new UnsupportedOperationException();
   }
 
   private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Credentials credentials) {

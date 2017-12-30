@@ -2,6 +2,9 @@ package fr.sharingcraftsman.user.domain.company;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.common.Email;
+import fr.sharingcraftsman.user.domain.common.Link;
+import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.Username;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +56,7 @@ public class OrganisationTest {
   public void should_throw_collaborator_exception_if_user_already_exists() throws Exception {
     try {
       given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(
-        new Collaborator(usernameBuilder.from("john@doe.fr"))
+              new Collaborator(usernameBuilder.from("john@doe.fr"))
       );
       Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
 
@@ -160,6 +163,31 @@ public class OrganisationTest {
       fail("Should throw invalid change password key exception");
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");
+    }
+  }
+
+  @Test
+  public void should_update_profile_of_collaborator() throws Exception {
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+    Profile profileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    given(humanResourceAdministrator.updateProfileOf(any(Profile.class))).willReturn(profileToUpdate);
+
+    Profile profile = organisation.updateProfile(profileToUpdate);
+
+    Profile expectedProfile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    assertThat(profile).isEqualTo(expectedProfile);
+  }
+
+  @Test
+  public void should_throw_profile_exception_if_email_is_invalid_when_updating_profile() throws Exception {
+    try {
+      given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+      Profile profileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+
+      Profile profile = organisation.updateProfile(profileToUpdate);
+      fail("Should have throw a profile exception when email is invalid");
+    } catch (CollaboratorException e) {
+      assertThat(e.getMessage()).isEqualTo("Invalid profile");
     }
   }
 }

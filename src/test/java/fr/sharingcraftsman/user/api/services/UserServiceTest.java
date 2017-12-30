@@ -169,4 +169,14 @@ public class UserServiceTest {
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
+
+  @Test
+  public void should_update_profile_with_new_information() throws Exception {
+    ProfileDTO profileDTO = new ProfileDTO("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
+
+    ResponseEntity response = userService.updateProfile(clientDTO, tokenDTO, profileDTO);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isEqualTo(profileDTO);
+  }
 }

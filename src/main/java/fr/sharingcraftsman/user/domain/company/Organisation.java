@@ -4,9 +4,12 @@ import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.common.ValidationError;
 import fr.sharingcraftsman.user.domain.ports.company.Company;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
 import fr.sharingcraftsman.user.domain.utils.CrypterFactory;
+
+import java.util.List;
 
 public class Organisation implements Company {
   public static Crypter crypter = CrypterFactory.getCrypter();
@@ -54,6 +57,25 @@ public class Organisation implements Company {
     ((Collaborator) person).setPassword(changePassword.getNewPassword().getEncryptedVersion());
     humanResourceAdministrator.updateCollaborator((Collaborator) person);
     humanResourceAdministrator.deleteChangePasswordKeyOf(credentials);
+  }
+
+  @Override
+  public Profile updateProfile(Profile profile) throws ProfileException {
+    Profile profileToUpdate = humanResourceAdministrator.findProfileOf(profile.getUsername());
+
+    List<ValidationError> errors = profile.validate();
+    if (!errors.isEmpty())
+      throw new ProfileException("Invalid profile", errors);
+
+    profileToUpdate.updateFrom(profile);
+    return humanResourceAdministrator.updateProfileOf(profileToUpdate);
+
+    /*
+    - Find collaborator findCollaboratorFromUsername
+    - Validate profile (check email)
+    - Update profile
+    - Save
+     */
   }
 
   private void checkChangePasswordKeyValidity(ChangePassword changePassword, Collaborator person) throws InvalidChangePasswordKeyException {
