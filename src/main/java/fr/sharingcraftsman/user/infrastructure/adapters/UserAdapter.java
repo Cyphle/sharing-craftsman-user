@@ -2,6 +2,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
@@ -87,11 +88,27 @@ public class UserAdapter implements HumanResourceAdministrator {
 
   @Override
   public Profile findProfileOf(Username username) {
-    throw new UnsupportedOperationException();
+    User user = userRepository.findByUsername(username.getUsername());
+
+    if (user == null)
+      return new UnknownProfile();
+
+    try {
+      return UserPivot.fromInfraToDomainProfile(user);
+    } catch (UsernameException e) {
+      return new UnknownProfile();
+    }
   }
 
   @Override
-  public KnownProfile updateProfileOf(KnownProfile profileToUpdate) {
-    throw new UnsupportedOperationException();
+  public Profile updateProfileOf(KnownProfile profileToUpdate) {
+    User user = userRepository.findByUsername(profileToUpdate.getUsernameContent());
+    user.updateFromProfile(UserPivot.fromDomainToInfraProfile(profileToUpdate));
+    User updatedUser = userRepository.save(user);
+    try {
+      return UserPivot.fromInfraToDomainProfile(updatedUser);
+    } catch (UsernameException e) {
+      return new UnknownProfile();
+    }
   }
 }

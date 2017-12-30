@@ -16,14 +16,18 @@ public class Email {
     this.email = email;
   }
 
-  public static Email from(String email) {
-    return new Email(email);
+  public String getEmail() {
+    return email;
   }
 
   public boolean isValid() {
     pattern = Pattern.compile(EMAIL_PATTERN);
     matcher = pattern.matcher(email);
     return matcher.matches();
+  }
+
+  public static Email from(String email) {
+    return new Email(email);
   }
 
   @Override

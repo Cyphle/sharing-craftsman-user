@@ -2,6 +2,9 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.common.Email;
+import fr.sharingcraftsman.user.domain.common.Link;
+import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
@@ -20,6 +23,7 @@ import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -108,5 +112,30 @@ public class UserAdapterTest {
 
     User user = new User("john@doe.fr", "newpassword");
     verify(userRepository).save(user);
+  }
+
+  @Test
+  public void should_find_profile_from_username() throws Exception {
+    User user = new User("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
+    given(userRepository.findByUsername("john@doe.fr")).willReturn(user);
+
+    Profile foundProfile = userAdapter.findProfileOf(usernameBuilder.from("john@doe.fr"));
+
+    KnownProfile expectedProfile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    assertThat((KnownProfile) foundProfile).isEqualTo(expectedProfile);
+    verify(userRepository).findByUsername("john@doe.fr");
+  }
+
+  @Test
+  public void should_save_new_profile() throws Exception {
+    User user = new User("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
+    given(userRepository.findByUsername("john@doe.fr")).willReturn(user);
+    given(userRepository.save(any(User.class))).willReturn(user);
+    KnownProfile profile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+
+    Profile foundProfile = userAdapter.updateProfileOf(profile);
+
+    assertThat((KnownProfile) foundProfile).isEqualTo(profile);
+    verify(userRepository).findByUsername("john@doe.fr");
   }
 }

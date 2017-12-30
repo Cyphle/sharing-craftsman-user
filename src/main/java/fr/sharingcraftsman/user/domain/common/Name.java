@@ -10,6 +10,10 @@ public class Name {
     this.name = name;
   }
 
+  public String getName() {
+    return name;
+  }
+
   public static Name of(String name) {
     return new Name(name);
   }

@@ -32,6 +32,34 @@ public class KnownProfile extends Profile {
     return username;
   }
 
+  public String getUsernameContent() {
+    return username.getUsername();
+  }
+
+  public String getFirstnameContent() {
+    return firstname.getName();
+  }
+
+  public String getLastnameContent() {
+    return lastname.getName();
+  }
+
+  public String getEmailContent() {
+    return email.getEmail();
+  }
+
+  public String getWebsiteContent() {
+    return website.getLink();
+  }
+
+  public String getGithubContent() {
+    return github.getLink();
+  }
+
+  public String getLinkedinContent() {
+    return linkedin.getLink();
+  }
+
   public List<ValidationError> validate() {
     List<ValidationError> errors = new ArrayList<>();
 

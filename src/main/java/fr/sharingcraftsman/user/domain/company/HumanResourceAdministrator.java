@@ -18,5 +18,5 @@ public interface HumanResourceAdministrator {
 
   Profile findProfileOf(Username username);
 
-  KnownProfile updateProfileOf(KnownProfile profileToUpdate);
+  Profile updateProfileOf(KnownProfile profileToUpdate);
 }

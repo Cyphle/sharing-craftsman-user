@@ -71,7 +71,7 @@ public class Organisation implements Company {
       throw new ProfileException("Invalid profile", errors);
 
     ((KnownProfile) profileToUpdate).updateFrom((KnownProfile) profile);
-    return humanResourceAdministrator.updateProfileOf((KnownProfile) profileToUpdate);
+    return (KnownProfile) humanResourceAdministrator.updateProfileOf((KnownProfile) profileToUpdate);
   }
 
   private void checkChangePasswordKeyValidity(ChangePassword changePassword, Collaborator person) throws InvalidChangePasswordKeyException {
