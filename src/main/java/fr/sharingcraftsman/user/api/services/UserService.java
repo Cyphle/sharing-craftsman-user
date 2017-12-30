@@ -68,7 +68,7 @@ public class UserService {
 
   public ResponseEntity requestChangePassword(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
+      log.warn("User " + tokenDTO.getUsername() + " is trying to request for change password with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
@@ -91,7 +91,7 @@ public class UserService {
 
   public ResponseEntity changePassword(ClientDTO clientDTO, TokenDTO tokenDTO, ChangePasswordDTO changePasswordDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
+      log.warn("User " + tokenDTO.getUsername() + " is trying to change password with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
@@ -110,21 +110,46 @@ public class UserService {
       company.changePassword(credentials, ChangePasswordPivot.fromApiToDomain(changePasswordDTO));
       return ResponseEntity.ok().build();
     } catch (CredentialsException | CollaboratorException e) {
-      log.warn("Error with change password " + tokenDTO.getUsername() + ": " + e.getMessage());
+      log.warn("Error with change password: " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());
     }
   }
 
-  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Credentials credentials) {
-    Client client = new Client(clientDTO.getName(), "", false);
-    if (!authenticator.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO)))
-      return true;
-    return false;
-  }
-
   public ResponseEntity updateProfile(ClientDTO clientDTO, TokenDTO tokenDTO, ProfileDTO profileDTO) {
+    /*
+    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
+      log.warn("User " + tokenDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
+      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+    }
+
+    try {
+      log.info("Request for a change password token for:" + tokenDTO.getUsername());
+      Credentials credentials = Credentials.buildEncryptedCredentials(
+              usernameBuilder.from(tokenDTO.getUsername()),
+              null,
+              false
+      );
+
+      if (verifyToken(clientDTO, tokenDTO, credentials))
+        return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+
+      Profile updatedProfile = company.updateProfile(ProfileDTO.fromApiToDomain(profileDTO);
+      return ResponseEntity.ok(ProfileDTO.fromDomainToApi(updatedProfile);
+     } catch (CredentialsException | CollaboratorException e) {
+      log.warn("Error with change password " + tokenDTO.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+     */
     throw new UnsupportedOperationException();
   }
+
+  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Credentials credentials) {
+    Client client = new Client(clientDTO.getName(), "", false);
+    return !authenticator.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO));
+  }
+
 }

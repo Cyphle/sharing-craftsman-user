@@ -52,6 +52,7 @@ public class UserServiceTest {
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 27, 12, 0));
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
+    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     userService = new UserService(humanResourceAdministrator, clientStock, tokenAdministrator, dateService);
     clientDTO = new ClientDTO("secret", "clientsecret");
     validToken = validTokenBuilder
@@ -64,7 +65,6 @@ public class UserServiceTest {
 
   @Test
   public void should_register_user() throws Exception {
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(humanResourceAdministrator.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownCollaborator());
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
@@ -76,7 +76,6 @@ public class UserServiceTest {
 
   @Test
   public void should_get_invalid_credential_username_when_username_is_not_specified() throws Exception {
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     LoginDTO loginDTO = new LoginDTO("", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
@@ -88,7 +87,6 @@ public class UserServiceTest {
 
   @Test
   public void should_get_invalid_credential_password_when_username_is_not_specified() throws Exception {
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
@@ -100,7 +98,6 @@ public class UserServiceTest {
 
   @Test
   public void should_get_user_already_exists_when_using_already_existing_username() throws Exception {
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(humanResourceAdministrator.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(
             (new CollaboratorBuilder())
                     .withUsername(usernameBuilder.from("john@doe.fr"))
@@ -135,7 +132,6 @@ public class UserServiceTest {
             .build();
     ChangePasswordKey key = new ChangePasswordKey(collaborator, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
@@ -146,7 +142,6 @@ public class UserServiceTest {
 
   @Test
   public void should_get_unauthorized_if_access_token_is_invalid_when_requesting_password_change() throws Exception {
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(new InvalidToken());
     TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa");
 
@@ -157,7 +152,6 @@ public class UserServiceTest {
 
   @Test
   public void should_change_password_when_sending_new_password() throws Exception {
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
     Collaborator collaborator = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
