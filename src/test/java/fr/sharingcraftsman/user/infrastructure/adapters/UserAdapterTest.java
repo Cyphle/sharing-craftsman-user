@@ -108,7 +108,7 @@ public class UserAdapterTest {
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("newpassword"))
             .build();
-    userAdapter.updateCollaborator(collaborator);
+    userAdapter.updateCollaboratorPassword(collaborator);
 
     User user = new User("john@doe.fr", "newpassword");
     verify(userRepository).save(user);

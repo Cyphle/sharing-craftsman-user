@@ -55,7 +55,7 @@ public class Organisation implements Company {
     checkChangePasswordKeyValidity(changePassword, (Collaborator) person);
 
     ((Collaborator) person).setPassword(changePassword.getNewPassword().getEncryptedVersion());
-    humanResourceAdministrator.updateCollaborator((Collaborator) person);
+    humanResourceAdministrator.updateCollaboratorPassword((Collaborator) person);
     humanResourceAdministrator.deleteChangePasswordKeyOf(credentials);
   }
 

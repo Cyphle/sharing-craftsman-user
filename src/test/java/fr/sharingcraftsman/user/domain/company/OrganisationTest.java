@@ -102,7 +102,7 @@ public class OrganisationTest {
             .withChangePasswordKey("aaa")
             .withChangePasswordKeyExpirationDate(LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0))
             .build();
-    verify(humanResourceAdministrator).updateCollaborator(updatedCollaborator);
+    verify(humanResourceAdministrator).updateCollaboratorPassword(updatedCollaborator);
   }
 
   @Test

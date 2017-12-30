@@ -67,6 +67,7 @@ public class UserAdapter implements HumanResourceAdministrator {
     User user = userRepository.findByUsername(credentials.getUsernameContent());
     user.setChangePasswordKey("");
     user.setChangePasswordExpirationDate(null);
+    user.setLastUpdateDate(dateService.nowInDate());
     userRepository.save(user);
   }
 
@@ -75,14 +76,16 @@ public class UserAdapter implements HumanResourceAdministrator {
     User user = userRepository.findByUsername(changePasswordKey.getUsername());
     user.setChangePasswordKey(changePasswordKey.getKey());
     user.setChangePasswordExpirationDate(Date.from(changePasswordKey.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
+    user.setLastUpdateDate(dateService.nowInDate());
     userRepository.save(user);
     return changePasswordKey;
   }
 
   @Override
-  public void updateCollaborator(Collaborator collaborator) {
+  public void updateCollaboratorPassword(Collaborator collaborator) {
     User user = userRepository.findByUsername(collaborator.getUsername());
     user.setPassword(collaborator.getPassword());
+    user.setLastUpdateDate(dateService.nowInDate());
     userRepository.save(user);
   }
 
@@ -104,6 +107,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   public Profile updateProfileOf(KnownProfile profileToUpdate) {
     User user = userRepository.findByUsername(profileToUpdate.getUsernameContent());
     user.updateFromProfile(UserPivot.fromDomainToInfraProfile(profileToUpdate));
+    user.setLastUpdateDate(dateService.nowInDate());
     User updatedUser = userRepository.save(user);
     try {
       return UserPivot.fromInfraToDomainProfile(updatedUser);

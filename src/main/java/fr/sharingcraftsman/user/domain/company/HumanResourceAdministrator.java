@@ -14,7 +14,7 @@ public interface HumanResourceAdministrator {
 
   ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey);
 
-  void updateCollaborator(Collaborator collaborator);
+  void updateCollaboratorPassword(Collaborator collaborator);
 
   Profile findProfileOf(Username username);
 
