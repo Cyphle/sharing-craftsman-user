@@ -81,13 +81,4 @@ public class UserController {
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return userService.updateProfile(clientDTO, tokenDTO, profileDTO);
   }
-
-  /*
-  POST PROFILE INFOS:
-    private String lastname;
-    private String firstname;
-    email
-    github
-    linkedin
-   */
 }
