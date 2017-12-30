@@ -40,18 +40,9 @@ public class RoleController {
     return roleService.getAuthorizations(clientDTO, tokenDTO);
   }
 
+  // TODO toread below
   /*
   ASSIGN group endpoint (only authorized for user who has GROUP_ADMIN -> In Admin controller
   Get groups and roles endpoint
-   */
-
-
-  /*
-  #  - Should have for user
-#    -> GROUP_USERS
-#        -> Containing ROLE_USER
-#  - Should have for admin
-#    -> GROUP_ADMINS
-#        -> Containing ROLE_ADMIN, ROLE_USER
    */
 }

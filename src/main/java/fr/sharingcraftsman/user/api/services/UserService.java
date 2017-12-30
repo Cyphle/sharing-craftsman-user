@@ -121,7 +121,7 @@ public class UserService {
     }
 
     try {
-      log.info("Request for a change password token for:" + tokenDTO.getUsername());
+      log.info("Request for a update profile with token:" + tokenDTO.getUsername());
       Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
 
       if (verifyToken(clientDTO, tokenDTO, credentials))
@@ -146,5 +146,4 @@ public class UserService {
     Client client = new Client(clientDTO.getName(), "", false);
     return !authenticator.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO));
   }
-
 }
