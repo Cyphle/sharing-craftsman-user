@@ -8,6 +8,10 @@ import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
 import fr.sharingcraftsman.user.domain.authentication.ValidToken;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
+import fr.sharingcraftsman.user.domain.common.Email;
+import fr.sharingcraftsman.user.domain.common.Link;
+import fr.sharingcraftsman.user.domain.common.Name;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.company.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -172,6 +176,11 @@ public class UserServiceTest {
 
   @Test
   public void should_update_profile_with_new_information() throws Exception {
+    given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
+    KnownProfile profile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(profile);
+    given(humanResourceAdministrator.updateProfileOf(any(KnownProfile.class))).willReturn(profile);
+
     ProfileDTO profileDTO = new ProfileDTO("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
 
     ResponseEntity response = userService.updateProfile(clientDTO, tokenDTO, profileDTO);

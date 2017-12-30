@@ -1,5 +1,10 @@
 package fr.sharingcraftsman.user.api.models;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@EqualsAndHashCode
+@ToString
 public class ProfileDTO {
   private String firstname;
   private String lastname;

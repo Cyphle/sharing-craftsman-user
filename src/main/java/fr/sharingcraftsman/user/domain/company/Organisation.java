@@ -62,7 +62,7 @@ public class Organisation implements Company {
   @Override
   public KnownProfile updateProfile(Profile profile) throws CollaboratorException {
     Profile profileToUpdate = humanResourceAdministrator.findProfileOf(((KnownProfile) profile).getUsername());
-
+    
     if (!profileToUpdate.isKnown())
       throw new UnknownCollaboratorException("Unknown collaborator");
 

@@ -1,10 +1,12 @@
 package fr.sharingcraftsman.user.domain.common;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @EqualsAndHashCode
+@ToString
 public class Name {
-  private static String name;
+  private String name;
 
   public Name(String name) {
     this.name = name;
