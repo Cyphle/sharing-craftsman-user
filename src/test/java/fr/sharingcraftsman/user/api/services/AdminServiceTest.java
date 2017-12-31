@@ -2,6 +2,7 @@ package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
+import fr.sharingcraftsman.user.domain.admin.HRAdminManager;
 import fr.sharingcraftsman.user.domain.authentication.ValidToken;
 import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
 import org.junit.Before;
@@ -19,11 +20,12 @@ import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTok
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AdminServiceTest {
   @Mock
-  private HumanResourceAdministrator humanResourceAdministrator;
+  private HRAdminManager hrAdminManager;
   @Mock
   private DateService dateService;
 
@@ -62,7 +64,7 @@ public class AdminServiceTest {
     tokenDTO.setUsername("admin@toto.fr");
     tokenDTO.setAccessToken("aaa");
 
-    adminService = new AdminService(humanResourceAdministrator, dateService);
+    adminService = new AdminService(hrAdminManager);
   }
 
   @Test
@@ -71,6 +73,7 @@ public class AdminServiceTest {
 
     ResponseEntity users = adminService.getUsers(clientDTO, tokenDTO);
 
+    verify(hrAdminManager).getAllCollaborators();
     assertThat(users).isEqualTo(ResponseEntity.ok(Arrays.asList(user, adminUser)));
   }
 }

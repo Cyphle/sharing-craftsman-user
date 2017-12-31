@@ -75,11 +75,6 @@ public class Organisation implements Company {
     return (KnownProfile) humanResourceAdministrator.updateProfileOf((KnownProfile) profileToUpdate);
   }
 
-  @Override
-  public List<AdminCollaborator> getAllCollaborators() {
-    return humanResourceAdministrator.getAllCollaborators();
-  }
-
   private void checkChangePasswordKeyValidity(ChangePassword changePassword, Collaborator person) throws InvalidChangePasswordKeyException {
     if (!changePassword.getChangePasswordKey().equals(person.getChangePasswordKey()) || person.getChangePasswordKeyExpirationDate().isBefore(dateService.now()))
       throw new InvalidChangePasswordKeyException("Invalid token to change password");

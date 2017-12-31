@@ -22,6 +22,4 @@ public interface HumanResourceAdministrator {
   Profile findProfileOf(Username username);
 
   Profile updateProfileOf(KnownProfile profileToUpdate);
-
-  List<AdminCollaborator> getAllCollaborators();
 }

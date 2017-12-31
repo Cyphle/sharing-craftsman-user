@@ -191,11 +191,4 @@ public class OrganisationTest {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
     }
   }
-
-  @Test
-  public void should_get_all_collaborators() throws Exception {
-    organisation.getAllCollaborators();
-
-    verify(humanResourceAdministrator).getAllCollaborators();
-  }
 }

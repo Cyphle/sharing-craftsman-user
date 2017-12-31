@@ -8,7 +8,7 @@ public class AdminUserDTO {
   private String website;
   private String githube;
   private String linkedin;
-  private AuthorizationsDTO authorization;
+  private AuthorizationsDTO authorizations;
   private boolean isActive;
   private long creationDate;
   private long lastUpdateDate;
@@ -16,7 +16,7 @@ public class AdminUserDTO {
   public AdminUserDTO() {
   }
 
-  public AdminUserDTO(String username, String firstname, String lastname, String email, String website, String githube, String linkedin, AuthorizationsDTO authorization, boolean isActive, long creationDate, long lastUpdateDate) {
+  public AdminUserDTO(String username, String firstname, String lastname, String email, String website, String githube, String linkedin, AuthorizationsDTO authorizations, boolean isActive, long creationDate, long lastUpdateDate) {
     this.username = username;
     this.firstname = firstname;
     this.lastname = lastname;
@@ -24,7 +24,7 @@ public class AdminUserDTO {
     this.website = website;
     this.githube = githube;
     this.linkedin = linkedin;
-    this.authorization = authorization;
+    this.authorizations = authorizations;
     this.isActive = isActive;
     this.creationDate = creationDate;
     this.lastUpdateDate = lastUpdateDate;
@@ -86,12 +86,12 @@ public class AdminUserDTO {
     this.linkedin = linkedin;
   }
 
-  public AuthorizationsDTO getAuthorization() {
-    return authorization;
+  public AuthorizationsDTO getAuthorizations() {
+    return authorizations;
   }
 
-  public void setAuthorization(AuthorizationsDTO authorization) {
-    this.authorization = authorization;
+  public void setAuthorizations(AuthorizationsDTO authorizations) {
+    this.authorizations = authorizations;
   }
 
   public boolean isActive() {
