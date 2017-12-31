@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.pivots;
 
+import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
@@ -10,6 +11,9 @@ import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
@@ -29,6 +33,26 @@ public class UserPivot {
             .withChangePasswordKey(changePasswordKey)
             .withChangePasswordKeyExpirationDate(changePasswordKeyExpirationDate)
             .build();
+  }
+
+  public static List<AdminCollaborator> fromInfraToAdminDomain(List<User> users) {
+    return users.stream()
+            .map(user -> AdminCollaborator.from(
+                    user.getUsername(),
+                    user.getPassword(),
+                    user.getFirstname(),
+                    user.getLastname(),
+                    user.getEmail(),
+                    user.getWebsite(),
+                    user.getGithub(),
+                    user.getLinkedin(),
+                    user.getChangePasswordKey(),
+                    user.getChangePasswordExpirationDate(),
+                    user.isActive(),
+                    user.getCreationDate(),
+                    user.getLastUpdateDate()
+            ))
+            .collect(Collectors.toList());
   }
 
   public static KnownProfile fromInfraToDomainProfile(User user) throws UsernameException {

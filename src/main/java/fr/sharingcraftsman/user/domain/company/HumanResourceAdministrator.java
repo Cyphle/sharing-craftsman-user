@@ -1,7 +1,10 @@
 package fr.sharingcraftsman.user.domain.company;
 
+import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.Username;
+
+import java.util.List;
 
 public interface HumanResourceAdministrator {
   void createNewCollaborator(Collaborator collaborator);
@@ -19,4 +22,6 @@ public interface HumanResourceAdministrator {
   Profile findProfileOf(Username username);
 
   Profile updateProfileOf(KnownProfile profileToUpdate);
+
+  List<AdminCollaborator> getAllCollaborators();
 }

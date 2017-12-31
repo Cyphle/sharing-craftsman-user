@@ -29,11 +29,20 @@ public class OrganisationTest {
   HumanResourceAdministrator humanResourceAdministrator;
   @Mock
   DateService dateService;
+
+  private Credentials credentials;
   private Organisation organisation;
 
   @Before
   public void setUp() throws Exception {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
+
+    credentials = Credentials.buildEncryptedCredentials(
+            usernameBuilder.from("john@doe.fr"),
+            passwordBuilder.from("password"),
+            false
+    );
+
     organisation = new Organisation(humanResourceAdministrator, dateService);
   }
 
@@ -80,11 +89,6 @@ public class OrganisationTest {
 
   @Test
   public void should_change_password_with_new_password() throws Exception {
-    Credentials credentials = Credentials.buildEncryptedCredentials(
-            usernameBuilder.from("john@doe.fr"),
-            passwordBuilder.from("password"),
-            false
-    );
     Collaborator collaborator = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
@@ -108,11 +112,6 @@ public class OrganisationTest {
   @Test
   public void should_throw_unknown_collaborator_exception_if_collaborator_is_not_known() throws Exception {
     try {
-      Credentials credentials = Credentials.buildEncryptedCredentials(
-              usernameBuilder.from("john@doe.fr"),
-              passwordBuilder.from("password"),
-              false
-      );
       given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(new UnknownCollaborator());
       ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
@@ -126,13 +125,7 @@ public class OrganisationTest {
   @Test
   public void should_throw_invalid_change_password_key_exception_if_key_is_not_valid() throws Exception {
     try {
-      Credentials credentials = Credentials.buildEncryptedCredentials(
-              usernameBuilder.from("john@doe.fr"),
-              passwordBuilder.from("password"),
-              false
-      );
-      Collaborator collaborator = Collaborator.from(credentials);
-      given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(collaborator);
+      given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(Collaborator.from(credentials));
       ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
       organisation.changePassword(credentials, changePassword);
@@ -145,11 +138,6 @@ public class OrganisationTest {
   @Test
   public void should_throw_invalid_change_password_key_exception_if_key_is_expired() throws Exception {
     try {
-      Credentials credentials = Credentials.buildEncryptedCredentials(
-              usernameBuilder.from("john@doe.fr"),
-              passwordBuilder.from("password"),
-              false
-      );
       Collaborator collaborator = (new CollaboratorBuilder())
               .withUsername(usernameBuilder.from("john@doe.fr"))
               .withPassword(passwordBuilder.from("hXYHz1OSnuod1SuvLcgD4A=="))
@@ -202,5 +190,12 @@ public class OrganisationTest {
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
     }
+  }
+
+  @Test
+  public void should_get_all_collaborators() throws Exception {
+    organisation.getAllCollaborators();
+
+    verify(humanResourceAdministrator).getAllCollaborators();
   }
 }

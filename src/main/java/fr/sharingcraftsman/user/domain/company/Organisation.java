@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.domain.company;
 
 import fr.sharingcraftsman.user.common.DateService;
+import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
@@ -12,7 +13,7 @@ import fr.sharingcraftsman.user.domain.utils.CrypterFactory;
 import java.util.List;
 
 public class Organisation implements Company {
-  public static Crypter crypter = CrypterFactory.getCrypter();
+  private static Crypter crypter = CrypterFactory.getCrypter();
   private HumanResourceAdministrator humanResourceAdministrator;
   private DateService dateService;
 
@@ -72,6 +73,11 @@ public class Organisation implements Company {
 
     ((KnownProfile) profileToUpdate).updateFrom((KnownProfile) profile);
     return (KnownProfile) humanResourceAdministrator.updateProfileOf((KnownProfile) profileToUpdate);
+  }
+
+  @Override
+  public List<AdminCollaborator> getAllCollaborators() {
+    return humanResourceAdministrator.getAllCollaborators();
   }
 
   private void checkChangePasswordKeyValidity(ChangePassword changePassword, Collaborator person) throws InvalidChangePasswordKeyException {

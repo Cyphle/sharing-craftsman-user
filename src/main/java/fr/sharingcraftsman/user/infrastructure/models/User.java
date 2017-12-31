@@ -57,6 +57,11 @@ public class User {
     this.linkedin = linkedin;
   }
 
+  public User(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin) {
+    this(username, firstname, lastname, email, website, github, linkedin);
+    this.password = password;
+  }
+
   public long getId() {
     return id;
   }

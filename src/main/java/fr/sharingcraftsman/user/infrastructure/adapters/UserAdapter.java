@@ -1,6 +1,8 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import com.google.common.collect.Lists;
 import fr.sharingcraftsman.user.common.DateService;
+import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.company.*;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserAdapter implements HumanResourceAdministrator {
@@ -114,5 +117,11 @@ public class UserAdapter implements HumanResourceAdministrator {
     } catch (UsernameException e) {
       return new UnknownProfile();
     }
+  }
+
+  @Override
+  public List<AdminCollaborator> getAllCollaborators() {
+    List<User> users = Lists.newArrayList(userRepository.findAll());
+    return UserPivot.fromInfraToAdminDomain(users);
   }
 }
