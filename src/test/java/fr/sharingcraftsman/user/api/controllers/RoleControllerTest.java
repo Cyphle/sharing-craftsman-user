@@ -1,7 +1,6 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.acceptance.dsl.AuthorizationDsl;
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.services.RoleService;
 import fr.sharingcraftsman.user.utils.Mapper;
@@ -64,6 +63,8 @@ public class RoleControllerTest {
             .andReturn();
 
     AuthorizationsDTO authorizationsDTO = Mapper.fromJsonStringToObject(mvcResult.getResponse().getContentAsString(), AuthorizationsDTO.class);
-    assertThat(authorizationsDTO.getGroups().get(0).getName()).isEqualTo("USERS");
+    GroupDTO expectedGroup = new GroupDTO("USERS");
+    expectedGroup.addRole(new RoleDTO("ROLE_USER"));
+    assertThat(authorizationsDTO.getGroups()).contains(expectedGroup);
   }
 }

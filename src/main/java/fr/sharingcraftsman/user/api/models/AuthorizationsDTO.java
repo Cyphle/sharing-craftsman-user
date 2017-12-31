@@ -4,22 +4,24 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode
 @ToString
 public class AuthorizationsDTO {
-  private List<GroupDTO> groups;
+  private Set<GroupDTO> groups;
 
   public AuthorizationsDTO() {
-    this.groups = new ArrayList<>();
+    this.groups = new HashSet<>();
   }
 
-  public List<GroupDTO> getGroups() {
+  public Set<GroupDTO> getGroups() {
     return groups;
   }
 
-  public void setGroups(List<GroupDTO> groups) {
+  public void setGroups(Set<GroupDTO> groups) {
     this.groups = groups;
   }
 

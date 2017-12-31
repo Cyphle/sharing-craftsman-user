@@ -4,6 +4,7 @@ import fr.sharingcraftsman.user.domain.common.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class AdminCollaborator {
@@ -37,11 +38,68 @@ public class AdminCollaborator {
     this.lastUpdateDate = fromDateToLocalDatetime(lastUpdateDate);
   }
 
+  public String getUsername() {
+    return username.getUsername();
+  }
+
+  public String getPassword() {
+    return password.getPassword();
+  }
+
+  public String getFirstname() {
+    return firstname.getName();
+  }
+
+  public String getLastname() {
+    return lastname.getName();
+  }
+
+  public String getEmail() {
+    return email.getEmail();
+  }
+
+  public String getWebsite() {
+    return website.getLink();
+  }
+
+  public String getGithub() {
+    return github.getLink();
+  }
+
+  public String getLinkedin() {
+    return linkedin.getLink();
+  }
+
+  public String getChangePasswordKey() {
+    return changePasswordKey;
+  }
+
+  public long getChangePasswordKeyExpirationDate() {
+    return changePasswordKeyExpirationDate != null ? fromLocalDatetimeToLong(changePasswordKeyExpirationDate) : 0;
+  }
+
+  public boolean isActive() {
+    return isActive;
+  }
+
+  public long getCreationDate() {
+    return fromLocalDatetimeToLong(creationDate);
+  }
+
+  public long getLastUpdateDate() {
+    return fromLocalDatetimeToLong(lastUpdateDate);
+  }
+
   public static AdminCollaborator from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, Date changePasswordExpirationDate, boolean active, Date creationDate, Date lastUpdateDate) {
     return new AdminCollaborator(username, password, firstname, lastname, email, website, github, linkedin, changePasswordKey, changePasswordExpirationDate, active, creationDate, lastUpdateDate);
   }
 
-  private LocalDateTime fromDateToLocalDatetime(Date changePasswordExpirationDate) {
-    return LocalDateTime.ofInstant(changePasswordExpirationDate.toInstant(), ZoneId.systemDefault());
+  private long fromLocalDatetimeToLong(LocalDateTime localDateTime) {
+    ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
+    return zdt.toInstant().toEpochMilli();
+  }
+
+  private LocalDateTime fromDateToLocalDatetime(Date date) {
+    return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
   }
 }

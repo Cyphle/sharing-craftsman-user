@@ -40,7 +40,7 @@ public class AdminController {
     return adminService.getUsers(clientDTO, tokenDTO);
   }
   /*
-  - Get list of users with profiles
+  - Get list of users with profiles -> OK
   - Add user
   - Remove user
   - Deactivate user
