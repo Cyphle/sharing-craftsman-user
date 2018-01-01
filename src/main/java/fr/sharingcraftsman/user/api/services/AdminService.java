@@ -14,6 +14,8 @@ import fr.sharingcraftsman.user.domain.authorization.*;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.common.UsernameException;
+import fr.sharingcraftsman.user.domain.company.CollaboratorException;
 import fr.sharingcraftsman.user.domain.ports.admin.CompanyAdmin;
 import fr.sharingcraftsman.user.domain.ports.authorization.Authorizer;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
@@ -82,6 +84,23 @@ public class AdminService {
     return ResponseEntity.ok(users);
   }
 
+  public ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    try {
+      company.deleteCollaborator(usernameBuilder.from(usernameToDelete));
+      return ResponseEntity.ok().build();
+    } catch (UsernameException | CollaboratorException e) {
+      log.warn("Error while deleting user " + usernameToDelete + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
       log.warn("User " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
@@ -114,9 +133,5 @@ public class AdminService {
       return HttpStatus.BAD_REQUEST;
     }
     return HttpStatus.OK;
-  }
-
-  public ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
-    throw new UnsupportedOperationException();
   }
 }

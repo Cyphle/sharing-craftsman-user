@@ -1,6 +1,8 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateService;
+import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import org.junit.Before;
@@ -15,7 +17,11 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 
+import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
+import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,5 +57,22 @@ public class HRAdminAdapterTest {
     hrAdminAdapter.getAllCollaborators();
 
     verify(userRepository).findAll();
+  }
+
+  @Test
+  public void should_delete_user() throws Exception {
+    hrAdminAdapter.deleteCollaborator(usernameBuilder.from("hello@world.fr"));
+
+    verify(userRepository).delete(any(User.class));
+  }
+
+  @Test
+  public void should_get_user_by_username() throws Exception {
+    given(userRepository.findByUsername("john@doe.fr")).willReturn(new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+
+    Person collaborator = hrAdminAdapter.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"));
+
+    Collaborator expected = Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
+    assertThat((Collaborator) collaborator).isEqualTo(expected);
   }
 }

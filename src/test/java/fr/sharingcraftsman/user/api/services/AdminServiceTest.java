@@ -11,10 +11,12 @@ import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
+import fr.sharingcraftsman.user.domain.common.Username;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -122,5 +124,17 @@ public class AdminServiceTest {
     ResponseEntity response = adminService.getUsers(clientDTO, tokenDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+  }
+
+  @Test
+  public void should_delete_user() throws Exception {
+    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    Mockito.doNothing().when(hrAdminManager).deleteCollaborator(any(Username.class));
+
+    ResponseEntity response = adminService.deleteUser(clientDTO, tokenDTO, "hello@world.fr");
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    verify(hrAdminManager).deleteCollaborator(usernameBuilder.from("hello@world.fr"));
   }
 }
