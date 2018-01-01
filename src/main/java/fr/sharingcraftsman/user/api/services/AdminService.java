@@ -115,4 +115,8 @@ public class AdminService {
     }
     return HttpStatus.OK;
   }
+
+  public ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
+    throw new UnsupportedOperationException();
+  }
 }

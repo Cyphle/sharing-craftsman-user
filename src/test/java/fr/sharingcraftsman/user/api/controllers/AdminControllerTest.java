@@ -21,6 +21,7 @@ import java.util.Collections;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,5 +62,17 @@ public class AdminControllerTest {
             .header("access-token", "aaa"))
             .andExpect(status().isOk())
             .andReturn();
+  }
+
+  @Test
+  public void should_delete_user() throws Exception {
+    given(adminService.deleteUser(any(ClientDTO.class), any(TokenDTO.class), any(String.class))).willReturn(ResponseEntity.ok().build());
+
+    this.mvc.perform(delete("/admin/users/hello@world.fr")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa"))
+            .andExpect(status().isOk());
   }
 }
