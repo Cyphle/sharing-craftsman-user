@@ -146,4 +146,8 @@ public class AdminService {
     }
     return HttpStatus.OK;
   }
+
+  public ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
+    throw new UnsupportedOperationException();
+  }
 }

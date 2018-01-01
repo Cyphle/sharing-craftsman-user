@@ -23,9 +23,7 @@ import java.util.Collections;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -87,6 +85,20 @@ public class AdminControllerTest {
     given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(AdminUserDTO.class))).willReturn(ResponseEntity.ok(userDTO));
 
     this.mvc.perform(put("/admin/users")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(userDTO)))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void should_add_user() throws Exception {
+    given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(AdminUserDTO.class))).willReturn(ResponseEntity.ok(userDTO));
+
+    this.mvc.perform(post("/admin/users")
             .header("client", "client")
             .header("secret", "clientsecret")
             .header("username", "john@doe.fr")

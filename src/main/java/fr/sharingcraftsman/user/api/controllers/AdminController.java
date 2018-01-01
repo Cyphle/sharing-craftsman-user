@@ -55,7 +55,7 @@ public class AdminController {
     return adminService.deleteUser(clientDTO, tokenDTO, usernameToDelete);
   }
 
-  @ApiOperation(value = "Endpoint to update user of user", response = ProfileDTO.class)
+  @ApiOperation(value = "Endpoint to update informations of user", response = ProfileDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -70,11 +70,27 @@ public class AdminController {
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return adminService.updateUser(clientDTO, tokenDTO, user);
   }
+
+  @ApiOperation(value = "Endpoint to add user", response = ProfileDTO.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.POST, value = "/users")
+  public ResponseEntity addUser(@RequestHeader("client") String client,
+                                   @RequestHeader("secret") String secret,
+                                   @RequestHeader("username") String username,
+                                   @RequestHeader("access-token") String accessToken,
+                                   @RequestBody AdminUserDTO user) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return adminService.addUser(clientDTO, tokenDTO, user);
+  }
   /*
   - Get list of users with profiles -> OK
   - Remove user -> OK
-  - Deactivate user + Modify user (send all user except authorizations)
-  - Modify user ?
+  - Deactivate user + Modify user (send all user except authorizations) -> OK
+  - Modify user ? -> OK
   - Add user
   - Get list of roles, groups
   - Add/remove roles groups (impact on user groups)
