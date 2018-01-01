@@ -2,6 +2,9 @@
 #
 #  Initialize application by adding roles and group (use autowired rolerepo
 #  Add admin (use userrepo and grouprepo)
+#
+#  - Get all collaborators
+#  - Delete one
 #  Background: Setup application
 #    Given The application is setup
 #    And A client <sharingcraftsman> is registered

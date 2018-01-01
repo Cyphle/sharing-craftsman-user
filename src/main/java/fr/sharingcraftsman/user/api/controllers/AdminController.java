@@ -54,7 +54,7 @@ public class AdminController {
   }
   /*
   - Get list of users with profiles -> OK
-  - Remove user
+  - Remove user -> OK
   - Deactivate user + Modify user (send all user except authorizations)
   - Modify user ?
   - Add user
