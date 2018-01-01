@@ -3,12 +3,14 @@ package fr.sharingcraftsman.user.api.controllers;
 import fr.sharingcraftsman.user.UserApplication;
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.services.AdminService;
+import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -23,6 +25,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -39,21 +42,24 @@ public class AdminControllerTest {
   @MockBean
   private AdminService adminService;
 
+  private AdminUserDTO userDTO;
+
   @Before
   public void setup() {
     this.mvc = MockMvcBuilders
             .webAppContextSetup(context)
             .build();
-  }
 
-  @Test
-  public void should_get_list_of_users_with_their_profile() throws Exception {
     GroupDTO group = new GroupDTO("USERS");
     group.addRole(new RoleDTO("ROLE_USER"));
     AuthorizationsDTO authorization = new AuthorizationsDTO();
     authorization.addGroup(group);
-    AdminUserDTO user = new AdminUserDTO("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
-    given(adminService.getUsers(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(Collections.singletonList(user)));
+    userDTO = new AdminUserDTO("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
+  }
+
+  @Test
+  public void should_get_list_of_users_with_their_profile() throws Exception {
+    given(adminService.getUsers(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(Collections.singletonList(userDTO)));
 
     this.mvc.perform(get("/admin/users")
             .header("client", "client")
@@ -73,6 +79,20 @@ public class AdminControllerTest {
             .header("secret", "clientsecret")
             .header("username", "john@doe.fr")
             .header("access-token", "aaa"))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void should_update_a_user() throws Exception {
+    given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(AdminUserDTO.class))).willReturn(ResponseEntity.ok(userDTO));
+
+    this.mvc.perform(put("/admin/users")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(userDTO)))
             .andExpect(status().isOk());
   }
 }

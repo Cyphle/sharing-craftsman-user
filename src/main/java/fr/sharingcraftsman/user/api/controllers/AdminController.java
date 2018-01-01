@@ -1,6 +1,8 @@
 package fr.sharingcraftsman.user.api.controllers;
 
+import fr.sharingcraftsman.user.api.models.AdminUserDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.ProfileDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.api.services.AdminService;
 import io.swagger.annotations.Api;
@@ -51,6 +53,22 @@ public class AdminController {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return adminService.deleteUser(clientDTO, tokenDTO, usernameToDelete);
+  }
+
+  @ApiOperation(value = "Endpoint to update user of user", response = ProfileDTO.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.PUT, value = "/users")
+  public ResponseEntity updateUser(@RequestHeader("client") String client,
+                                      @RequestHeader("secret") String secret,
+                                      @RequestHeader("username") String username,
+                                      @RequestHeader("access-token") String accessToken,
+                                      @RequestBody AdminUserDTO user) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return adminService.updateUser(clientDTO, tokenDTO, user);
   }
   /*
   - Get list of users with profiles -> OK

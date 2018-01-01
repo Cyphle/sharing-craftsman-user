@@ -1,6 +1,5 @@
 package fr.sharingcraftsman.user.api.models;
 
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @ToString

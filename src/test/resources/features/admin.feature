@@ -5,6 +5,15 @@
 #
 #  - Get all collaborators
 #  - Delete one
+#- Deactivate user + Modify user (send all user except authorizations)
+#- Modify user ?
+#- Add user
+#- Get list of roles, groups
+#- Add/remove roles groups (impact on user groups)
+#- Get list of authorizations
+#- Add/remove authorizations
+#- Get list of tokens
+#- Remove tokens
 #  Background: Setup application
 #    Given The application is setup
 #    And A client <sharingcraftsman> is registered
