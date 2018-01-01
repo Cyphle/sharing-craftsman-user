@@ -108,9 +108,34 @@ public class AdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    AdminCollaborator collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
-    company.updateCollaborator(collaborator);
-    return ResponseEntity.ok().build();
+    try {
+      AdminCollaborator collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+      company.updateCollaborator(collaborator);
+      return ResponseEntity.ok().build();
+    } catch (CollaboratorException e) {
+      log.warn("Error while updating user " + user.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
+  public ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    try {
+      AdminCollaborator collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+      company.createCollaborator(collaborator);
+      return ResponseEntity.ok().build();
+    } catch (CollaboratorException e) {
+      log.warn("Error while creating user " + user.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
   }
 
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
@@ -145,9 +170,5 @@ public class AdminService {
       return HttpStatus.BAD_REQUEST;
     }
     return HttpStatus.OK;
-  }
-
-  public ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
-    throw new UnsupportedOperationException();
   }
 }

@@ -3,6 +3,7 @@ package fr.sharingcraftsman.user.domain.admin;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.company.CollaboratorException;
 import fr.sharingcraftsman.user.domain.company.UnknownCollaborator;
+import fr.sharingcraftsman.user.infrastructure.models.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,5 +68,17 @@ public class OrganisationAdminTest {
     AdminCollaborator expectedCollaborator = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     verify(hrAdminManager).findAdminCollaboratorFromUsername(expectedCollaborator.getUsername());
     verify(hrAdminManager).updateCollaborator(expectedCollaborator);
+  }
+
+  @Test
+  public void should_create_collaborator() throws Exception {
+    given(hrAdminManager.findAdminCollaboratorFromUsername(any(Username.class))).willReturn(new UnknownAdminCollaborator());
+
+    AdminCollaborator collaboratorToCreate = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    organisation.createCollaborator(collaboratorToCreate);
+
+    AdminCollaborator expectedCollaborator = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    verify(hrAdminManager).findAdminCollaboratorFromUsername(expectedCollaborator.getUsername());
+    verify(hrAdminManager).createCollaborator(expectedCollaborator);
   }
 }

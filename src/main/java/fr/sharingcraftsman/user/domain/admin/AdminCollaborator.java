@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 @ToString
-public class AdminCollaborator {
+public class AdminCollaborator extends AdminPerson {
   private Username username;
   private Password password;
   private Name firstname;
@@ -121,6 +121,11 @@ public class AdminCollaborator {
     github = collaborator.github;
     linkedin = collaborator.linkedin;
     isActive = collaborator.isActive;
+  }
+
+  @Override
+  public boolean isKnown() {
+    return true;
   }
 
   public static AdminCollaborator from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, Date changePasswordExpirationDate, boolean active, Date creationDate, Date lastUpdateDate) {

@@ -14,5 +14,7 @@ public interface HRAdminManager {
 
   void updateCollaborator(AdminCollaborator collaborator);
 
-  AdminCollaborator findAdminCollaboratorFromUsername(Username username);
+  AdminPerson findAdminCollaboratorFromUsername(Username username);
+
+  void createCollaborator(AdminCollaborator collaborator);
 }

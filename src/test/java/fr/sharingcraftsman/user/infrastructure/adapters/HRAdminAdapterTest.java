@@ -2,6 +2,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
+import fr.sharingcraftsman.user.domain.admin.AdminPerson;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.infrastructure.models.User;
@@ -87,7 +88,7 @@ public class HRAdminAdapterTest {
     user.setChangePasswordExpirationDate(null);
     given(userRepository.findByUsername("admin@toto.fr")).willReturn(user);
 
-    AdminCollaborator collaborator = hrAdminAdapter.findAdminCollaboratorFromUsername(usernameBuilder.from("admin@toto.fr"));
+    AdminPerson collaborator = hrAdminAdapter.findAdminCollaboratorFromUsername(usernameBuilder.from("admin@toto.fr"));
 
     AdminCollaborator expectedCollaborator = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     assertThat(collaborator).isEqualTo(expectedCollaborator);
@@ -108,5 +109,14 @@ public class HRAdminAdapterTest {
     updatedUser.setChangePasswordKey("");
     updatedUser.setChangePasswordExpirationDate(null);
     verify(userRepository).save(updatedUser);
+  }
+
+  @Test
+  public void should_create_user() throws Exception {
+    AdminCollaborator collaborator = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    hrAdminAdapter.createCollaborator(collaborator);
+
+    User newUser = new User("admin@toto.fr", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    verify(userRepository).save(newUser);
   }
 }

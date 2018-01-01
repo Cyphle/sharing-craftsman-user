@@ -152,4 +152,12 @@ public class AdminServiceTest {
     AdminCollaborator updatedUser = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     verify(hrAdminManager).updateCollaborator(updatedUser);
   }
+
+  @Test
+  public void should_create_a_new_user() throws Exception {
+    adminService.addUser(clientDTO, tokenDTO, user);
+
+    AdminCollaborator newCollaborator = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    verify(hrAdminManager).createCollaborator(newCollaborator);
+  }
 }

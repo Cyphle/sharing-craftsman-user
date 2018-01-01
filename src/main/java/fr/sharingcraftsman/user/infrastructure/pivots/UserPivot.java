@@ -35,6 +35,18 @@ public class UserPivot {
             .build();
   }
 
+  public static User fromDomainToInfra(AdminCollaborator collaborator) {
+    return new User(
+            collaborator.getUsernameContent(),
+            collaborator.getFirstname(),
+            collaborator.getLastname(),
+            collaborator.getEmail(),
+            collaborator.getWebsite(),
+            collaborator.getGithub(),
+            collaborator.getLinkedin()
+    );
+  }
+
   public static List<AdminCollaborator> fromInfraToAdminDomain(List<User> users) {
     return users.stream()
             .map(user -> AdminCollaborator.from(
