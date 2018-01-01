@@ -1,8 +1,10 @@
 package fr.sharingcraftsman.user.domain.common;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @EqualsAndHashCode
+@ToString
 public class Username {
   public static UsernameBuilder usernameBuilder = new UsernameBuilder();
 

@@ -4,6 +4,7 @@ import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.admin.HRAdminManager;
+import fr.sharingcraftsman.user.domain.admin.UnknownAdminCollaborator;
 import fr.sharingcraftsman.user.domain.authentication.ValidToken;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.GroupAdministrator;
@@ -12,6 +13,8 @@ import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.company.Collaborator;
+import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,12 +26,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
+import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -131,6 +132,12 @@ public class AdminServiceTest {
     given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
     given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
     Mockito.doNothing().when(hrAdminManager).deleteCollaborator(any(Username.class));
+    given(hrAdminManager.findCollaboratorFromUsername(usernameBuilder.from("hello@world.fr"))).willReturn(
+            new CollaboratorBuilder()
+                    .withUsername(usernameBuilder.from("hello@world.fr"))
+                    .withPassword(passwordBuilder.from("passwrdo"))
+                    .build()
+    );
 
     ResponseEntity response = adminService.deleteUser(clientDTO, tokenDTO, "hello@world.fr");
 
@@ -140,24 +147,56 @@ public class AdminServiceTest {
 
   @Test
   public void should_update_user() throws Exception {
+    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(hrAdminManager.findAdminCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(
+            AdminCollaborator.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date())
+    );
+
     GroupDTO group = new GroupDTO("USERS");
     group.addRole(new RoleDTO("ROLE_USER"));
     AuthorizationsDTO authorization = new AuthorizationsDTO();
     authorization.addGroup(group);
     AdminUserDTO userToUpdate = new AdminUserDTO("john@doe.fr", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
     userToUpdate.setPassword("password");
-
     adminService.updateUser(clientDTO, tokenDTO, userToUpdate);
 
-    AdminCollaborator updatedUser = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    AdminCollaborator updatedUser = AdminCollaborator.from("john@doe.fr", "password", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
     verify(hrAdminManager).updateCollaborator(updatedUser);
   }
 
   @Test
   public void should_create_a_new_user() throws Exception {
+    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(hrAdminManager.findAdminCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownAdminCollaborator());
+
     adminService.addUser(clientDTO, tokenDTO, user);
 
-    AdminCollaborator newCollaborator = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    AdminCollaborator newCollaborator = AdminCollaborator.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
     verify(hrAdminManager).createCollaborator(newCollaborator);
+  }
+
+  @Test
+  public void should_get_groups_and_roles() throws Exception {
+    Group users = new Group("USERS");
+    users.addRole(new Role("ROLE_USER"));
+    Group admins = new Group("ADMINS");
+    admins.addRoles(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    Set<Group> groups = new HashSet<>();
+    groups.add(users);
+    groups.add(admins);
+    given(roleAdministrator.getAllGroups()).willReturn(groups);
+
+    ResponseEntity response = adminService.getGroups(clientDTO, tokenDTO);
+
+    GroupDTO groupUser = new GroupDTO("USERS");
+    groupUser.addRoles(Collections.singletonList(new RoleDTO("ROLE_USER")));
+    GroupDTO groupAdmin = new GroupDTO("ADMINS");
+    groupAdmin.addRoles(Arrays.asList(new RoleDTO("ROLE_USER"), new RoleDTO("ROLE_ADMIN")));
+    Set<GroupDTO> groupsDTO = new HashSet<>();
+    groupsDTO.add(groupUser);
+    groupsDTO.add(groupAdmin);
+    assertThat(response.getBody()).isEqualTo(groupsDTO);
   }
 }

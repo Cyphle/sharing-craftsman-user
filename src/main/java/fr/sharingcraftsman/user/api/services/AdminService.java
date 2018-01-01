@@ -139,6 +139,11 @@ public class AdminService {
   }
 
   public ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
     throw new UnsupportedOperationException();
   }
 
