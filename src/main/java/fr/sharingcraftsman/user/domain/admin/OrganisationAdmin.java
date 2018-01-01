@@ -29,4 +29,11 @@ public class OrganisationAdmin implements CompanyAdmin {
 
     hrAdminManager.deleteCollaborator(username);
   }
+
+  @Override
+  public void updateCollaborator(AdminCollaborator collaborator) {
+    AdminCollaborator collaboratorToUpdate = hrAdminManager.findAdminCollaboratorFromUsername(collaborator.getUsername());
+    collaboratorToUpdate.updateFields(collaborator);
+    hrAdminManager.updateCollaborator(collaboratorToUpdate);
+  }
 }

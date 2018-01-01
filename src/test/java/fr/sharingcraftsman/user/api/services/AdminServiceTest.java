@@ -137,4 +137,19 @@ public class AdminServiceTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     verify(hrAdminManager).deleteCollaborator(usernameBuilder.from("hello@world.fr"));
   }
+
+  @Test
+  public void should_update_user() throws Exception {
+    GroupDTO group = new GroupDTO("USERS");
+    group.addRole(new RoleDTO("ROLE_USER"));
+    AuthorizationsDTO authorization = new AuthorizationsDTO();
+    authorization.addGroup(group);
+    AdminUserDTO userToUpdate = new AdminUserDTO("john@doe.fr", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
+    userToUpdate.setPassword("password");
+
+    adminService.updateUser(clientDTO, tokenDTO, userToUpdate);
+
+    AdminCollaborator updatedUser = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    verify(hrAdminManager).updateCollaborator(updatedUser);
+  }
 }

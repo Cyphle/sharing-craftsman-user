@@ -52,4 +52,17 @@ public class HRAdminAdapter implements HRAdminManager {
       return new UnknownCollaborator();
     }
   }
+
+  @Override
+  public void updateCollaborator(AdminCollaborator collaborator) {
+    User foundUser = userRepository.findByUsername(collaborator.getUsernameContent());
+    foundUser.updateFromAdminCollaborator(collaborator);
+    userRepository.save(foundUser);
+  }
+
+  @Override
+  public AdminCollaborator findAdminCollaboratorFromUsername(Username username) {
+    User foundUser = userRepository.findByUsername(username.getUsername());
+    return UserPivot.fromInfraToAdminDomain(foundUser);
+  }
 }

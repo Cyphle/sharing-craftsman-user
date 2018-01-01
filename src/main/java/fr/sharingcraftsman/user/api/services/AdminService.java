@@ -3,6 +3,7 @@ package fr.sharingcraftsman.user.api.services;
 import fr.sharingcraftsman.user.api.models.AdminUserDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.api.pivots.AdminCollaboratorPivot;
 import fr.sharingcraftsman.user.api.pivots.AuthorizationPivot;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
@@ -60,7 +61,7 @@ public class AdminService {
     List<AdminCollaborator> collaborators = company.getAllCollaborators();
     List<AdminUserDTO> users = collaborators.stream()
             .map(collaborator -> new AdminUserDTO(
-                    collaborator.getUsername(),
+                    collaborator.getUsernameContent(),
                     collaborator.getPassword(),
                     collaborator.getFirstname(),
                     collaborator.getLastname(),
@@ -101,6 +102,17 @@ public class AdminService {
     }
   }
 
+  public ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    AdminCollaborator collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+    company.updateCollaborator(collaborator);
+    return ResponseEntity.ok().build();
+  }
+
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
       log.warn("User " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
@@ -133,9 +145,5 @@ public class AdminService {
       return HttpStatus.BAD_REQUEST;
     }
     return HttpStatus.OK;
-  }
-
-  public ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
-    throw new UnsupportedOperationException();
   }
 }

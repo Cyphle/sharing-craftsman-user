@@ -55,6 +55,23 @@ public class UserPivot {
             .collect(Collectors.toList());
   }
 
+  public static AdminCollaborator fromInfraToAdminDomain(User user) {
+    return AdminCollaborator.from(
+            user.getUsername(),
+            user.getPassword(),
+            user.getFirstname(),
+            user.getLastname(),
+            user.getEmail(),
+            user.getWebsite(),
+            user.getGithub(),
+            user.getLinkedin(),
+            user.getChangePasswordKey(),
+            user.getChangePasswordExpirationDate(),
+            user.isActive(),
+            user.getCreationDate(),
+            user.getLastUpdateDate());
+  }
+
   public static KnownProfile fromInfraToDomainProfile(User user) throws UsernameException {
     return new ProfileBuilder()
             .withUsername(usernameBuilder.from(user.getUsername()))

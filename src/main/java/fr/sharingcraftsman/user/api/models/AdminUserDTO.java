@@ -2,6 +2,8 @@ package fr.sharingcraftsman.user.api.models;
 
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @ToString
 public class AdminUserDTO {
   private String username;
@@ -58,6 +60,10 @@ public class AdminUserDTO {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public String getPassword() {
+    return password;
   }
 
   public void setPassword(String password) {
@@ -118,6 +124,14 @@ public class AdminUserDTO {
 
   public void setAuthorizations(AuthorizationsDTO authorizations) {
     this.authorizations = authorizations;
+  }
+
+  public String getChangePasswordKey() {
+    return changePasswordKey;
+  }
+
+  public long getChangePasswordKeyExpirationDate() {
+    return changePasswordKeyExpirationDate;
   }
 
   public boolean isActive() {

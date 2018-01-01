@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateService;
+import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.infrastructure.models.User;
@@ -74,5 +75,38 @@ public class HRAdminAdapterTest {
 
     Collaborator expected = Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
     assertThat((Collaborator) collaborator).isEqualTo(expected);
+  }
+
+  @Test
+  public void should_get_user_by_username_in_admin_collaborator_object() throws Exception {
+    User user = new User("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    user.setActive(true);
+    user.setCreationDate(new Date());
+    user.setLastUpdateDate(new Date());
+    user.setChangePasswordKey("");
+    user.setChangePasswordExpirationDate(null);
+    given(userRepository.findByUsername("admin@toto.fr")).willReturn(user);
+
+    AdminCollaborator collaborator = hrAdminAdapter.findAdminCollaboratorFromUsername(usernameBuilder.from("admin@toto.fr"));
+
+    AdminCollaborator expectedCollaborator = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    assertThat(collaborator).isEqualTo(expectedCollaborator);
+  }
+
+  @Test
+  public void should_update_user() throws Exception {
+    User userToUpdate = new User("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    given(userRepository.findByUsername("admin@toto.fr")).willReturn(userToUpdate);
+
+    AdminCollaborator collaboratorToUpdate = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    hrAdminAdapter.updateCollaborator(collaboratorToUpdate);
+
+    User updatedUser = new User("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    updatedUser.setActive(true);
+    updatedUser.setCreationDate(new Date());
+    updatedUser.setLastUpdateDate(new Date());
+    updatedUser.setChangePasswordKey("");
+    updatedUser.setChangePasswordExpirationDate(null);
+    verify(userRepository).save(updatedUser);
   }
 }

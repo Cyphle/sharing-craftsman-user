@@ -10,4 +10,6 @@ public interface CompanyAdmin {
   List<AdminCollaborator> getAllCollaborators();
 
   void deleteCollaborator(Username username) throws CollaboratorException;
+
+  void updateCollaborator(AdminCollaborator collaborator);
 }
