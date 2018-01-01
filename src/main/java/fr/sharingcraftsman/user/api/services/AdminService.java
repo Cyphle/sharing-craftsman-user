@@ -138,6 +138,10 @@ public class AdminService {
     }
   }
 
+  public ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    throw new UnsupportedOperationException();
+  }
+
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
       log.warn("User " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());

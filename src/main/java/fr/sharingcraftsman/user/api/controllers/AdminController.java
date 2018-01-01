@@ -1,9 +1,6 @@
 package fr.sharingcraftsman.user.api.controllers;
 
-import fr.sharingcraftsman.user.api.models.AdminUserDTO;
-import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.models.ProfileDTO;
-import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.services.AdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -55,7 +52,7 @@ public class AdminController {
     return adminService.deleteUser(clientDTO, tokenDTO, usernameToDelete);
   }
 
-  @ApiOperation(value = "Endpoint to update informations of user", response = ProfileDTO.class)
+  @ApiOperation(value = "Endpoint to update informations of user", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -71,7 +68,7 @@ public class AdminController {
     return adminService.updateUser(clientDTO, tokenDTO, user);
   }
 
-  @ApiOperation(value = "Endpoint to add user", response = ProfileDTO.class)
+  @ApiOperation(value = "Endpoint to add user", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -86,12 +83,27 @@ public class AdminController {
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return adminService.addUser(clientDTO, tokenDTO, user);
   }
+
+  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.GET, value = "/roles/groups")
+  public ResponseEntity getGroups(@RequestHeader("client") String client,
+                                @RequestHeader("secret") String secret,
+                                @RequestHeader("username") String username,
+                                @RequestHeader("access-token") String accessToken) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return adminService.getGroups(clientDTO, tokenDTO);
+  }
   /*
   - Get list of users with profiles -> OK
   - Remove user -> OK
   - Deactivate user + Modify user (send all user except authorizations) -> OK
   - Modify user ? -> OK
-  - Add user
+  - Add user -> OK
   - Get list of roles, groups
   - Add/remove roles groups (impact on user groups)
   - Get list of authorizations
