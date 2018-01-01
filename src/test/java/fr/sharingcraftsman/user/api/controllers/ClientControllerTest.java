@@ -1,9 +1,8 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.models.ClientRegistration;
+import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.services.ClientService;
-import fr.sharingcraftsman.user.api.services.LoginService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,11 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.not;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -50,7 +46,7 @@ public class ClientControllerTest {
 
   @Test
   public void should_register_client() throws Exception {
-    ClientRegistration client = new ClientRegistration();
+    ClientDTO client = new ClientDTO();
     client.setName("sharingcraftsman");
     given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
 
@@ -62,7 +58,7 @@ public class ClientControllerTest {
 
   @Test
   public void should_return_unauthorized_if_client_name_is_not_correct() throws Exception {
-    ClientRegistration client = new ClientRegistration();
+    ClientDTO client = new ClientDTO();
     client.setName("toto");
     given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
 

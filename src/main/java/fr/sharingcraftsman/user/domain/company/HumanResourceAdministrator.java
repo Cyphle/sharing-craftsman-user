@@ -6,7 +6,17 @@ import fr.sharingcraftsman.user.domain.common.Username;
 public interface HumanResourceAdministrator {
   void createNewCollaborator(Collaborator collaborator);
 
-  Person getCollaborator(Username username);
+  Person findCollaboratorFromUsername(Username username);
 
-  Person findFromCredentials(Credentials credentials);
+  Person findCollaboratorFromCredentials(Credentials credentials);
+
+  void deleteChangePasswordKeyOf(Credentials credentials);
+
+  ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey);
+
+  void updateCollaboratorPassword(Collaborator collaborator);
+
+  Profile findProfileOf(Username username);
+
+  Profile updateProfileOf(KnownProfile profileToUpdate);
 }

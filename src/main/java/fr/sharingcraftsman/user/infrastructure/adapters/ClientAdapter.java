@@ -6,7 +6,9 @@ import fr.sharingcraftsman.user.infrastructure.models.OAuthClient;
 import fr.sharingcraftsman.user.infrastructure.pivots.ClientPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ClientAdapter implements ClientStock {
   private ClientRepository clientRepository;
 

@@ -1,17 +1,21 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
+import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.common.UsernameException;
+import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.infrastructure.models.User;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
-import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
-import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
-import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
-import fr.sharingcraftsman.user.domain.company.Person;
-import fr.sharingcraftsman.user.domain.company.UnknownCollaborator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.util.Date;
+
+@Service
 public class UserAdapter implements HumanResourceAdministrator {
   private UserRepository userRepository;
   private DateService dateService;
@@ -25,13 +29,13 @@ public class UserAdapter implements HumanResourceAdministrator {
   @Override
   public void createNewCollaborator(Collaborator collaborator) {
     User user = UserPivot.fromDomainToInfra(collaborator);
-    user.setCreationDate(dateService.now());
-    user.setLastUpdateDate(dateService.now());
+    user.setCreationDate(dateService.nowInDate());
+    user.setLastUpdateDate(dateService.nowInDate());
     userRepository.save(user);
   }
 
   @Override
-  public Person getCollaborator(Username username) {
+  public Person findCollaboratorFromUsername(Username username) {
     User foundUser = userRepository.findByUsername(username.getUsername());
 
     if (foundUser == null)
@@ -45,7 +49,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public Person findFromCredentials(Credentials credentials) {
+  public Person findCollaboratorFromCredentials(Credentials credentials) {
     User foundUser = userRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
 
     if (foundUser == null)
@@ -55,6 +59,60 @@ public class UserAdapter implements HumanResourceAdministrator {
       return UserPivot.fromInfraToDomain(foundUser);
     } catch (CredentialsException e) {
       return new UnknownCollaborator();
+    }
+  }
+
+  @Override
+  public void deleteChangePasswordKeyOf(Credentials credentials) {
+    User user = userRepository.findByUsername(credentials.getUsernameContent());
+    user.setChangePasswordKey("");
+    user.setChangePasswordExpirationDate(null);
+    user.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(user);
+  }
+
+  @Override
+  public ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey) {
+    User user = userRepository.findByUsername(changePasswordKey.getUsername());
+    user.setChangePasswordKey(changePasswordKey.getKey());
+    user.setChangePasswordExpirationDate(Date.from(changePasswordKey.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
+    user.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(user);
+    return changePasswordKey;
+  }
+
+  @Override
+  public void updateCollaboratorPassword(Collaborator collaborator) {
+    User user = userRepository.findByUsername(collaborator.getUsername());
+    user.setPassword(collaborator.getPassword());
+    user.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(user);
+  }
+
+  @Override
+  public Profile findProfileOf(Username username) {
+    User user = userRepository.findByUsername(username.getUsername());
+
+    if (user == null)
+      return new UnknownProfile();
+
+    try {
+      return UserPivot.fromInfraToDomainProfile(user);
+    } catch (UsernameException e) {
+      return new UnknownProfile();
+    }
+  }
+
+  @Override
+  public Profile updateProfileOf(KnownProfile profileToUpdate) {
+    User user = userRepository.findByUsername(profileToUpdate.getUsernameContent());
+    user.updateFromProfile(UserPivot.fromDomainToInfraProfile(profileToUpdate));
+    user.setLastUpdateDate(dateService.nowInDate());
+    User updatedUser = userRepository.save(user);
+    try {
+      return UserPivot.fromInfraToDomainProfile(updatedUser);
+    } catch (UsernameException e) {
+      return new UnknownProfile();
     }
   }
 }
