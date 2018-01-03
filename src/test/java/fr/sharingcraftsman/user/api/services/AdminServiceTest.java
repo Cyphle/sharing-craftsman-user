@@ -13,7 +13,6 @@ import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
 import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -179,6 +178,8 @@ public class AdminServiceTest {
 
   @Test
   public void should_get_groups_and_roles() throws Exception {
+    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
     Group users = new Group("USERS");
     users.addRole(new Role("ROLE_USER"));
     Group admins = new Group("ADMINS");
@@ -186,7 +187,7 @@ public class AdminServiceTest {
     Set<Group> groups = new HashSet<>();
     groups.add(users);
     groups.add(admins);
-    given(roleAdministrator.getAllGroups()).willReturn(groups);
+    given(roleAdministrator.getAllRolesWithTheirGroups()).willReturn(groups);
 
     ResponseEntity response = adminService.getGroups(clientDTO, tokenDTO);
 

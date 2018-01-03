@@ -6,5 +6,5 @@ import java.util.Set;
 public interface RoleAdministrator {
   List<Role> getRolesOf(String group);
 
-  Set<Group> getAllGroups();
+  Set<Group> getAllRolesWithTheirGroups();
 }

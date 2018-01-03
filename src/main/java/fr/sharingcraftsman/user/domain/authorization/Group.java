@@ -4,17 +4,19 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode
 @ToString
 public class Group {
-  List<Role> roles;
+  Set<Role> roles;
   private String name;
 
   public Group(String name) {
     this.name = name;
-    this.roles = new ArrayList<>();
+    this.roles = new HashSet<>();
   }
 
   public void addRole(Role role) {
@@ -29,7 +31,7 @@ public class Group {
     return name;
   }
 
-  public List<Role> getRoles() {
+  public Set<Role> getRoles() {
     return roles;
   }
 }

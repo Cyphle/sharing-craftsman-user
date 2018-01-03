@@ -15,6 +15,6 @@ databaseChangeLog:
       file: db/changelog/changes/07-create-group-role-table.yaml
   - include:
       file: db/changelog/changes/08-create-user-group-table.yaml
-# Not work when launching jar.
 #  - includeAll:
-#        path: db/changelog/changes/
+#        path: changes
+#        relativeToChangelogFile: true

@@ -5,6 +5,7 @@ import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
 import fr.sharingcraftsman.user.infrastructure.pivots.RolePivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.GroupRoleRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,12 @@ import java.util.Set;
 @Service
 public class RoleManagerAdapter implements RoleAdministrator {
   private GroupRoleRepository groupRoleRepository;
+  private RoleRepository roleRepository;
 
   @Autowired
-  public RoleManagerAdapter(GroupRoleRepository groupRoleRepository) {
+  public RoleManagerAdapter(GroupRoleRepository groupRoleRepository, RoleRepository roleRepository) {
     this.groupRoleRepository = groupRoleRepository;
+    this.roleRepository = roleRepository;
   }
 
   @Override
@@ -26,7 +29,7 @@ public class RoleManagerAdapter implements RoleAdministrator {
   }
 
   @Override
-  public Set<Group> getAllGroups() {
-    throw new UnsupportedOperationException();
+  public Set<Group> getAllRolesWithTheirGroups() {
+    return RolePivot.rolesWithGroupfromInfraToDomain(roleRepository.findAll());
   }
 }

@@ -23,6 +23,11 @@ public class GroupDTO {
     this.roles = new HashSet<>();
   }
 
+  public GroupDTO(String name, Set<RoleDTO> roles) {
+    this.name = name;
+    this.roles = roles;
+  }
+
   public String getName() {
     return name;
   }

@@ -104,7 +104,7 @@ public class AdminController {
   - Deactivate user + Modify user (send all user except authorizations) -> OK
   - Modify user ? -> OK
   - Add user -> OK
-  - Get list of roles, groups
+  - Get list of roles, groups -> OK
   - Add/remove roles groups (impact on user groups)
   - Get list of authorizations
   - Add/remove authorizations

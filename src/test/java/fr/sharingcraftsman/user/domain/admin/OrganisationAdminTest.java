@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.domain.admin;
 
 import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
 import fr.sharingcraftsman.user.domain.company.CollaboratorException;
 import fr.sharingcraftsman.user.domain.company.UnknownCollaborator;
 import fr.sharingcraftsman.user.infrastructure.models.User;
@@ -12,6 +13,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Date;
 
+import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -40,6 +42,13 @@ public class OrganisationAdminTest {
 
   @Test
   public void should_delete_collaborator_if_exists() throws Exception {
+    given(hrAdminManager.findCollaboratorFromUsername(usernameBuilder.from("hello@world.fr"))).willReturn(
+            new CollaboratorBuilder()
+            .withUsername((usernameBuilder.from("hello@world.fr")))
+            .withPassword(passwordBuilder.from("password"))
+            .build()
+    );
+
     organisation.deleteCollaborator(usernameBuilder.from("hello@world.fr"));
 
     verify(hrAdminManager).findCollaboratorFromUsername(usernameBuilder.from("hello@world.fr"));

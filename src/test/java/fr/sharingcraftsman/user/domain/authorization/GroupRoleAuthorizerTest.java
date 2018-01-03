@@ -71,4 +71,11 @@ public class GroupRoleAuthorizerTest {
 
     verify(groupAdministrator, never()).addGroup(any(Username.class), any(Groups.class));
   }
+
+  @Test
+  public void should_get_all_groups_and_roles() throws Exception {
+    authorizer.getAllRolesWithTheirGroups();
+
+    verify(roleAdministrator).getAllRolesWithTheirGroups();
+  }
 }

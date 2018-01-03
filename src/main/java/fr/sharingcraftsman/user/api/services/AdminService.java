@@ -2,10 +2,12 @@ package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.AdminUserDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.GroupDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.api.pivots.AdminCollaboratorPivot;
 import fr.sharingcraftsman.user.api.pivots.AuthorizationPivot;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
+import fr.sharingcraftsman.user.api.pivots.GroupPivot;
 import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.admin.HRAdminManager;
 import fr.sharingcraftsman.user.domain.admin.OrganisationAdmin;
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
@@ -144,7 +147,8 @@ public class AdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    throw new UnsupportedOperationException();
+    Set<GroupDTO> groups = GroupPivot.groupFromDomainToApi(authorizer.getAllRolesWithTheirGroups());
+    return ResponseEntity.ok(groups);
   }
 
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {

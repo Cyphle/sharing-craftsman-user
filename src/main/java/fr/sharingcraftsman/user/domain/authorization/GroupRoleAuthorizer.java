@@ -4,6 +4,7 @@ import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.ports.authorization.Authorizer;
 
 import java.util.List;
+import java.util.Set;
 
 public class GroupRoleAuthorizer implements Authorizer {
   private GroupAdministrator groupAdministrator;
@@ -30,6 +31,11 @@ public class GroupRoleAuthorizer implements Authorizer {
     if (isNotAdminGroup(groupToAdd) && doesNotAlreadyHaveGroup(groupToAdd, groups)) {
       groupAdministrator.addGroup(credentials.getUsername(), groupToAdd);
     }
+  }
+
+  @Override
+  public Set<Group> getAllRolesWithTheirGroups() {
+    return roleAdministrator.getAllRolesWithTheirGroups();
   }
 
   private boolean doesNotAlreadyHaveGroup(Groups groupToAdd, List<Group> groups) {
