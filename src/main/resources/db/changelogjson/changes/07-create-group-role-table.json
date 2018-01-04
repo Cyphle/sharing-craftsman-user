@@ -1,0 +1,21 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "07-create-group-role-table.yaml",
+        "author": "cphamle",
+        "changes": [
+          {
+            "sqlFile": {
+              "encoding": "utf8",
+              "path": "../sql/07-create-group-role-table.sql",
+              "relativeToChangelogFile": true,
+              "splitStatements": true,
+              "stripComments": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

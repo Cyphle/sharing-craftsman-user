@@ -1,8 +1,10 @@
 {
-  "databaseChangeLog": [{
-    "includeAll": {
-      "path": "changes",
-      "relativeToChangelogFile": true
+  "databaseChangeLog": [
+    {
+      "includeAll": {
+        "path": "changes",
+        "relativeToChangelogFile": true
+      }
     }
-  }]
+  ]
 }

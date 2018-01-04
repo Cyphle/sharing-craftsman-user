@@ -1,0 +1,21 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "03-create-token-table.json",
+        "author": "cphamle",
+        "changes": [
+          {
+            "sqlFile": {
+              "encoding": "utf8",
+              "path": "../sql/03-create-token-table.sql",
+              "relativeToChangelogFile": true,
+              "splitStatements": true,
+              "stripComments": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
