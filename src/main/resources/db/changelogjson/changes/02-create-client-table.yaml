@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 02-create-client-table.yaml
+      author: cphamle
+      changes:
+      - sqlFile:
+          encoding: utf8
+          path: ../sql/02-create-client-table.sql
+          relativeToChangelogFile: true
+          splitStatements: true
+          stripComments: true

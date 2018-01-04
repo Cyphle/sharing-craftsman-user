@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.acceptance;
 
+import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -24,8 +25,8 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
   private TokenDsl newToken;
   private AuthorizationDsl authorization;
 
-  @Given("The application is setup")
-  public void setupApplication() {
+  @Before
+  public void setUp() {
     if (this.mvc == null) {
       this.mvc = MockMvcBuilders
               .webAppContextSetup(context)
@@ -33,7 +34,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
     }
   }
 
-  @And("A client <(.*)> is registered")
+  @Given("A client <(.*)> is registered")
   public void createClient(String clientName) throws Exception {
     ClientDTO client = new ClientDTO();
     client.setName(clientName);
@@ -42,8 +43,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
             .perform(post(getBaseUri() + "/clients/register")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(Mapper.fromObjectToJsonString(client))
-            )
-            .andExpect(status().isOk());
+            );
   }
 
   @Given("I register to the application with my credentials <(.*)> and password <(.*)>")

@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.acceptance;
 
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -22,8 +23,8 @@ public class UpdateProfileStepsDef extends SpringAcceptanceTestConfig {
   private ProfileDsl profileDsl;
   private ProfileDsl newProfile;
 
-  @Given("The application is initialized with client")
-  public void setupApplication() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     if (this.mvc == null) {
       this.mvc = MockMvcBuilders
               .webAppContextSetup(context)
