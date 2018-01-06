@@ -139,4 +139,18 @@ public class AdminControllerTest {
             .content(Mapper.fromObjectToJsonString(newGroupForUser)))
             .andExpect(status().isOk());
   }
+
+  @Test
+  public void should_remove_group_from_user() throws Exception {
+    UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world.fr", "USERS");
+
+    this.mvc.perform(post("/admin/roles/groups/remove")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(newGroupForUser)))
+            .andExpect(status().isOk());
+  }
 }

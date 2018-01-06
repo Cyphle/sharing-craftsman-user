@@ -113,6 +113,22 @@ public class AdminController {
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return adminService.addGroupToUser(clientDTO, tokenDTO, userGroupDTO);
   }
+
+  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.POST, value = "/roles/groups/remove")
+  public ResponseEntity removeGroup(@RequestHeader("client") String client,
+                                  @RequestHeader("secret") String secret,
+                                  @RequestHeader("username") String username,
+                                  @RequestHeader("access-token") String accessToken,
+                                  @RequestBody UserGroupDTO userGroupDTO) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return adminService.removeGroupToUser(clientDTO, tokenDTO, userGroupDTO);
+  }
   /*
   - Get list of users with profiles -> OK
   - Remove user -> OK
@@ -120,7 +136,7 @@ public class AdminController {
   - Modify user ? -> OK
   - Add user -> OK
   - Get list of roles, groups -> OK
-  - Add/remove roles groups (impact on user groups) -> OK
+  - Add/remove roles groups (impact on user groups)
   - Get list of authorizations
   - Add/remove authorizations
   - Get list of tokens
