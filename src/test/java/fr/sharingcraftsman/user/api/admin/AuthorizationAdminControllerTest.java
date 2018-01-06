@@ -82,15 +82,19 @@ public class AuthorizationAdminControllerTest {
             .andExpect(status().isOk());
   }
 
-  /*
-  - Get list of users with profiles -> OK
-  - Remove user -> OK
-  - Deactivate user + Modify user (send all user except authorizations) -> OK
-  - Modify user ? -> OK
-  - Add user -> OK
-  - Get list of roles, groups -> OK
-  - Add/remove roles groups (impact on user groups) -> OK
-  - Get list of authorizations -> OK
-  - Add/remove authorizations
-   */
+  @Test
+  public void should_remove_role_from_group() throws Exception {
+    Set<RoleDTO> roles = new HashSet<>();
+    roles.add(new RoleDTO("ROLE_USER"));
+    GroupDTO newGroup = new GroupDTO("SUPER_ADMINS", roles);
+
+    this.mvc.perform(delete("/admin/roles/groups")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(newGroup)))
+            .andExpect(status().isOk());
+  }
 }

@@ -50,4 +50,20 @@ public class AuthorizationAdminController {
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return adminService.createNewGroupWithRoles(clientDTO, tokenDTO, groupDTO);
   }
+
+  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.DELETE, value = "/groups")
+  public ResponseEntity removeRoleFromGroup(@RequestHeader("client") String client,
+                                    @RequestHeader("secret") String secret,
+                                    @RequestHeader("username") String username,
+                                    @RequestHeader("access-token") String accessToken,
+                                    @RequestBody GroupDTO groupDTO) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return adminService.removeNewGroupWithRoles(clientDTO, tokenDTO, groupDTO);
+  }
 }
