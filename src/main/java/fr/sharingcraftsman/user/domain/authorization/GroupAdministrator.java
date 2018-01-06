@@ -7,5 +7,7 @@ import java.util.List;
 public interface GroupAdministrator {
   List<Group> findGroupsOf(Username username);
 
-  void addGroup(Username username, Groups group);
+  void addGroupToCollaborator(Username username, Groups group);
+
+  void removeGroupFromCollaborator(Username username, Groups group);
 }

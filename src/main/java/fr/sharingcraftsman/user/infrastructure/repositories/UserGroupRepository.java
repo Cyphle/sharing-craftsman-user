@@ -9,4 +9,6 @@ import java.util.List;
 public interface UserGroupRepository extends CrudRepository<UserGroup, Long> {
   @Query("Select u from UserGroup u where u.username = ?1")
   List<UserGroup> findByUsername(String username);
+  @Query("Select u from UserGroup u where u.username = ?1 and u.group = ?2")
+  UserGroup findByUsernameAndGroup(String username, String group);
 }

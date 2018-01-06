@@ -53,7 +53,7 @@ public class GroupRoleAuthorizerTest {
   public void should_add_given_group_to_collaborator() throws Exception {
     authorizer.addGroup(credentials, Groups.USERS);
 
-    verify(groupAdministrator).addGroup(credentials.getUsername(), Groups.USERS);
+    verify(groupAdministrator).addGroupToCollaborator(credentials.getUsername(), Groups.USERS);
   }
 
   @Test
@@ -62,7 +62,7 @@ public class GroupRoleAuthorizerTest {
 
     authorizer.addGroup(credentials, Groups.USERS);
 
-    verify(groupAdministrator, never()).addGroup(any(Username.class), any(Groups.class));
+    verify(groupAdministrator, never()).addGroupToCollaborator(any(Username.class), any(Groups.class));
   }
 
   @Test
@@ -70,5 +70,23 @@ public class GroupRoleAuthorizerTest {
     authorizer.getAllRolesWithTheirGroups();
 
     verify(roleAdministrator).getAllRolesWithTheirGroups();
+  }
+
+  @Test
+  public void should_not_remove_group_when_collaborator_does_not_have_it() throws Exception {
+    given(groupAdministrator.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(new Group("ÆDMINS")));
+
+    authorizer.removeGroup(credentials, Groups.USERS);
+
+    verify(groupAdministrator, never()).removeGroupFromCollaborator(any(Username.class), any(Groups.class));
+  }
+
+  @Test
+  public void should_remove_group_when_collaborator_has_group() throws Exception {
+    given(groupAdministrator.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(new Group("USERS")));
+
+    authorizer.removeGroup(credentials, Groups.USERS);
+
+    verify(groupAdministrator).removeGroupFromCollaborator(any(Username.class), any(Groups.class));
   }
 }

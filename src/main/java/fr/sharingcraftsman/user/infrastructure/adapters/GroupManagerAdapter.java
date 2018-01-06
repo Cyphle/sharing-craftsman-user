@@ -27,7 +27,13 @@ public class GroupManagerAdapter implements GroupAdministrator {
   }
 
   @Override
-  public void addGroup(Username username, Groups group) {
+  public void addGroupToCollaborator(Username username, Groups group) {
     userGroupRepository.save(new UserGroup(username.getUsername(), group.name()));
+  }
+
+  @Override
+  public void removeGroupFromCollaborator(Username username, Groups group) {
+    UserGroup userGroup = userGroupRepository.findByUsernameAndGroup(username.getUsername(), group.name());
+    userGroupRepository.delete(userGroup);
   }
 }

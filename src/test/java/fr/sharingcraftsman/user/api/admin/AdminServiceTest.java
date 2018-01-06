@@ -211,4 +211,15 @@ public class AdminServiceTest {
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
+
+  @Test
+  public void should_remove_group_to_user() throws Exception {
+    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world", "USERS");
+
+    ResponseEntity response = adminService.removeGroupToUser(clientDTO, tokenDTO, newGroupForUser);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
 }

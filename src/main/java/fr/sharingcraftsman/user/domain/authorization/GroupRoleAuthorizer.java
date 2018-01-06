@@ -29,13 +29,25 @@ public class GroupRoleAuthorizer implements Authorizer {
   public void addGroup(Credentials credentials, Groups groupToAdd) {
     List<Group> groups = groupAdministrator.findGroupsOf(credentials.getUsername());
     if (doesNotAlreadyHaveGroup(groupToAdd, groups)) {
-      groupAdministrator.addGroup(credentials.getUsername(), groupToAdd);
+      groupAdministrator.addGroupToCollaborator(credentials.getUsername(), groupToAdd);
     }
   }
 
   @Override
   public Set<Group> getAllRolesWithTheirGroups() {
     return roleAdministrator.getAllRolesWithTheirGroups();
+  }
+
+  @Override
+  public void removeGroup(Credentials credentials, Groups groupToRemove) {
+    List<Group> groups = groupAdministrator.findGroupsOf(credentials.getUsername());
+    if (hasGivenGroup(groupToRemove, groups)) {
+      groupAdministrator.removeGroupFromCollaborator(credentials.getUsername(), groupToRemove);
+    }
+  }
+
+  private boolean hasGivenGroup(Groups groupToRemove, List<Group> groups) {
+    return groups.stream().anyMatch(group -> group.getName().equals(groupToRemove.name()));
   }
 
   private boolean doesNotAlreadyHaveGroup(Groups groupToAdd, List<Group> groups) {

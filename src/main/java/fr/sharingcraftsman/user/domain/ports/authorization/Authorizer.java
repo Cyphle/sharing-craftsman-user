@@ -13,4 +13,6 @@ public interface Authorizer {
   void addGroup(Credentials credentials, Groups groupToAdd);
 
   Set<Group> getAllRolesWithTheirGroups();
+
+  void removeGroup(Credentials credentials, Groups groupToRemove);
 }

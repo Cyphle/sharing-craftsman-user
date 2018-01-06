@@ -168,7 +168,20 @@ public class AdminService {
   }
 
   public ResponseEntity removeGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
-    throw new UnsupportedOperationException();
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    try {
+      authorizer.removeGroup(Credentials.buildCredentials(usernameBuilder.from(userGroupDTO.getUsername()), null, false), Groups.valueOf(userGroupDTO.getGroup()));
+      return ResponseEntity.ok().build();
+    } catch (UsernameException e) {
+      log.warn("Error: " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
   }
 
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
