@@ -217,4 +217,8 @@ public class AdminService {
     }
     return HttpStatus.OK;
   }
+
+  public ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
+    throw new UnsupportedOperationException();
+  }
 }

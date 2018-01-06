@@ -18,9 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -29,9 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {UserApplication.class})
-@WebMvcTest(AdminController.class)
+@WebMvcTest(UserAdminController.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class AdminControllerTest {
+public class UserAdminControllerTest {
   @Autowired
   private MockMvc mvc;
 
@@ -106,51 +104,6 @@ public class AdminControllerTest {
             .header("access-token", "aaa")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(userDTO)))
-            .andExpect(status().isOk());
-  }
-
-  @Test
-  public void should_get_groups() throws Exception {
-    GroupDTO groupUser = new GroupDTO("USERS");
-    groupUser.addRoles(Collections.singletonList(new RoleDTO("ROLE_USER")));
-    GroupDTO groupAdmin = new GroupDTO("ADMINS");
-    groupAdmin.addRoles(Arrays.asList(new RoleDTO("ROLE_USER"), new RoleDTO("ROLE_ADMIN")));
-    List<GroupDTO> groups = Arrays.asList(groupUser, groupAdmin);
-    given(adminService.getGroups(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(groups));
-
-    this.mvc.perform(get("/admin/roles/groups")
-            .header("client", "client")
-            .header("secret", "clientsecret")
-            .header("username", "john@doe.fr")
-            .header("access-token", "aaa"))
-            .andExpect(status().isOk());
-  }
-
-  @Test
-  public void should_add_group_to_user() throws Exception {
-    UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world.fr", "USERS");
-
-    this.mvc.perform(post("/admin/roles/groups/add")
-            .header("client", "client")
-            .header("secret", "clientsecret")
-            .header("username", "john@doe.fr")
-            .header("access-token", "aaa")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(Mapper.fromObjectToJsonString(newGroupForUser)))
-            .andExpect(status().isOk());
-  }
-
-  @Test
-  public void should_remove_group_from_user() throws Exception {
-    UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world.fr", "USERS");
-
-    this.mvc.perform(post("/admin/roles/groups/remove")
-            .header("client", "client")
-            .header("secret", "clientsecret")
-            .header("username", "john@doe.fr")
-            .header("access-token", "aaa")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(Mapper.fromObjectToJsonString(newGroupForUser)))
             .andExpect(status().isOk());
   }
 }
