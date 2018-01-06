@@ -194,8 +194,14 @@ public class AdminService {
     return ResponseEntity.ok().build();
   }
 
-  public ResponseEntity removeNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
-    throw new UnsupportedOperationException();
+  public ResponseEntity removeRoleFromGroup(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    authorizer.removeRoleFromGroup(GroupPivot.fromApiToDomain(groupDTO));
+    return ResponseEntity.ok().build();
   }
 
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {

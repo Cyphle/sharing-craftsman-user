@@ -16,7 +16,7 @@ public class RolePivot {
             .collect(Collectors.toList());
   }
 
-  public static Set<Group> rolesWithGroupfromInfraToDomain(Iterable<GroupRole> roles) {
+  public static Set<Group> fromInfraToDomainRolesGroupedByGroup(Iterable<GroupRole> roles) {
     Set<Group> groups = new HashSet<>();
     roles.forEach(role -> groups.add(new Group(role.getGroup())));
     roles.forEach(role -> {

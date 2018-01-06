@@ -225,6 +225,8 @@ public class AdminServiceTest {
 
   @Test
   public void should_create_new_group_with_roles() throws Exception {
+    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
     Set<RoleDTO> roles = new HashSet<>();
     roles.add(new RoleDTO("ROLE_ROOT"));
     roles.add(new RoleDTO("ROLE_ADMIN"));
@@ -232,6 +234,21 @@ public class AdminServiceTest {
     GroupDTO newGroup = new GroupDTO("SUPER_ADMINS", roles);
 
     ResponseEntity response = adminService.createNewGroupWithRoles(clientDTO, tokenDTO, newGroup);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  @Test
+  public void should_remove_role_from_group() throws Exception {
+    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    Set<RoleDTO> roles = new HashSet<>();
+    roles.add(new RoleDTO("ROLE_ROOT"));
+    roles.add(new RoleDTO("ROLE_ADMIN"));
+    roles.add(new RoleDTO("ROLE_USER"));
+    GroupDTO newGroup = new GroupDTO("SUPER_ADMINS", roles);
+
+    ResponseEntity response = adminService.removeRoleFromGroup(clientDTO, tokenDTO, newGroup);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

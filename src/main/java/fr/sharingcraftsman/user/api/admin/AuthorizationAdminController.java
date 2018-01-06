@@ -64,6 +64,6 @@ public class AuthorizationAdminController {
                                     @RequestBody GroupDTO groupDTO) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.removeNewGroupWithRoles(clientDTO, tokenDTO, groupDTO);
+    return adminService.removeRoleFromGroup(clientDTO, tokenDTO, groupDTO);
   }
 }

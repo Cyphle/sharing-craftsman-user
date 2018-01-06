@@ -1,12 +1,11 @@
 package fr.sharingcraftsman.user.domain.authorization;
 
+import com.google.common.collect.Lists;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.ports.authorization.Authorizer;
-import fr.sharingcraftsman.user.infrastructure.models.GroupRole;
-import fr.sharingcraftsman.user.infrastructure.pivots.GroupPivot;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GroupRoleAuthorizer implements Authorizer {
   private GroupAdministrator groupAdministrator;
@@ -50,7 +49,24 @@ public class GroupRoleAuthorizer implements Authorizer {
 
   @Override
   public void createNewGroupWithRoles(Group group) {
-    roleAdministrator.createNewGroupsWithRole(group.asSeparatedGroupByRole());
+    Group foundGroup = roleAdministrator.getAllRolesWithTheirGroups()
+            .stream()
+            .filter(fetchedGroup -> fetchedGroup.getName().equals(group.getName()))
+            .findFirst()
+            .orElse(new Group(""));
+
+    List<Group> rolesToAdd = group.asSeparatedGroupByRole()
+            .stream()
+            .filter(role -> !foundGroup.getRoles().contains(Lists.newArrayList(role.getRoles()).get(0)))
+            .collect(Collectors.toList());
+
+    roleAdministrator.createNewGroupsWithRole(rolesToAdd);
+  }
+
+  @Override
+  public void removeRoleFromGroup(Group group) {
+    Group filteredGroup = new Group(group.getName(), new HashSet<>(Collections.singletonList(Lists.newArrayList(group.getRoles()).get(0))));
+    roleAdministrator.removeRoleFromGroup(filteredGroup);
   }
 
   private boolean hasGivenGroup(Groups groupToRemove, List<Group> groups) {

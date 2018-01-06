@@ -103,4 +103,37 @@ public class GroupRoleAuthorizerTest {
     Group groupUser = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_USER"))));
     verify(roleAdministrator).createNewGroupsWithRole(Arrays.asList(groupRoot, groupAdmin, groupUser));
   }
+
+  @Test
+  public void should_not_create_group_if_already_exists() throws Exception {
+    Group superAdminUser = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_USER"))));
+    given(roleAdministrator.getAllRolesWithTheirGroups()).willReturn(new HashSet<>(Collections.singletonList(superAdminUser)));
+    Group groupWithRoles = new Group("SUPER_ADMIN", new HashSet<>(Arrays.asList(new Role("ROLE_ROOT"), new Role("ROLE_ADMIN"), new Role("ROLE_USER"))));
+
+    authorizer.createNewGroupWithRoles(groupWithRoles);
+
+    Group groupRoot = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT"))));
+    Group groupAdmin = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ADMIN"))));
+    verify(roleAdministrator).createNewGroupsWithRole(Arrays.asList(groupRoot, groupAdmin));
+  }
+
+  @Test
+  public void should_remove_role_from_group() throws Exception {
+    Group groupWithRoles = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_USER"))));
+
+    authorizer.removeRoleFromGroup(groupWithRoles);
+
+    Group groupUser = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_USER"))));
+    verify(roleAdministrator).removeRoleFromGroup(groupUser);
+  }
+
+  @Test
+  public void should_remove_first_role_given_from_group() throws Exception {
+    Group groupWithRoles = new Group("SUPER_ADMIN", new HashSet<>(Arrays.asList(new Role("ROLE_ADMIN"), new Role("ROLE_USER"))));
+
+    authorizer.removeRoleFromGroup(groupWithRoles);
+
+    Group groupUser = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ADMIN"))));
+    verify(roleAdministrator).removeRoleFromGroup(groupUser);
+  }
 }

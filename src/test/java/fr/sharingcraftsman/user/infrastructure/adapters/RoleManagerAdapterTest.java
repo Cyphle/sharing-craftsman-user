@@ -22,12 +22,10 @@ public class RoleManagerAdapterTest {
   private RoleManagerAdapter roleManagerAdapter;
   @Mock
   private GroupRoleRepository groupRoleRepository;
-  @Mock
-  private RoleRepository roleRepository;
 
   @Before
   public void setUp() throws Exception {
-    roleManagerAdapter = new RoleManagerAdapter(groupRoleRepository, roleRepository);
+    roleManagerAdapter = new RoleManagerAdapter(groupRoleRepository);
   }
 
   @Test
@@ -47,7 +45,7 @@ public class RoleManagerAdapterTest {
             new GroupRole("ADMINS", "ROLE_ADMIN"),
             new GroupRole("ADMINS", "ROLE_USER")
     );
-    given(roleRepository.findAll()).willReturn(roles);
+    given(groupRoleRepository.findAll()).willReturn(roles);
 
     Set<Group> fetchedRoles = roleManagerAdapter.getAllRolesWithTheirGroups();
 
@@ -65,6 +63,15 @@ public class RoleManagerAdapterTest {
   public void should_create_new_group() throws Exception {
     roleManagerAdapter.createNewGroupsWithRole(Collections.singletonList(new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT"))))));
 
-    verify(roleRepository).save(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
+    verify(groupRoleRepository).save(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
+  }
+
+  @Test
+  public void should_delete_group() throws Exception {
+    given(groupRoleRepository.findFromGroupNameAndRole("SUPER_ADMIN", "ROLE_ROOT")).willReturn(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
+
+    roleManagerAdapter.removeRoleFromGroup(new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT")))));
+
+    verify(groupRoleRepository).delete(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
   }
 }

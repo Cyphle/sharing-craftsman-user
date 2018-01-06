@@ -9,4 +9,6 @@ public interface RoleAdministrator {
   Set<Group> getAllRolesWithTheirGroups();
 
   void createNewGroupsWithRole(List<Group> groups);
+
+  void removeRoleFromGroup(Group group);
 }

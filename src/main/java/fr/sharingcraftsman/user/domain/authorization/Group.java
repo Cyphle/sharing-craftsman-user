@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 @ToString
 public class Group {
-  Set<Role> roles;
+  private Set<Role> roles;
   private String name;
 
   public Group(String name) {
