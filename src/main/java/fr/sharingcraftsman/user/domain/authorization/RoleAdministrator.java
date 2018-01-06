@@ -7,4 +7,6 @@ public interface RoleAdministrator {
   List<Role> getRolesOf(String group);
 
   Set<Group> getAllRolesWithTheirGroups();
+
+  void createNewGroupsWithRole(List<Group> groups);
 }

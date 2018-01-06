@@ -20,4 +20,16 @@ public class GroupPivot {
             .map(role -> new RoleDTO(role.getRole()))
             .collect(Collectors.toSet());
   }
+
+  public static Group fromApiToDomain(GroupDTO groupDTO) {
+    Group group = new Group(groupDTO.getName());
+    group.addRoles(
+            groupDTO
+                    .getRoles()
+                    .stream()
+                    .map(role -> new Role(role.getRole()))
+                    .collect(Collectors.toList())
+    );
+    return group;
+  }
 }

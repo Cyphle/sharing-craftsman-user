@@ -41,7 +41,7 @@ public class AuthorizationAdminController {
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.POST, value = "/groups")
-  public ResponseEntity removeGroup(@RequestHeader("client") String client,
+  public ResponseEntity createNewGroupWithRoles(@RequestHeader("client") String client,
                                     @RequestHeader("secret") String secret,
                                     @RequestHeader("username") String username,
                                     @RequestHeader("access-token") String accessToken,

@@ -3,10 +3,8 @@ package fr.sharingcraftsman.user.domain.authorization;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode
 @ToString
@@ -17,6 +15,11 @@ public class Group {
   public Group(String name) {
     this.name = name;
     this.roles = new HashSet<>();
+  }
+
+  public Group(String name, Set<Role> roles) {
+    this.name = name;
+    this.roles = roles;
   }
 
   public void addRole(Role role) {
@@ -33,5 +36,11 @@ public class Group {
 
   public Set<Role> getRoles() {
     return roles;
+  }
+
+  public List<Group> asSeparatedGroupByRole() {
+    return roles.stream()
+            .map(role -> new Group(name, new HashSet<>(Collections.singletonList(role))))
+            .collect(Collectors.toList());
   }
 }

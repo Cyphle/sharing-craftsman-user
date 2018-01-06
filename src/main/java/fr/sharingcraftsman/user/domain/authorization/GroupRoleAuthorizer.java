@@ -2,6 +2,8 @@ package fr.sharingcraftsman.user.domain.authorization;
 
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.ports.authorization.Authorizer;
+import fr.sharingcraftsman.user.infrastructure.models.GroupRole;
+import fr.sharingcraftsman.user.infrastructure.pivots.GroupPivot;
 
 import java.util.List;
 import java.util.Set;
@@ -46,6 +48,11 @@ public class GroupRoleAuthorizer implements Authorizer {
     }
   }
 
+  @Override
+  public void createNewGroupWithRoles(Group group) {
+    roleAdministrator.createNewGroupsWithRole(group.asSeparatedGroupByRole());
+  }
+
   private boolean hasGivenGroup(Groups groupToRemove, List<Group> groups) {
     return groups.stream().anyMatch(group -> group.getName().equals(groupToRemove.name()));
   }
@@ -53,5 +60,4 @@ public class GroupRoleAuthorizer implements Authorizer {
   private boolean doesNotAlreadyHaveGroup(Groups groupToAdd, List<Group> groups) {
     return groups.stream().noneMatch(group -> group.getName().equals(groupToAdd.name()));
   }
-
 }

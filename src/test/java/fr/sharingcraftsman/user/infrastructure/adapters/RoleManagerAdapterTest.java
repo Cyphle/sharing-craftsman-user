@@ -15,6 +15,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoleManagerAdapterTest {
@@ -58,5 +59,12 @@ public class RoleManagerAdapterTest {
             users,
             admins
     );
+  }
+
+  @Test
+  public void should_create_new_group() throws Exception {
+    roleManagerAdapter.createNewGroupsWithRole(Collections.singletonList(new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT"))))));
+
+    verify(roleRepository).save(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
   }
 }

@@ -9,7 +9,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -88,5 +90,17 @@ public class GroupRoleAuthorizerTest {
     authorizer.removeGroup(credentials, Groups.USERS);
 
     verify(groupAdministrator).removeGroupFromCollaborator(any(Username.class), any(Groups.class));
+  }
+
+  @Test
+  public void should_create_new_group() throws Exception {
+    Group groupWithRoles = new Group("SUPER_ADMIN", new HashSet<>(Arrays.asList(new Role("ROLE_ROOT"), new Role("ROLE_ADMIN"), new Role("ROLE_USER"))));
+
+    authorizer.createNewGroupWithRoles(groupWithRoles);
+
+    Group groupRoot = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT"))));
+    Group groupAdmin = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ADMIN"))));
+    Group groupUser = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_USER"))));
+    verify(roleAdministrator).createNewGroupsWithRole(Arrays.asList(groupRoot, groupAdmin, groupUser));
   }
 }

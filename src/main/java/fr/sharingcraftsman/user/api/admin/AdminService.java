@@ -184,6 +184,16 @@ public class AdminService {
     }
   }
 
+  public ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    authorizer.createNewGroupWithRoles(GroupPivot.fromApiToDomain(groupDTO));
+    return ResponseEntity.ok().build();
+  }
+
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
       log.warn("User " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
@@ -216,9 +226,5 @@ public class AdminService {
       return HttpStatus.BAD_REQUEST;
     }
     return HttpStatus.OK;
-  }
-
-  public ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
-    throw new UnsupportedOperationException();
   }
 }
