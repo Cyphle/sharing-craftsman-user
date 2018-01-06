@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.controllers;
 
 import fr.sharingcraftsman.user.UserApplication;
+import fr.sharingcraftsman.user.api.admin.UserGroupDTO;
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.services.AdminService;
 import fr.sharingcraftsman.user.domain.client.Client;
@@ -125,6 +126,20 @@ public class AdminControllerTest {
             .header("secret", "clientsecret")
             .header("username", "john@doe.fr")
             .header("access-token", "aaa"))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void should_add_group_to_user() throws Exception {
+    UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world.fr", "USERS");
+
+    this.mvc.perform(post("/admin/roles/groups/add")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .header("access-token", "aaa")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(newGroupForUser)))
             .andExpect(status().isOk());
   }
 }

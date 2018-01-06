@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.api.controllers;
 
+import fr.sharingcraftsman.user.api.admin.UserGroupDTO;
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.services.AdminService;
 import io.swagger.annotations.Api;
@@ -97,6 +98,22 @@ public class AdminController {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return adminService.getGroups(clientDTO, tokenDTO);
+  }
+
+  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.POST, value = "/roles/groups/add")
+  public ResponseEntity addGroup(@RequestHeader("client") String client,
+                                  @RequestHeader("secret") String secret,
+                                  @RequestHeader("username") String username,
+                                  @RequestHeader("access-token") String accessToken,
+                                  @RequestBody UserGroupDTO userGroupDTO) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    return adminService.addGroupToUser(clientDTO, tokenDTO, userGroupDTO);
   }
   /*
   - Get list of users with profiles -> OK

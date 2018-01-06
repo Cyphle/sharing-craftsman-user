@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.api.services;
 
+import fr.sharingcraftsman.user.api.admin.UserGroupDTO;
 import fr.sharingcraftsman.user.api.models.AdminUserDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.GroupDTO;
@@ -149,6 +150,10 @@ public class AdminService {
 
     Set<GroupDTO> groups = GroupPivot.groupFromDomainToApi(authorizer.getAllRolesWithTheirGroups());
     return ResponseEntity.ok(groups);
+  }
+
+  public ResponseEntity addGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
+    throw new UnsupportedOperationException();
   }
 
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
