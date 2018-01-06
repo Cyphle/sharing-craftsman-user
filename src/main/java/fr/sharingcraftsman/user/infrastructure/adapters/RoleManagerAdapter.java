@@ -8,7 +8,6 @@ import fr.sharingcraftsman.user.infrastructure.models.GroupRole;
 import fr.sharingcraftsman.user.infrastructure.pivots.GroupPivot;
 import fr.sharingcraftsman.user.infrastructure.pivots.RolePivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.GroupRoleRepository;
-import fr.sharingcraftsman.user.infrastructure.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

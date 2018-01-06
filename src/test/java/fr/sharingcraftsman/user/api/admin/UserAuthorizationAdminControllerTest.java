@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -28,6 +29,9 @@ public class UserAuthorizationAdminControllerTest {
 
   @Autowired
   private WebApplicationContext context;
+
+  @MockBean
+  private AdminService adminService;
 
   @Before
   public void setup() {

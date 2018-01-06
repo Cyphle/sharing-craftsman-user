@@ -11,9 +11,8 @@
 #- Get list of roles, groups
 #- Add/remove roles groups (impact on user groups)
 #- Get list of authorizations
-#- Add/remove authorizations
-#- Get list of tokens
-#- Remove tokens
+#- Add/remove authorizations (roles and groups)
+
 #  Background: Setup application
 #    Given The application is setup
 #    And A client <sharingcraftsman> is registered

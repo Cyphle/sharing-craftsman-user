@@ -4,7 +4,6 @@ import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.infrastructure.models.GroupRole;
 import fr.sharingcraftsman.user.infrastructure.repositories.GroupRoleRepository;
-import fr.sharingcraftsman.user.infrastructure.repositories.RoleRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
