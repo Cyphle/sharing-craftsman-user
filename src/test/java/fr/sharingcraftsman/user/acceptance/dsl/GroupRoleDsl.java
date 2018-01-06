@@ -1,18 +1,15 @@
 package fr.sharingcraftsman.user.acceptance.dsl;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
-@EqualsAndHashCode
-@ToString
-public class RoleDsl {
+public class GroupRoleDsl {
+  private String group;
   private String role;
 
-  public RoleDsl() {
+  public String getGroup() {
+    return group;
   }
 
-  public RoleDsl(String role) {
-    this.role = role;
+  public void setGroup(String group) {
+    this.group = group;
   }
 
   public String getRole() {
