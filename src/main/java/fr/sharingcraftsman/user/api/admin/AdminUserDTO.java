@@ -1,8 +1,7 @@
-package fr.sharingcraftsman.user.api.models;
+package fr.sharingcraftsman.user.api.admin;
 
+import fr.sharingcraftsman.user.api.models.AuthorizationsDTO;
 import lombok.ToString;
-
-import java.time.LocalDateTime;
 
 @ToString
 public class AdminUserDTO {

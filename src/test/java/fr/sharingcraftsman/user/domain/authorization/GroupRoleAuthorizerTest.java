@@ -66,13 +66,6 @@ public class GroupRoleAuthorizerTest {
   }
 
   @Test
-  public void should_not_add_group_if_admin_group() throws Exception {
-    authorizer.addGroup(credentials, Groups.ADMINS);
-
-    verify(groupAdministrator, never()).addGroup(any(Username.class), any(Groups.class));
-  }
-
-  @Test
   public void should_get_all_groups_and_roles() throws Exception {
     authorizer.getAllRolesWithTheirGroups();
 

@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.api.pivots;
 
-import fr.sharingcraftsman.user.api.models.AdminUserDTO;
+import fr.sharingcraftsman.user.api.admin.AdminUserDTO;
 import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 
 import java.time.Instant;

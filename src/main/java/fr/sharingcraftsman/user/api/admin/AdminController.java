@@ -1,8 +1,6 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.admin;
 
-import fr.sharingcraftsman.user.api.admin.UserGroupDTO;
 import fr.sharingcraftsman.user.api.models.*;
-import fr.sharingcraftsman.user.api.services.AdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -122,7 +120,7 @@ public class AdminController {
   - Modify user ? -> OK
   - Add user -> OK
   - Get list of roles, groups -> OK
-  - Add/remove roles groups (impact on user groups)
+  - Add/remove roles groups (impact on user groups) -> OK
   - Get list of authorizations
   - Add/remove authorizations
   - Get list of tokens

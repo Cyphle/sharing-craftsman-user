@@ -1,10 +1,7 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.admin;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.admin.UserGroupDTO;
 import fr.sharingcraftsman.user.api.models.*;
-import fr.sharingcraftsman.user.api.services.AdminService;
-import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
