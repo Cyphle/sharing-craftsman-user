@@ -4,14 +4,14 @@ import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.LoginDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.common.DateService;
+import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
-import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
-import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
+import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,6 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,11 +59,7 @@ public class BaseTokenServiceTest {
 
     tokenService = new TokenService(userRepository, accessTokenRepository, clientRepository, dateService);
     clientDTO = new ClientDTO("client", "secret");
-    validToken = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(dateService.getDayAt(8))
-            .build();
+    validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
 
     token = new TokenDTO();
     token.setUsername("john@doe.fr");

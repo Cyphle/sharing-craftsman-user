@@ -69,13 +69,13 @@ public class UserUserOrganisationImplAdminTest {
 
   @Test
   public void should_update_collaborator() throws Exception {
-    UserForBaseUserForAdmin foundCollaborator = UserForBaseUserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    UserForAdmin foundCollaborator = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     given(userForAdminRepository.findAdminCollaboratorFromUsername(foundCollaborator.getUsername())).willReturn(foundCollaborator);
 
-    UserForBaseUserForAdmin collaboratorToUpdate = UserForBaseUserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    UserForAdmin collaboratorToUpdate = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     organisation.updateCollaborator(collaboratorToUpdate);
 
-    UserForBaseUserForAdmin expectedCollaborator = UserForBaseUserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    UserForAdmin expectedCollaborator = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     verify(userForAdminRepository).findAdminCollaboratorFromUsername(expectedCollaborator.getUsername());
     verify(userForAdminRepository).updateCollaborator(expectedCollaborator);
   }
@@ -84,10 +84,10 @@ public class UserUserOrganisationImplAdminTest {
   public void should_create_collaborator() throws Exception {
     given(userForAdminRepository.findAdminCollaboratorFromUsername(any(Username.class))).willReturn(new UnknownBaseUserForAdminCollaborator());
 
-    UserForBaseUserForAdmin collaboratorToCreate = UserForBaseUserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    UserForAdmin collaboratorToCreate = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     organisation.createCollaborator(collaboratorToCreate);
 
-    UserForBaseUserForAdmin expectedCollaborator = UserForBaseUserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
+    UserForAdmin expectedCollaborator = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     verify(userForAdminRepository).findAdminCollaboratorFromUsername(expectedCollaborator.getUsername());
     verify(userForAdminRepository).createCollaborator(expectedCollaborator);
   }

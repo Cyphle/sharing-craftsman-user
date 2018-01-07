@@ -2,7 +2,7 @@ package fr.sharingcraftsman.user.api.admin;
 
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.admin.UserForBaseUserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.admin.exceptions.UnknownBaseUserForAdminCollaborator;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.*;
 
-import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,11 +75,7 @@ public class AdminServiceTest {
     adminUser.setPassword("password");
 
     clientDTO = new ClientDTO("client", "secret");
-    validToken = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(dateService.getDayAt(8))
-            .build();
+    validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
 
     tokenDTO = new TokenDTO();
     tokenDTO.setUsername("admin@toto.fr");
@@ -91,9 +86,9 @@ public class AdminServiceTest {
 
   @Test
   public void should_get_list_of_users_with_profile_and_authorizations() throws Exception {
-    List<UserForBaseUserForAdmin> collaborators = Arrays.asList(
-            UserForBaseUserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date()),
-            UserForBaseUserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date())
+    List<UserForAdmin> collaborators = Arrays.asList(
+            UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date()),
+            UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date())
     );
     given(userForAdminRepository.getAllCollaborators()).willReturn(collaborators);
     given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("john@doe.fr"))).willReturn(Collections.singletonList(new Group("USERS")));
@@ -149,7 +144,7 @@ public class AdminServiceTest {
     given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
     given(userForAdminRepository.findAdminCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(
-            UserForBaseUserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date())
+            UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date())
     );
 
     GroupDTO group = new GroupDTO("USERS");
@@ -160,7 +155,7 @@ public class AdminServiceTest {
     userToUpdate.setPassword("password");
     adminService.updateUser(clientDTO, tokenDTO, userToUpdate);
 
-    UserForBaseUserForAdmin updatedUser = UserForBaseUserForAdmin.from("john@doe.fr", "password", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
+    UserForAdmin updatedUser = UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
     verify(userForAdminRepository).updateCollaborator(updatedUser);
   }
 
@@ -172,7 +167,7 @@ public class AdminServiceTest {
 
     adminService.addUser(clientDTO, tokenDTO, user);
 
-    UserForBaseUserForAdmin newCollaborator = UserForBaseUserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
+    UserForAdmin newCollaborator = UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
     verify(userForAdminRepository).createCollaborator(newCollaborator);
   }
 

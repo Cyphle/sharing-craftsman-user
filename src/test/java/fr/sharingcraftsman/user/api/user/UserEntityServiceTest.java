@@ -2,12 +2,12 @@ package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
+import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
-import fr.sharingcraftsman.user.domain.authentication.AccessToken;
-import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Email;
@@ -29,7 +29,6 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,11 +65,7 @@ public class UserEntityServiceTest {
     given(clientRepository.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
     userService = new UserService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService);
     clientDTO = new ClientDTO("secret", "clientsecret");
-    validToken = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(dateService.getDayAt(8))
-            .build();
+    validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     tokenDTO = new TokenDTO("john@doe.fr", "aaa");
   }
 
@@ -212,11 +207,4 @@ public class UserEntityServiceTest {
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
-
-  /*
-  @Test
-  public void should_send_exception_when_no_email_is_set() throws Exception {
-
-  }
-   */
 }

@@ -18,7 +18,7 @@ public class AdministrationImpl implements Administration {
   }
 
   @Override
-  public List<UserForBaseUserForAdmin> getAllCollaborators() {
+  public List<UserForAdmin> getAllCollaborators() {
     return userForAdminRepository.getAllCollaborators();
   }
 
@@ -33,18 +33,18 @@ public class AdministrationImpl implements Administration {
   }
 
   @Override
-  public void updateCollaborator(UserForBaseUserForAdmin collaborator) throws UnknownUserException {
+  public void updateCollaborator(UserForAdmin collaborator) throws UnknownUserException {
     BaseUserForAdmin collaboratorToUpdate = userForAdminRepository.findAdminCollaboratorFromUsername(collaborator.getUsername());
 
     if (!collaboratorToUpdate.isKnown())
       throw new UnknownUserException("Unknown collaborator");
 
-    ((UserForBaseUserForAdmin) collaboratorToUpdate).updateFields(collaborator);
-    userForAdminRepository.updateCollaborator((UserForBaseUserForAdmin) collaboratorToUpdate);
+    ((UserForAdmin) collaboratorToUpdate).updateFields(collaborator);
+    userForAdminRepository.updateCollaborator((UserForAdmin) collaboratorToUpdate);
   }
 
   @Override
-  public void createCollaborator(UserForBaseUserForAdmin collaborator) throws AlreadyExistingUserException {
+  public void createCollaborator(UserForAdmin collaborator) throws AlreadyExistingUserException {
     BaseUserForAdmin foundCollaborator = userForAdminRepository.findAdminCollaboratorFromUsername(collaborator.getUsername());
 
     if (foundCollaborator.isKnown())

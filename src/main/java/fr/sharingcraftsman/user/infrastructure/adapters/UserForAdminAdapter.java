@@ -2,7 +2,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import com.google.common.collect.Lists;
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.admin.UserForBaseUserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.BaseUserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.admin.exceptions.UnknownBaseUserForAdminCollaborator;
@@ -30,7 +30,7 @@ public class UserForAdminAdapter implements UserForAdminRepository {
   }
 
   @Override
-  public List<UserForBaseUserForAdmin> getAllCollaborators() {
+  public List<UserForAdmin> getAllCollaborators() {
     List<UserEntity> userEntities = Lists.newArrayList(userJpaRepository.findAll());
     return UserPivot.fromInfraToAdminDomain(userEntities);
   }
@@ -56,7 +56,7 @@ public class UserForAdminAdapter implements UserForAdminRepository {
   }
 
   @Override
-  public void updateCollaborator(UserForBaseUserForAdmin collaborator) {
+  public void updateCollaborator(UserForAdmin collaborator) {
     UserEntity foundUserEntity = userJpaRepository.findByUsername(collaborator.getUsernameContent());
     foundUserEntity.updateFromAdminCollaborator(collaborator);
     foundUserEntity.setLastUpdateDate(dateService.nowInDate());
@@ -74,7 +74,7 @@ public class UserForAdminAdapter implements UserForAdminRepository {
   }
 
   @Override
-  public void createCollaborator(UserForBaseUserForAdmin collaborator) {
+  public void createCollaborator(UserForAdmin collaborator) {
     UserEntity userEntityToCreate = UserPivot.fromDomainToInfra(collaborator);
     userEntityToCreate.setCreationDate(dateService.nowInDate());
     userEntityToCreate.setLastUpdateDate(dateService.nowInDate());

@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 @ToString
-public class UserForBaseUserForAdmin extends BaseUserForAdmin {
+public class UserForAdmin extends BaseUserForAdmin {
   private Username username;
   private Password password;
   private Name firstname;
@@ -24,7 +24,7 @@ public class UserForBaseUserForAdmin extends BaseUserForAdmin {
   private LocalDateTime creationDate;
   private LocalDateTime lastUpdateDate;
 
-  public UserForBaseUserForAdmin(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, Date changePasswordExpirationDate, boolean active, Date creationDate, Date lastUpdateDate) {
+  public UserForAdmin(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, Date changePasswordExpirationDate, boolean active, Date creationDate, Date lastUpdateDate) {
     this.username = new Username(username);
     this.password = new Password(password);
     this.firstname = Name.of(firstname);
@@ -40,7 +40,7 @@ public class UserForBaseUserForAdmin extends BaseUserForAdmin {
     this.lastUpdateDate = fromDateToLocalDatetime(lastUpdateDate);
   }
 
-  public UserForBaseUserForAdmin(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate, boolean isActive, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
+  public UserForAdmin(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate, boolean isActive, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
     this.username = new Username(username);
     this.password = new Password(password);
     this.firstname = Name.of(firstname);
@@ -111,7 +111,7 @@ public class UserForBaseUserForAdmin extends BaseUserForAdmin {
     return fromLocalDatetimeToLong(lastUpdateDate);
   }
 
-  public void updateFields(UserForBaseUserForAdmin collaborator) {
+  public void updateFields(UserForAdmin collaborator) {
     username = collaborator.username;
     firstname = collaborator.firstname;
     lastname = collaborator.lastname;
@@ -127,12 +127,12 @@ public class UserForBaseUserForAdmin extends BaseUserForAdmin {
     return true;
   }
 
-  public static UserForBaseUserForAdmin from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, Date changePasswordExpirationDate, boolean active, Date creationDate, Date lastUpdateDate) {
-    return new UserForBaseUserForAdmin(username, password, firstname, lastname, email, website, github, linkedin, changePasswordKey, changePasswordExpirationDate, active, creationDate, lastUpdateDate);
+  public static UserForAdmin from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, Date changePasswordExpirationDate, boolean active, Date creationDate, Date lastUpdateDate) {
+    return new UserForAdmin(username, password, firstname, lastname, email, website, github, linkedin, changePasswordKey, changePasswordExpirationDate, active, creationDate, lastUpdateDate);
   }
 
-  public static UserForBaseUserForAdmin from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, LocalDateTime changePasswordExpirationDate, boolean active, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
-    return new UserForBaseUserForAdmin(username, password, firstname, lastname, email, website, github, linkedin, changePasswordKey, changePasswordExpirationDate, active, creationDate, lastUpdateDate);
+  public static UserForAdmin from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, LocalDateTime changePasswordExpirationDate, boolean active, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
+    return new UserForAdmin(username, password, firstname, lastname, email, website, github, linkedin, changePasswordKey, changePasswordExpirationDate, active, creationDate, lastUpdateDate);
   }
 
   private long fromLocalDatetimeToLong(LocalDateTime localDateTime) {
@@ -149,7 +149,7 @@ public class UserForBaseUserForAdmin extends BaseUserForAdmin {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    UserForBaseUserForAdmin that = (UserForBaseUserForAdmin) o;
+    UserForAdmin that = (UserForAdmin) o;
 
     if (isActive != that.isActive) return false;
     if (username != null ? !username.equals(that.username) : that.username != null) return false;

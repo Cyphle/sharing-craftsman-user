@@ -7,7 +7,7 @@ import fr.sharingcraftsman.user.api.pivots.AdminCollaboratorPivot;
 import fr.sharingcraftsman.user.api.pivots.AuthorizationPivot;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.api.pivots.GroupPivot;
-import fr.sharingcraftsman.user.domain.admin.UserForBaseUserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.admin.AdministrationImpl;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
@@ -62,7 +62,7 @@ public class AdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    List<UserForBaseUserForAdmin> collaborators = company.getAllCollaborators();
+    List<UserForAdmin> collaborators = company.getAllCollaborators();
     List<AdminUserDTO> users = collaborators.stream()
             .map(collaborator -> new AdminUserDTO(
                     collaborator.getUsernameContent(),
@@ -113,7 +113,7 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      UserForBaseUserForAdmin collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+      UserForAdmin collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
       company.updateCollaborator(collaborator);
       return ResponseEntity.ok().build();
     } catch (UserException e) {
@@ -131,7 +131,7 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      UserForBaseUserForAdmin collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+      UserForAdmin collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
       company.createCollaborator(collaborator);
       authorizationManager.addGroup(Credentials.buildCredentials(usernameBuilder.from(user.getUsername()), null, false), Groups.USERS);
       return ResponseEntity.ok().build();

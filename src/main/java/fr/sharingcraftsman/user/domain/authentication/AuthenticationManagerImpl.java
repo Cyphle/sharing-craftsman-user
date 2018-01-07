@@ -12,8 +12,6 @@ import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
-
 public class AuthenticationManagerImpl implements AuthenticationManager {
   private final int LONG_VALIDITY_OFFSET = 8;
   private final int SHORT_VALIDITY_OFFSET = 1;
@@ -75,11 +73,11 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   }
 
   private BaseToken generateToken(Credentials credentials, Client client, User user) {
-    AccessToken token = validTokenBuilder
-            .withAccessToken(generateKey(client.getName() + user.getUsername()))
-            .withRefreshToken(generateKey(client.getName() + user.getUsername()))
-            .expiringThe(dateService.getDayAt(credentials.stayLogged() ? LONG_VALIDITY_OFFSET : SHORT_VALIDITY_OFFSET))
-            .build();
+    AccessToken token = AccessToken.from(
+            generateToken(client.getName() + user.getUsername()),
+            generateToken(client.getName() + user.getUsername()),
+            dateService.getDayAt(credentials.stayLogged() ? LONG_VALIDITY_OFFSET : SHORT_VALIDITY_OFFSET)
+    );
 
     return accessTokenRepository.createNewToken(client, user, token);
   }
@@ -99,7 +97,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     return foundBaseToken.isValid();
   }
 
-  private String generateKey(String seed) {
+  private String generateToken(String seed) {
     SecureRandom random = new SecureRandom(seed.getBytes());
     byte bytes[] = new byte[96];
     random.nextBytes(bytes);

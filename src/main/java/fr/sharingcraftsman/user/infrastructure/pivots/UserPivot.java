@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.pivots;
 
-import fr.sharingcraftsman.user.domain.admin.UserForBaseUserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
@@ -37,7 +37,7 @@ public class UserPivot {
             .build();
   }
 
-  public static UserEntity fromDomainToInfra(UserForBaseUserForAdmin collaborator) {
+  public static UserEntity fromDomainToInfra(UserForAdmin collaborator) {
     return new UserEntity(
             collaborator.getUsernameContent(),
             collaborator.getFirstname(),
@@ -49,9 +49,9 @@ public class UserPivot {
     );
   }
 
-  public static List<UserForBaseUserForAdmin> fromInfraToAdminDomain(List<UserEntity> userEntities) {
+  public static List<UserForAdmin> fromInfraToAdminDomain(List<UserEntity> userEntities) {
     return userEntities.stream()
-            .map(user -> UserForBaseUserForAdmin.from(
+            .map(user -> UserForAdmin.from(
                     user.getUsername(),
                     user.getPassword(),
                     user.getFirstname(),
@@ -69,8 +69,8 @@ public class UserPivot {
             .collect(Collectors.toList());
   }
 
-  public static UserForBaseUserForAdmin fromInfraToAdminDomain(UserEntity userEntity) {
-    return UserForBaseUserForAdmin.from(
+  public static UserForAdmin fromInfraToAdminDomain(UserEntity userEntity) {
+    return UserForAdmin.from(
             userEntity.getUsername(),
             userEntity.getPassword(),
             userEntity.getFirstname(),

@@ -1,13 +1,12 @@
 package fr.sharingcraftsman.user.domain.authentication;
 
+import fr.sharingcraftsman.user.common.DateConverter;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode
 public class AccessToken extends BaseToken {
-  public static final ValidTokenBuilder validTokenBuilder = new ValidTokenBuilder();
-
   private String accessToken;
   private String refreshToken;
   private LocalDateTime expirationDate;
@@ -30,33 +29,20 @@ public class AccessToken extends BaseToken {
     return expirationDate;
   }
 
+  public static AccessToken from(String accessToken, String refreshToken, LocalDateTime expirationDate) {
+    return new AccessToken(accessToken, refreshToken, expirationDate);
+  }
+
+  public static AccessToken fromOnlyAccessToken(String accessToken) {
+    return new AccessToken(accessToken, "", DateConverter.fromLongToLocalDateTime(0));
+  }
+
+  public static AccessToken fromOnlyRefreshToken(String refreshToken) {
+    return new AccessToken("", refreshToken, DateConverter.fromLongToLocalDateTime(0));
+  }
+
   @Override
   public boolean isValid() {
     return true;
-  }
-
-  public static class ValidTokenBuilder {
-    private String accessToken;
-    private String refreshToken;
-    private LocalDateTime expirationDate;
-
-    public ValidTokenBuilder withAccessToken(String accessToken) {
-      this.accessToken = accessToken;
-      return this;
-    }
-
-    public ValidTokenBuilder withRefreshToken(String refreshToken) {
-      this.refreshToken = refreshToken;
-      return this;
-    }
-
-    public ValidTokenBuilder expiringThe(LocalDateTime expirationDate) {
-      this.expirationDate = expirationDate;
-      return this;
-    }
-
-    public AccessToken build() {
-      return new AccessToken(accessToken, refreshToken, expirationDate);
-    }
   }
 }

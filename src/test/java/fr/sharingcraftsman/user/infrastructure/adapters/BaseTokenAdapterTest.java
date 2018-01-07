@@ -1,7 +1,9 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.authentication.*;
+import fr.sharingcraftsman.user.domain.authentication.AccessToken;
+import fr.sharingcraftsman.user.domain.authentication.BaseToken;
+import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.user.User;
@@ -21,7 +23,6 @@ import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,11 +45,7 @@ public class BaseTokenAdapterTest {
   @Before
   public void setUp() throws Exception {
     tokenAdapter = new AccessTokenAdapter(accessTokenJpaRepository);
-    token = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
-            .build();
+    token = AccessToken.from("aaa", "bbb", LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     client = Client.knownClient("client", "secret");
     user = User.from(credentials);
@@ -73,11 +70,11 @@ public class BaseTokenAdapterTest {
     accessTokenEntity.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(accessTokenJpaRepository.save(any(AccessTokenEntity.class))).willReturn(accessTokenEntity);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    AccessToken token = validTokenBuilder
-            .withAccessToken(generateKey(client.getName() + user.getUsername()))
-            .withRefreshToken(generateKey(client.getName() + user.getUsername()))
-            .expiringThe(dateService.getDayAt(8))
-            .build();
+    AccessToken token = AccessToken.from(
+            generateKey(client.getName() + user.getUsername()),
+            generateKey(client.getName() + user.getUsername()),
+            dateService.getDayAt(8)
+    );
 
     AccessToken createdToken = tokenAdapter.createNewToken(client, user, token);
 
@@ -108,11 +105,7 @@ public class BaseTokenAdapterTest {
   @Test
   public void should_return_a_valid_token_when_refresh_token_found() throws Exception {
     given(accessTokenJpaRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(new AccessTokenEntity("john@doe.fr", "client", "aaa", "bbb", Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant())));
-    AccessToken refreshToken = validTokenBuilder
-            .withAccessToken("")
-            .withRefreshToken("bbb")
-            .expiringThe(null)
-            .build();
+    AccessToken refreshToken = AccessToken.fromOnlyRefreshToken("bbb");
 
     BaseToken foundBaseToken = tokenAdapter.findTokenFromRefreshToken(client, credentials, refreshToken);
 

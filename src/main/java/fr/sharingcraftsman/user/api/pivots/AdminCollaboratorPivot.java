@@ -1,15 +1,15 @@
 package fr.sharingcraftsman.user.api.pivots;
 
 import fr.sharingcraftsman.user.api.admin.AdminUserDTO;
-import fr.sharingcraftsman.user.domain.admin.UserForBaseUserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public class AdminCollaboratorPivot {
-  public static UserForBaseUserForAdmin fromApiToDomain(AdminUserDTO user) {
-    return UserForBaseUserForAdmin.from(
+  public static UserForAdmin fromApiToDomain(AdminUserDTO user) {
+    return UserForAdmin.from(
             user.getUsername(),
             user.getPassword(),
             user.getFirstname(),

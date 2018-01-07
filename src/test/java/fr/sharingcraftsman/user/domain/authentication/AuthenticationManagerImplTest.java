@@ -2,12 +2,12 @@ package fr.sharingcraftsman.user.domain.authentication;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
+import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
+import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
-import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +17,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.time.LocalDateTime;
 import java.time.Month;
 
-import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,11 +46,7 @@ public class AuthenticationManagerImplTest {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     identifier = new AuthenticationManagerImpl(userRepository, accessTokenRepository, dateService);
-    oAuthToken = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
-            .build();
+    oAuthToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     client = Client.knownClient("client", "secret");
     credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     user = (new CollaboratorBuilder())
@@ -62,11 +57,7 @@ public class AuthenticationManagerImplTest {
 
   @Test
   public void should_generate_token_when_identifying() throws Exception {
-    AccessToken token = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(dateService.getDayAt(8))
-            .build();
+    AccessToken token = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(token);
     credentials.setStayLogged(true);
@@ -96,16 +87,8 @@ public class AuthenticationManagerImplTest {
 
   @Test
   public void should_not_validate_token_if_is_expired() throws Exception {
-    AccessToken token = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("")
-            .expiringThe(null)
-            .build();
-    AccessToken fetchedToken = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 10, 12, 0))
-            .build();
+    AccessToken token = AccessToken.fromOnlyAccessToken("aaa");
+    AccessToken fetchedToken = AccessToken.from("aaa", "bbb", LocalDateTime.of(2017, Month.DECEMBER, 10, 12, 0));
     given(accessTokenRepository.findTokenFromAccessToken(client, credentials, token)).willReturn(fetchedToken);
 
     boolean isValid = identifier.isTokenValid(credentials, client, token);
@@ -143,16 +126,8 @@ public class AuthenticationManagerImplTest {
 
   @Test
   public void should_not_validate_refresh_token_if_is_expired() throws Exception {
-    AccessToken token = validTokenBuilder
-            .withAccessToken("")
-            .withRefreshToken("bbb")
-            .expiringThe(null)
-            .build();
-    AccessToken fetchedToken = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 10, 12, 0))
-            .build();
+    AccessToken token = AccessToken.fromOnlyRefreshToken("bbb");
+    AccessToken fetchedToken = AccessToken.from("aaa", "bbb", LocalDateTime.of(2017, Month.DECEMBER, 10, 12, 0));
     given(accessTokenRepository.findTokenFromRefreshToken(client, credentials, token)).willReturn(fetchedToken);
 
     boolean isValid = identifier.isRefreshTokenValid(credentials, client, token);
@@ -162,11 +137,7 @@ public class AuthenticationManagerImplTest {
 
   @Test
   public void should_generate_new_token_when_request_with_refresh_token() throws Exception {
-    AccessToken token = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(dateService.getDayAt(8))
-            .build();
+    AccessToken token = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(token);
     credentials.setStayLogged(true);

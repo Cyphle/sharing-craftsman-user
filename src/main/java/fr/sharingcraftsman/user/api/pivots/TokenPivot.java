@@ -1,15 +1,12 @@
 package fr.sharingcraftsman.user.api.pivots;
 
 import fr.sharingcraftsman.user.api.models.TokenDTO;
-import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
+import fr.sharingcraftsman.user.domain.authentication.Credentials;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-
-import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 
 public class TokenPivot {
   public static TokenDTO fromDomainToApi(AccessToken token, Credentials credentials) {
@@ -24,10 +21,6 @@ public class TokenPivot {
   }
 
   public static AccessToken fromApiToDomain(TokenDTO token) {
-    return validTokenBuilder
-            .withAccessToken(token.getAccessToken())
-            .withRefreshToken(token.getRefreshToken())
-            .expiringThe(LocalDateTime.ofInstant(Instant.ofEpochMilli(token.getExpirationDate()), ZoneId.systemDefault()))
-            .build();
+    return AccessToken.from(token.getAccessToken(), token.getRefreshToken(), DateConverter.fromLongToLocalDateTime(token.getExpirationDate()));
   }
 }

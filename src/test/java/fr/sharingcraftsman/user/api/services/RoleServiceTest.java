@@ -2,10 +2,11 @@ package fr.sharingcraftsman.user.api.services;
 
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
+import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
-import fr.sharingcraftsman.user.domain.authentication.AccessToken;
-import fr.sharingcraftsman.user.domain.authorization.*;
+import fr.sharingcraftsman.user.domain.authorization.Group;
+import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
@@ -24,7 +25,6 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -63,11 +63,8 @@ public class RoleServiceTest {
     token.setUsername("john@doe.fr");
     token.setAccessToken("aaa");
 
-    validToken = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(dateService.getDayAt(8))
-            .build();
+    validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
+
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
   }
 
