@@ -1,7 +1,6 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.api.models.*;
-import fr.sharingcraftsman.user.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -64,6 +63,27 @@ public class UserController {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
+  }
+
+  /*
+  1. Lost password will check username and send email to email if set (or username if it is a mail and no email is set)
+  Otherwise, send error no email given
+  2. Generate change password key
+  3. Send by mail ? (will need a host)
+  4. Then use existing rouge change-password
+   */
+  @ApiOperation(value = "Endpoint to generate key when lost password", response = ResponseEntity.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.GET, value = "/lost-password")
+  public ResponseEntity requestLostPassword(@RequestHeader("client") String client,
+                                       @RequestHeader("secret") String secret,
+                                       @RequestHeader("username") String username,
+                                       @RequestHeader("front-end-host") String frontEndHost) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    return userService.generateLostPasswordKey(clientDTO, username, frontEndHost);
   }
 
   @ApiOperation(value = "Update profile endpoint", response = ProfileDTO.class)

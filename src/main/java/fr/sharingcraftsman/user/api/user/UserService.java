@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.services;
+package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.pivots.*;
@@ -151,6 +151,10 @@ public class UserService {
               .badRequest()
               .body(e.getMessage());
     }
+  }
+
+  public ResponseEntity generateLostPasswordKey(ClientDTO clientDTO, String username, String frontEndHost) {
+    throw new UnsupportedOperationException();
   }
 
   private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Credentials credentials) {

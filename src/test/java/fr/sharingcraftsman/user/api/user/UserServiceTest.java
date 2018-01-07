@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.services;
+package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
