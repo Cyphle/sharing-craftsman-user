@@ -40,13 +40,13 @@ public class AuthorizationEntityAuthorizationManagerTest {
 
   @Test
   public void should_get_authorizations_of_collaborator() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(new Group("USERS")));
-    given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(new Role("ROLE_USER")));
+    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(Group.from("USERS")));
+    given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
 
     Authorization authorization = authorizationManager.getAuthorizationsOf(credentials);
 
-    Role role = new Role("ROLE_USER");
-    Group group = new Group("USERS");
+    Role role = Role.from("ROLE_USER");
+    Group group = Group.from("USERS");
     group.addRole(role);
     Authorization expectedAuthorization = new Authorization();
     expectedAuthorization.addGroup(group);
@@ -62,7 +62,7 @@ public class AuthorizationEntityAuthorizationManagerTest {
 
   @Test
   public void should_not_add_group_if_collaborator_already_has_the_group() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(new Group("USERS")));
+    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(Group.from("USERS")));
 
     authorizationManager.addGroup(credentials, Groups.USERS);
 
@@ -78,7 +78,7 @@ public class AuthorizationEntityAuthorizationManagerTest {
 
   @Test
   public void should_not_remove_group_when_collaborator_does_not_have_it() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(new Group("ÆDMINS")));
+    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(Group.from("ÆDMINS")));
 
     authorizationManager.removeGroup(credentials, Groups.USERS);
 
@@ -87,7 +87,7 @@ public class AuthorizationEntityAuthorizationManagerTest {
 
   @Test
   public void should_remove_group_when_collaborator_has_group() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(new Group("USERS")));
+    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(Group.from("USERS")));
 
     authorizationManager.removeGroup(credentials, Groups.USERS);
 
@@ -96,46 +96,46 @@ public class AuthorizationEntityAuthorizationManagerTest {
 
   @Test
   public void should_create_new_group() throws Exception {
-    Group groupWithRoles = new Group("SUPER_ADMIN", new HashSet<>(Arrays.asList(new Role("ROLE_ROOT"), new Role("ROLE_ADMIN"), new Role("ROLE_USER"))));
+    Group groupWithRoles = Group.from("SUPER_ADMIN", new HashSet<>(Arrays.asList(Role.from("ROLE_ROOT"), Role.from("ROLE_ADMIN"), Role.from("ROLE_USER"))));
 
     authorizationManager.createNewGroupWithRoles(groupWithRoles);
 
-    Group groupRoot = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT"))));
-    Group groupAdmin = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ADMIN"))));
-    Group groupUser = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_USER"))));
+    Group groupRoot = Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_ROOT"))));
+    Group groupAdmin = Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_ADMIN"))));
+    Group groupUser = Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_USER"))));
     verify(authorizationRepository).createNewGroupsWithRole(Arrays.asList(groupRoot, groupAdmin, groupUser));
   }
 
   @Test
   public void should_not_create_group_if_already_exists() throws Exception {
-    Group superAdminUser = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_USER"))));
+    Group superAdminUser = Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_USER"))));
     given(authorizationRepository.getAllRolesWithTheirGroups()).willReturn(new HashSet<>(Collections.singletonList(superAdminUser)));
-    Group groupWithRoles = new Group("SUPER_ADMIN", new HashSet<>(Arrays.asList(new Role("ROLE_ROOT"), new Role("ROLE_ADMIN"), new Role("ROLE_USER"))));
+    Group groupWithRoles = Group.from("SUPER_ADMIN", new HashSet<>(Arrays.asList(Role.from("ROLE_ROOT"), Role.from("ROLE_ADMIN"), Role.from("ROLE_USER"))));
 
     authorizationManager.createNewGroupWithRoles(groupWithRoles);
 
-    Group groupRoot = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT"))));
-    Group groupAdmin = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ADMIN"))));
+    Group groupRoot = Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_ROOT"))));
+    Group groupAdmin = Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_ADMIN"))));
     verify(authorizationRepository).createNewGroupsWithRole(Arrays.asList(groupRoot, groupAdmin));
   }
 
   @Test
   public void should_remove_role_from_group() throws Exception {
-    Group groupWithRoles = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_USER"))));
+    Group groupWithRoles = Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_USER"))));
 
     authorizationManager.removeRoleFromGroup(groupWithRoles);
 
-    Group groupUser = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_USER"))));
+    Group groupUser = Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_USER"))));
     verify(authorizationRepository).removeRoleFromGroup(groupUser);
   }
 
   @Test
   public void should_remove_first_role_given_from_group() throws Exception {
-    Group groupWithRoles = new Group("SUPER_ADMIN", new HashSet<>(Arrays.asList(new Role("ROLE_ADMIN"), new Role("ROLE_USER"))));
+    Group groupWithRoles = Group.from("SUPER_ADMIN", new HashSet<>(Arrays.asList(Role.from("ROLE_ADMIN"), Role.from("ROLE_USER"))));
 
     authorizationManager.removeRoleFromGroup(groupWithRoles);
 
-    Group groupUser = new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ADMIN"))));
+    Group groupUser = Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_ADMIN"))));
     verify(authorizationRepository).removeRoleFromGroup(groupUser);
   }
 }

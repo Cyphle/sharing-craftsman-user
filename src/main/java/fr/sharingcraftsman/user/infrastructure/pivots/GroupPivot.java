@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 public class GroupPivot {
   public static List<Group> fromInfraToDomain(List<UserAuthorizationEntity> userAuthorizationEntities) {
     return userAuthorizationEntities.stream()
-            .map(group -> new Group(group.getGroup()))
+            .map(group -> Group.from(group.getGroup()))
             .collect(Collectors.toList());
   }
 
   public static AuthorizationEntity fromDomainToInfra(Group group) {
-    return new AuthorizationEntity(group.getName(), Lists.newArrayList(group.getRoles()).get(0).getRole());
+    return new AuthorizationEntity(group.getName(), Lists.newArrayList(group.getRoles()).get(0).getName());
   }
 }

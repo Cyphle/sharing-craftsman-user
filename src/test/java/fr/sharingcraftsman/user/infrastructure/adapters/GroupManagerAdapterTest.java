@@ -36,7 +36,7 @@ public class GroupManagerAdapterTest {
 
     List<Group> groups = groupManagerAdapter.findGroupsOf(usernameBuilder.from("john@doe.fr"));
 
-    assertThat(groups).containsExactly(new Group("USERS"));
+    assertThat(groups).containsExactly(Group.from("USERS"));
   }
 
   @Test

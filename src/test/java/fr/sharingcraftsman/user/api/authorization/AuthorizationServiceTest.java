@@ -71,9 +71,9 @@ public class AuthorizationServiceTest {
 
   @Test
   public void should_get_authorizations_of_user() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("john@doe.fr"))).willReturn(Arrays.asList(new Group("USERS"), new Group("ADMINS")));
-    given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(new Role("ROLE_USER")));
-    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("john@doe.fr"))).willReturn(Arrays.asList(Group.from("USERS"), Group.from("ADMINS")));
+    given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
 
     ResponseEntity response = authorizationService.getAuthorizations(clientDTO, token);
 

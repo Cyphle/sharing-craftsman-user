@@ -16,7 +16,7 @@ public class AuthorizationPivot {
       groupDTO.addRoles(
               group.getRoles()
                       .stream()
-                      .map(role -> new RoleDTO(role.getRole()))
+                      .map(role -> new RoleDTO(role.getName()))
                       .collect(Collectors.toList())
       );
       authorizationsDTO.addGroup(groupDTO);

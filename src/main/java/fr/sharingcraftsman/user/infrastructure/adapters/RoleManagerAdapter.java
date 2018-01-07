@@ -40,7 +40,7 @@ public class RoleManagerAdapter implements AuthorizationRepository {
 
   @Override
   public void removeRoleFromGroup(Group group) {
-    AuthorizationEntity authorizationEntity = authorizationJpaRepository.findFromGroupNameAndRole(group.getName(), Lists.newArrayList(group.getRoles()).get(0).getRole());
+    AuthorizationEntity authorizationEntity = authorizationJpaRepository.findFromGroupNameAndRole(group.getName(), Lists.newArrayList(group.getRoles()).get(0).getName());
     if (authorizationEntity != null)
       authorizationJpaRepository.delete(authorizationEntity);
   }

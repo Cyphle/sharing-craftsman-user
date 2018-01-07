@@ -17,17 +17,17 @@ public class GroupPivot {
 
   private static Set<RoleDTO> roleFromDomainToApi(Set<Role> roles) {
     return roles.stream()
-            .map(role -> new RoleDTO(role.getRole()))
+            .map(role -> new RoleDTO(role.getName()))
             .collect(Collectors.toSet());
   }
 
   public static Group fromApiToDomain(GroupDTO groupDTO) {
-    Group group = new Group(groupDTO.getName());
+    Group group = Group.from(groupDTO.getName());
     group.addRoles(
             groupDTO
                     .getRoles()
                     .stream()
-                    .map(role -> new Role(role.getRole()))
+                    .map(role -> Role.from(role.getRole()))
                     .collect(Collectors.toList())
     );
     return group;

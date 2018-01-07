@@ -55,7 +55,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             .stream()
             .filter(fetchedGroup -> fetchedGroup.getName().equals(group.getName()))
             .findFirst()
-            .orElse(new Group(""));
+            .orElse(Group.from(""));
 
     List<Group> rolesToAdd = group.asSeparatedGroupByRole()
             .stream()
@@ -67,7 +67,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
 
   @Override
   public void removeRoleFromGroup(Group group) {
-    Group filteredGroup = new Group(group.getName(), new HashSet<>(Collections.singletonList(Lists.newArrayList(group.getRoles()).get(0))));
+    Group filteredGroup = Group.from(group.getName(), new HashSet<>(Collections.singletonList(Lists.newArrayList(group.getRoles()).get(0))));
     authorizationRepository.removeRoleFromGroup(filteredGroup);
   }
 

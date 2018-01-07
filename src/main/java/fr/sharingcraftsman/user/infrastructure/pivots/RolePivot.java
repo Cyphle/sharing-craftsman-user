@@ -12,17 +12,17 @@ import java.util.stream.Collectors;
 public class RolePivot {
   public static List<Role> fromInfraToDomain(List<AuthorizationEntity> authorizationEntities) {
     return authorizationEntities.stream()
-            .map(groupRole -> new Role(groupRole.getRole()))
+            .map(groupRole -> Role.from(groupRole.getRole()))
             .collect(Collectors.toList());
   }
 
   public static Set<Group> fromInfraToDomainRolesGroupedByGroup(Iterable<AuthorizationEntity> roles) {
     Set<Group> groups = new HashSet<>();
-    roles.forEach(role -> groups.add(new Group(role.getGroup())));
+    roles.forEach(role -> groups.add(Group.from(role.getGroup())));
     roles.forEach(role -> {
       groups.forEach(group -> {
         if (role.getGroup().equals(group.getName()))
-          group.addRole(new Role(role.getRole()));
+          group.addRole(Role.from(role.getRole()));
       });
     });
     return groups;

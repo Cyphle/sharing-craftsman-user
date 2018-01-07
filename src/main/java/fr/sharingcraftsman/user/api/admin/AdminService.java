@@ -18,7 +18,6 @@ import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepo
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.PasswordException;
-import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
 import fr.sharingcraftsman.user.domain.admin.ports.Administration;
@@ -233,7 +232,7 @@ public class AdminService {
         if (adminGroup.get()
                 .getRoles()
                 .stream()
-                .noneMatch(role -> role.getRole().contains("ADMIN"))) {
+                .noneMatch(role -> role.getName().contains("ADMIN"))) {
           return HttpStatus.UNAUTHORIZED;
         }
       } else {

@@ -6,13 +6,17 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class Role {
-  private String role;
+  private String name;
 
-  public Role(String role) {
-    this.role = role;
+  private Role(String name) {
+    this.name = name;
   }
 
-  public String getRole() {
-    return role;
+  public String getName() {
+    return name;
+  }
+
+  public static Role from(String name) {
+    return new Role(name);
   }
 }
