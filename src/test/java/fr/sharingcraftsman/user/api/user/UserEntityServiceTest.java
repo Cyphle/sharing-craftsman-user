@@ -130,7 +130,7 @@ public class UserEntityServiceTest {
   public void should_get_change_password_token_when_requesting_to_change_password() throws Exception {
     User user = User.from("john@doe.fr", "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
-    ChangePasswordKey key = new ChangePasswordKey(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
+    ChangePasswordKey key = ChangePasswordKey.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(userRepository.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
 
@@ -168,7 +168,7 @@ public class UserEntityServiceTest {
   @Test
   public void should_update_profile_with_new_information() throws Exception {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
-    Profile profile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    Profile profile = Profile.from(usernameBuilder.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"));
     given(userRepository.findProfileOf(any(Username.class))).willReturn(profile);
     given(userRepository.updateProfileOf(any(Profile.class))).willReturn(profile);
 
@@ -184,9 +184,9 @@ public class UserEntityServiceTest {
   public void should_generate_key_when_lost_password() throws Exception {
     User user = User.from("john@doe.fr", "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
-    ChangePasswordKey key = new ChangePasswordKey(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
+    ChangePasswordKey key = ChangePasswordKey.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(userRepository.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
 
     ResponseEntity response = userService.generateLostPasswordKey(clientDTO, "john@doe.fr");
 

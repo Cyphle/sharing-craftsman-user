@@ -7,7 +7,7 @@ public class ChangePasswordKey {
   private final String key;
   private LocalDateTime expirationDate;
 
-  public ChangePasswordKey(User user, String key, LocalDateTime expirationDate) {
+  private ChangePasswordKey(User user, String key, LocalDateTime expirationDate) {
     this.user = user;
     this.key = key;
     this.expirationDate = expirationDate;

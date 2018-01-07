@@ -6,9 +6,8 @@ import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.Profile;
-import fr.sharingcraftsman.user.domain.user.ProfileBuilder;
+import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 
 import java.time.LocalDateTime;
@@ -85,15 +84,14 @@ public class UserPivot {
   }
 
   public static Profile fromInfraToDomainProfile(UserEntity userEntity) throws UsernameException {
-    return new ProfileBuilder()
-            .withUsername(usernameBuilder.from(userEntity.getUsername()))
-            .withFirstname(Name.of(userEntity.getFirstname()))
-            .withLastname(Name.of(userEntity.getLastname()))
-            .withEmail(Email.from(userEntity.getEmail()))
-            .withWebsite(Link.to(userEntity.getWebsite()))
-            .withGithub(Link.to(userEntity.getGithub()))
-            .withLinkedin(Link.to(userEntity.getLinkedin()))
-            .build();
+    return Profile.from(
+            usernameBuilder.from(userEntity.getUsername()),
+            Name.of(userEntity.getFirstname()),
+            Name.of(userEntity.getLastname()),
+            Email.from(userEntity.getEmail()),
+            Link.to(userEntity.getWebsite()),
+            Link.to(userEntity.getGithub()),
+            Link.to(userEntity.getLinkedin()));
   }
 
   public static UserEntity fromDomainToInfraProfile(Profile profile) {

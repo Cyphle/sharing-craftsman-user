@@ -20,7 +20,6 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -116,7 +115,14 @@ public class UserEntityAdapterTest {
 
     BaseProfile foundBaseProfile = userAdapter.findProfileOf(usernameBuilder.from("john@doe.fr"));
 
-    Profile expectedProfile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    Profile expectedProfile = Profile.from(
+            usernameBuilder.from("john@doe.fr"),
+            Name.of("John"),
+            Name.of("Doe"),
+            Email.from("john@doe.fr"),
+            Link.to("www.johndoe.fr"),
+            Link.to("github.com/johndoe"),
+            Link.to("linkedin.com/johndoe"));
     assertThat((Profile) foundBaseProfile).isEqualTo(expectedProfile);
     verify(userJpaRepository).findByUsername("john@doe.fr");
   }
@@ -126,7 +132,14 @@ public class UserEntityAdapterTest {
     UserEntity userEntity = new UserEntity("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
     given(userJpaRepository.save(any(UserEntity.class))).willReturn(userEntity);
-    Profile profile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    Profile profile = Profile.from(
+            usernameBuilder.from("john@doe.fr"),
+            Name.of("John"),
+            Name.of("Doe"),
+            Email.from("john@doe.fr"),
+            Link.to("www.johndoe.fr"),
+            Link.to("github.com/johndoe"),
+            Link.to("linkedin.com/johndoe"));
 
     BaseProfile foundBaseProfile = userAdapter.updateProfileOf(profile);
 

@@ -18,7 +18,7 @@ public class Profile extends BaseProfile {
   private Link github;
   private Link linkedin;
 
-  public Profile(Username username, Name firstname, Name lastname, Email email, Link website, Link github, Link linkedin) {
+  private Profile(Username username, Name firstname, Name lastname, Email email, Link website, Link github, Link linkedin) {
     this.username = username;
     this.firstname = firstname;
     this.lastname = lastname;
@@ -85,5 +85,9 @@ public class Profile extends BaseProfile {
   @Override
   public boolean isKnown() {
     return true;
+  }
+
+  public static Profile from(Username username, Name firstname, Name lastname, Email email, Link website, Link github, Link linkedin) {
+    return new Profile(username, firstname, lastname, email, website, github, linkedin);
   }
 }

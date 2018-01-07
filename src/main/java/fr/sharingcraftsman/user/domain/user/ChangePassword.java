@@ -10,7 +10,7 @@ public class ChangePassword {
   private final Password oldPassword;
   private final Password newPassword;
 
-  public ChangePassword(String changePasswordKey, Password oldPassword, Password newPassword) {
+  private ChangePassword(String changePasswordKey, Password oldPassword, Password newPassword) {
     this.changePasswordKey = changePasswordKey;
     this.oldPassword = oldPassword;
     this.newPassword = newPassword;
