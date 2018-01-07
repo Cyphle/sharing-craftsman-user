@@ -10,7 +10,7 @@ import fr.sharingcraftsman.user.domain.company.Collaborator;
 import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
 import fr.sharingcraftsman.user.domain.company.KnownProfile;
 import fr.sharingcraftsman.user.domain.company.ProfileBuilder;
-import fr.sharingcraftsman.user.infrastructure.models.User;
+import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,24 +21,24 @@ import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 
 public class UserPivot {
-  public static User fromDomainToInfra(Collaborator collaborator) {
-    return new User(collaborator.getUsername(), collaborator.getPassword());
+  public static UserEntity fromDomainToInfra(Collaborator collaborator) {
+    return new UserEntity(collaborator.getUsername(), collaborator.getPassword());
   }
 
-  public static Collaborator fromInfraToDomain(User user) throws CredentialsException {
-    String changePasswordKey = user.getChangePasswordKey() != null ? user.getChangePasswordKey() : "";
-    LocalDateTime changePasswordKeyExpirationDate = user.getChangePasswordExpirationDate() != null ? LocalDateTime.ofInstant(user.getChangePasswordExpirationDate().toInstant(), ZoneId.systemDefault()) : null;
+  public static Collaborator fromInfraToDomain(UserEntity userEntity) throws CredentialsException {
+    String changePasswordKey = userEntity.getChangePasswordKey() != null ? userEntity.getChangePasswordKey() : "";
+    LocalDateTime changePasswordKeyExpirationDate = userEntity.getChangePasswordExpirationDate() != null ? LocalDateTime.ofInstant(userEntity.getChangePasswordExpirationDate().toInstant(), ZoneId.systemDefault()) : null;
 
     return (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from(user.getUsername()))
-            .withPassword(user.getPassword() != null ? passwordBuilder.from(user.getPassword()) : null)
+            .withUsername(usernameBuilder.from(userEntity.getUsername()))
+            .withPassword(userEntity.getPassword() != null ? passwordBuilder.from(userEntity.getPassword()) : null)
             .withChangePasswordKey(changePasswordKey)
             .withChangePasswordKeyExpirationDate(changePasswordKeyExpirationDate)
             .build();
   }
 
-  public static User fromDomainToInfra(AdminCollaborator collaborator) {
-    return new User(
+  public static UserEntity fromDomainToInfra(AdminCollaborator collaborator) {
+    return new UserEntity(
             collaborator.getUsernameContent(),
             collaborator.getFirstname(),
             collaborator.getLastname(),
@@ -49,8 +49,8 @@ public class UserPivot {
     );
   }
 
-  public static List<AdminCollaborator> fromInfraToAdminDomain(List<User> users) {
-    return users.stream()
+  public static List<AdminCollaborator> fromInfraToAdminDomain(List<UserEntity> userEntities) {
+    return userEntities.stream()
             .map(user -> AdminCollaborator.from(
                     user.getUsername(),
                     user.getPassword(),
@@ -69,36 +69,36 @@ public class UserPivot {
             .collect(Collectors.toList());
   }
 
-  public static AdminCollaborator fromInfraToAdminDomain(User user) {
+  public static AdminCollaborator fromInfraToAdminDomain(UserEntity userEntity) {
     return AdminCollaborator.from(
-            user.getUsername(),
-            user.getPassword(),
-            user.getFirstname(),
-            user.getLastname(),
-            user.getEmail(),
-            user.getWebsite(),
-            user.getGithub(),
-            user.getLinkedin(),
-            user.getChangePasswordKey(),
-            user.getChangePasswordExpirationDate(),
-            user.isActive(),
-            user.getCreationDate(),
-            user.getLastUpdateDate());
+            userEntity.getUsername(),
+            userEntity.getPassword(),
+            userEntity.getFirstname(),
+            userEntity.getLastname(),
+            userEntity.getEmail(),
+            userEntity.getWebsite(),
+            userEntity.getGithub(),
+            userEntity.getLinkedin(),
+            userEntity.getChangePasswordKey(),
+            userEntity.getChangePasswordExpirationDate(),
+            userEntity.isActive(),
+            userEntity.getCreationDate(),
+            userEntity.getLastUpdateDate());
   }
 
-  public static KnownProfile fromInfraToDomainProfile(User user) throws UsernameException {
+  public static KnownProfile fromInfraToDomainProfile(UserEntity userEntity) throws UsernameException {
     return new ProfileBuilder()
-            .withUsername(usernameBuilder.from(user.getUsername()))
-            .withFirstname(Name.of(user.getFirstname()))
-            .withLastname(Name.of(user.getLastname()))
-            .withEmail(Email.from(user.getEmail()))
-            .withWebsite(Link.to(user.getWebsite()))
-            .withGithub(Link.to(user.getGithub()))
-            .withLinkedin(Link.to(user.getLinkedin()))
+            .withUsername(usernameBuilder.from(userEntity.getUsername()))
+            .withFirstname(Name.of(userEntity.getFirstname()))
+            .withLastname(Name.of(userEntity.getLastname()))
+            .withEmail(Email.from(userEntity.getEmail()))
+            .withWebsite(Link.to(userEntity.getWebsite()))
+            .withGithub(Link.to(userEntity.getGithub()))
+            .withLinkedin(Link.to(userEntity.getLinkedin()))
             .build();
   }
 
-  public static User fromDomainToInfraProfile(KnownProfile profile) {
-    return new User(profile.getUsernameContent(), profile.getFirstnameContent(), profile.getLastnameContent(), profile.getEmailContent(), profile.getWebsiteContent(), profile.getGithubContent(), profile.getLinkedinContent());
+  public static UserEntity fromDomainToInfraProfile(KnownProfile profile) {
+    return new UserEntity(profile.getUsernameContent(), profile.getFirstnameContent(), profile.getLastnameContent(), profile.getEmailContent(), profile.getWebsiteContent(), profile.getGithubContent(), profile.getLinkedinContent());
   }
 }

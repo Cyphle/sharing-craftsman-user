@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.infrastructure.repositories;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.infrastructure.models.OAuthClient;
+import fr.sharingcraftsman.user.infrastructure.models.ClientEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,12 +27,12 @@ public class ClientRepositoryTest {
 
   @Before
   public void setUp() throws Exception {
-    entityManager.persist(new OAuthClient("client", "secret"));
+    entityManager.persist(new ClientEntity("client", "secret"));
   }
 
   @Test
   public void should_get_client_by_name_and_secret() throws Exception {
-    OAuthClient client = clientRepository.findByNameAndSecret("client", "secret");
+    ClientEntity client = clientRepository.findByNameAndSecret("client", "secret");
 
     assertThat(client.getName()).isEqualTo("client");
     assertThat(client.getSecret()).isEqualTo("secret");

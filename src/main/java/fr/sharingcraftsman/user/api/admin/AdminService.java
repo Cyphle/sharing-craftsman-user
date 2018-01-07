@@ -207,7 +207,7 @@ public class AdminService {
 
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
+      log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
       return true;
     }
     return false;

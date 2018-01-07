@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "group_roles_mapping")
 @ToString
 @EqualsAndHashCode
-public class GroupRole {
+public class AuthorizationEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
@@ -19,10 +19,10 @@ public class GroupRole {
   @Column(name = "role")
   private String role;
 
-  public GroupRole() {
+  public AuthorizationEntity() {
   }
 
-  public GroupRole(String group, String role) {
+  public AuthorizationEntity(String group, String role) {
     this.group = group;
     this.role = role;
   }

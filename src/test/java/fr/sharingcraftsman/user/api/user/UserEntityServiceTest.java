@@ -38,7 +38,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserServiceTest {
+public class UserEntityServiceTest {
   @Mock
   private HumanResourceAdministrator humanResourceAdministrator;
   @Mock

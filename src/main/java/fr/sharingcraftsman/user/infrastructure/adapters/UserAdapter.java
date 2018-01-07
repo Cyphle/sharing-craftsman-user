@@ -6,7 +6,7 @@ import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.company.*;
-import fr.sharingcraftsman.user.infrastructure.models.User;
+import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,21 +28,21 @@ public class UserAdapter implements HumanResourceAdministrator {
 
   @Override
   public void createNewCollaborator(Collaborator collaborator) {
-    User user = UserPivot.fromDomainToInfra(collaborator);
-    user.setCreationDate(dateService.nowInDate());
-    user.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(user);
+    UserEntity userEntity = UserPivot.fromDomainToInfra(collaborator);
+    userEntity.setCreationDate(dateService.nowInDate());
+    userEntity.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(userEntity);
   }
 
   @Override
   public Person findCollaboratorFromUsername(Username username) {
-    User foundUser = userRepository.findByUsername(username.getUsername());
+    UserEntity foundUserEntity = userRepository.findByUsername(username.getUsername());
 
-    if (foundUser == null)
+    if (foundUserEntity == null)
       return new UnknownCollaborator();
 
     try {
-      return UserPivot.fromInfraToDomain(foundUser);
+      return UserPivot.fromInfraToDomain(foundUserEntity);
     } catch (CredentialsException e) {
       return new UnknownCollaborator();
     }
@@ -50,13 +50,13 @@ public class UserAdapter implements HumanResourceAdministrator {
 
   @Override
   public Person findCollaboratorFromCredentials(Credentials credentials) {
-    User foundUser = userRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
+    UserEntity foundUserEntity = userRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
 
-    if (foundUser == null)
+    if (foundUserEntity == null)
       return new UnknownCollaborator();
 
     try {
-      return UserPivot.fromInfraToDomain(foundUser);
+      return UserPivot.fromInfraToDomain(foundUserEntity);
     } catch (CredentialsException e) {
       return new UnknownCollaborator();
     }
@@ -64,40 +64,40 @@ public class UserAdapter implements HumanResourceAdministrator {
 
   @Override
   public void deleteChangePasswordKeyOf(Credentials credentials) {
-    User user = userRepository.findByUsername(credentials.getUsernameContent());
-    user.setChangePasswordKey("");
-    user.setChangePasswordExpirationDate(null);
-    user.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(user);
+    UserEntity userEntity = userRepository.findByUsername(credentials.getUsernameContent());
+    userEntity.setChangePasswordKey("");
+    userEntity.setChangePasswordExpirationDate(null);
+    userEntity.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(userEntity);
   }
 
   @Override
   public ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey) {
-    User user = userRepository.findByUsername(changePasswordKey.getUsername());
-    user.setChangePasswordKey(changePasswordKey.getKey());
-    user.setChangePasswordExpirationDate(Date.from(changePasswordKey.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
-    user.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(user);
+    UserEntity userEntity = userRepository.findByUsername(changePasswordKey.getUsername());
+    userEntity.setChangePasswordKey(changePasswordKey.getKey());
+    userEntity.setChangePasswordExpirationDate(Date.from(changePasswordKey.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
+    userEntity.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(userEntity);
     return changePasswordKey;
   }
 
   @Override
   public void updateCollaboratorPassword(Collaborator collaborator) {
-    User user = userRepository.findByUsername(collaborator.getUsername());
-    user.setPassword(collaborator.getPassword());
-    user.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(user);
+    UserEntity userEntity = userRepository.findByUsername(collaborator.getUsername());
+    userEntity.setPassword(collaborator.getPassword());
+    userEntity.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(userEntity);
   }
 
   @Override
   public Profile findProfileOf(Username username) {
-    User user = userRepository.findByUsername(username.getUsername());
+    UserEntity userEntity = userRepository.findByUsername(username.getUsername());
 
-    if (user == null)
+    if (userEntity == null)
       return new UnknownProfile();
 
     try {
-      return UserPivot.fromInfraToDomainProfile(user);
+      return UserPivot.fromInfraToDomainProfile(userEntity);
     } catch (UsernameException e) {
       return new UnknownProfile();
     }
@@ -105,12 +105,12 @@ public class UserAdapter implements HumanResourceAdministrator {
 
   @Override
   public Profile updateProfileOf(KnownProfile profileToUpdate) {
-    User user = userRepository.findByUsername(profileToUpdate.getUsernameContent());
-    user.updateFromProfile(UserPivot.fromDomainToInfraProfile(profileToUpdate));
-    user.setLastUpdateDate(dateService.nowInDate());
-    User updatedUser = userRepository.save(user);
+    UserEntity userEntity = userRepository.findByUsername(profileToUpdate.getUsernameContent());
+    userEntity.updateFromProfile(UserPivot.fromDomainToInfraProfile(profileToUpdate));
+    userEntity.setLastUpdateDate(dateService.nowInDate());
+    UserEntity updatedUserEntity = userRepository.save(userEntity);
     try {
-      return UserPivot.fromInfraToDomainProfile(updatedUser);
+      return UserPivot.fromInfraToDomainProfile(updatedUserEntity);
     } catch (UsernameException e) {
       return new UnknownProfile();
     }

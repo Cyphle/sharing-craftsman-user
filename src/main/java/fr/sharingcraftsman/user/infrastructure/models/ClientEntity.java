@@ -8,7 +8,7 @@ import java.util.Date;
 @Entity
 @Table(name = "clients")
 @EqualsAndHashCode
-public class OAuthClient {
+public class ClientEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
@@ -24,10 +24,10 @@ public class OAuthClient {
   @Column(name = "last_update_date")
   private Date lastUpdateDate;
 
-  public OAuthClient() {
+  public ClientEntity() {
   }
 
-  public OAuthClient(String name, String secret) {
+  public ClientEntity(String name, String secret) {
     this.name = name;
     this.secret = secret;
   }

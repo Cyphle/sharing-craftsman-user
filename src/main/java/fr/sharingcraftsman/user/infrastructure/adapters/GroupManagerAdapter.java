@@ -4,9 +4,9 @@ import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.GroupAdministrator;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.infrastructure.models.UserGroup;
+import fr.sharingcraftsman.user.infrastructure.models.UserAuthorizationEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.GroupPivot;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserGroupRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserAuthorizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,26 +14,26 @@ import java.util.List;
 
 @Service
 public class GroupManagerAdapter implements GroupAdministrator {
-  private UserGroupRepository userGroupRepository;
+  private UserAuthorizationRepository userAuthorizationRepository;
 
   @Autowired
-  public GroupManagerAdapter(UserGroupRepository userGroupRepository) {
-    this.userGroupRepository = userGroupRepository;
+  public GroupManagerAdapter(UserAuthorizationRepository userAuthorizationRepository) {
+    this.userAuthorizationRepository = userAuthorizationRepository;
   }
 
   @Override
   public List<Group> findGroupsOf(Username username) {
-    return GroupPivot.fromInfraToDomain(userGroupRepository.findByUsername(username.getUsername()));
+    return GroupPivot.fromInfraToDomain(userAuthorizationRepository.findByUsername(username.getUsername()));
   }
 
   @Override
   public void addGroupToCollaborator(Username username, Groups group) {
-    userGroupRepository.save(new UserGroup(username.getUsername(), group.name()));
+    userAuthorizationRepository.save(new UserAuthorizationEntity(username.getUsername(), group.name()));
   }
 
   @Override
   public void removeGroupFromCollaborator(Username username, Groups group) {
-    UserGroup userGroup = userGroupRepository.findByUsernameAndGroup(username.getUsername(), group.name());
-    userGroupRepository.delete(userGroup);
+    UserAuthorizationEntity userAuthorizationEntity = userAuthorizationRepository.findByUsernameAndGroup(username.getUsername(), group.name());
+    userAuthorizationRepository.delete(userAuthorizationEntity);
   }
 }

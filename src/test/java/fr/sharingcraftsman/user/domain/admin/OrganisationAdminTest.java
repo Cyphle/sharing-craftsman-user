@@ -4,7 +4,6 @@ import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
 import fr.sharingcraftsman.user.domain.company.CollaboratorException;
 import fr.sharingcraftsman.user.domain.company.UnknownCollaborator;
-import fr.sharingcraftsman.user.infrastructure.models.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

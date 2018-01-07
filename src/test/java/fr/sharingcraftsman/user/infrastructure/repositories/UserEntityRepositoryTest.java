@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.infrastructure.repositories;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.infrastructure.models.User;
+import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Test;
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {UserApplication.class})
 @DataJpaTest
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class UserRepositoryTest {
+public class UserEntityRepositoryTest {
   @Autowired
   private TestEntityManager entityManager;
 
@@ -35,38 +35,38 @@ public class UserRepositoryTest {
 
   @Test
   public void should_save_a_new_user() throws Exception {
-    userRepository.save(new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    userRepository.save(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    User expectedUser = new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
-    expectedUser.setId(1);
+    UserEntity expectedUserEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
+    expectedUserEntity.setId(1);
     assertThat(Lists.newArrayList(userRepository.findAll())).containsExactly(
-      expectedUser
+            expectedUserEntity
     );
   }
 
   @Test
   public void should_get_user_by_username() throws Exception {
-    entityManager.persist(new User("john@doe.fr", "password"));
-    entityManager.persist(new User("hello@world.fr", "toto"));
+    entityManager.persist(new UserEntity("john@doe.fr", "password"));
+    entityManager.persist(new UserEntity("hello@world.fr", "toto"));
 
-    User expectedUser = new User("hello@world.fr", "toto");
-    expectedUser.setId(2);
-    assertThat(userRepository.findByUsername("hello@world.fr")).isEqualTo(expectedUser);
+    UserEntity expectedUserEntity = new UserEntity("hello@world.fr", "toto");
+    expectedUserEntity.setId(2);
+    assertThat(userRepository.findByUsername("hello@world.fr")).isEqualTo(expectedUserEntity);
   }
 
   @Test
   public void should_delete_change_password_token_for_user() throws Exception {
-    User user = new User("hello@world.com", "password");
-    user.setChangePasswordKey("aaa");
-    user.setChangePasswordExpirationDate(new Date());
-    entityManager.persist(user);
+    UserEntity userEntity = new UserEntity("hello@world.com", "password");
+    userEntity.setChangePasswordKey("aaa");
+    userEntity.setChangePasswordExpirationDate(new Date());
+    entityManager.persist(userEntity);
 
-    user.setChangePasswordKey("");
-    user.setChangePasswordExpirationDate(null);
-    userRepository.save(user);
-    User foundUser = userRepository.findByUsername("hello@world.com");
+    userEntity.setChangePasswordKey("");
+    userEntity.setChangePasswordExpirationDate(null);
+    userRepository.save(userEntity);
+    UserEntity foundUserEntity = userRepository.findByUsername("hello@world.com");
 
-    assertThat(foundUser.getChangePasswordKey()).isEmpty();
-    assertThat(foundUser.getChangePasswordExpirationDate()).isNull();
+    assertThat(foundUserEntity.getChangePasswordKey()).isEmpty();
+    assertThat(foundUserEntity.getChangePasswordExpirationDate()).isNull();
   }
 }

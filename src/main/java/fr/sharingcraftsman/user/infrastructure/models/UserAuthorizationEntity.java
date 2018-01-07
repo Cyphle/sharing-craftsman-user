@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "user_groups")
 @ToString
 @EqualsAndHashCode
-public class UserGroup {
+public class UserAuthorizationEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
@@ -19,10 +19,10 @@ public class UserGroup {
   @Column(name = "access_group")
   private String group;
 
-  public UserGroup() {
+  public UserAuthorizationEntity() {
   }
 
-  public UserGroup(String username, String group) {
+  public UserAuthorizationEntity(String username, String group) {
     this.username = username;
     this.group = group;
   }

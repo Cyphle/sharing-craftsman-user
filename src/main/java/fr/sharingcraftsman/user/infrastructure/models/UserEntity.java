@@ -9,7 +9,7 @@ import java.util.Date;
 @Entity
 @Table(name = "users")
 @ToString
-public class User {
+public class UserEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
@@ -41,14 +41,14 @@ public class User {
   @Column(name = "change_password_expiration_date")
   private Date changePasswordExpirationDate;
 
-  public User() { }
+  public UserEntity() { }
 
-  public User(String username, String password) {
+  public UserEntity(String username, String password) {
     this.username = username;
     this.password = password;
   }
 
-  public User(String username, String firstname, String lastname, String email, String website, String github, String linkedin) {
+  public UserEntity(String username, String firstname, String lastname, String email, String website, String github, String linkedin) {
     this.username = username;
     this.firstname = firstname;
     this.lastname = lastname;
@@ -58,7 +58,7 @@ public class User {
     this.linkedin = linkedin;
   }
 
-  public User(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin) {
+  public UserEntity(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin) {
     this(username, firstname, lastname, email, website, github, linkedin);
     this.password = password;
   }
@@ -175,13 +175,13 @@ public class User {
     this.changePasswordExpirationDate = changePasswordExpirationDate;
   }
 
-  public void updateFromProfile(User user) {
-    firstname = user.firstname;
-    lastname = user.lastname;
-    email = user.email;
-    website = user.website;
-    github = user.github;
-    linkedin = user.linkedin;
+  public void updateFromProfile(UserEntity userEntity) {
+    firstname = userEntity.firstname;
+    lastname = userEntity.lastname;
+    email = userEntity.email;
+    website = userEntity.website;
+    github = userEntity.github;
+    linkedin = userEntity.linkedin;
   }
 
   public void updateFromAdminCollaborator(AdminCollaborator collaborator) {
@@ -199,12 +199,12 @@ public class User {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    User user = (User) o;
+    UserEntity userEntity = (UserEntity) o;
 
-    if (username != null ? !username.equals(user.username) : user.username != null) return false;
-    if (lastname != null ? !lastname.equals(user.lastname) : user.lastname != null) return false;
-    if (firstname != null ? !firstname.equals(user.firstname) : user.firstname != null) return false;
-    return password != null ? password.equals(user.password) : user.password == null;
+    if (username != null ? !username.equals(userEntity.username) : userEntity.username != null) return false;
+    if (lastname != null ? !lastname.equals(userEntity.lastname) : userEntity.lastname != null) return false;
+    if (firstname != null ? !firstname.equals(userEntity.firstname) : userEntity.firstname != null) return false;
+    return password != null ? password.equals(userEntity.password) : userEntity.password == null;
   }
 
   @Override

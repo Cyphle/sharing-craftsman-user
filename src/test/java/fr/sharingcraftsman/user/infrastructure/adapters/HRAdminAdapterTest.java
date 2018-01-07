@@ -5,7 +5,7 @@ import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.admin.AdminPerson;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.company.*;
-import fr.sharingcraftsman.user.infrastructure.models.User;
+import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,19 +42,19 @@ public class HRAdminAdapterTest {
 
   @Test
   public void should_get_all_collaborators() throws Exception {
-    User user = new User("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
-    user.setActive(true);
-    user.setCreationDate(new Date());
-    user.setLastUpdateDate(new Date());
-    user.setChangePasswordKey("");
-    user.setChangePasswordExpirationDate(null);
-    User userTwo = new User("foo@bar.fr", "password", "Foo", "Bar", "foo@bar.fr", "www.foobar.fr", "github.com/foobar", "linkedin.com/foobar");
-    userTwo.setActive(true);
-    userTwo.setCreationDate(new Date());
-    userTwo.setLastUpdateDate(new Date());
-    userTwo.setChangePasswordKey("");
-    userTwo.setChangePasswordExpirationDate(null);
-    given(userRepository.findAll()).willReturn(Arrays.asList(user, userTwo));
+    UserEntity userEntity = new UserEntity("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
+    userEntity.setActive(true);
+    userEntity.setCreationDate(new Date());
+    userEntity.setLastUpdateDate(new Date());
+    userEntity.setChangePasswordKey("");
+    userEntity.setChangePasswordExpirationDate(null);
+    UserEntity userEntityTwo = new UserEntity("foo@bar.fr", "password", "Foo", "Bar", "foo@bar.fr", "www.foobar.fr", "github.com/foobar", "linkedin.com/foobar");
+    userEntityTwo.setActive(true);
+    userEntityTwo.setCreationDate(new Date());
+    userEntityTwo.setLastUpdateDate(new Date());
+    userEntityTwo.setChangePasswordKey("");
+    userEntityTwo.setChangePasswordExpirationDate(null);
+    given(userRepository.findAll()).willReturn(Arrays.asList(userEntity, userEntityTwo));
 
     hrAdminAdapter.getAllCollaborators();
 
@@ -65,12 +65,12 @@ public class HRAdminAdapterTest {
   public void should_delete_user() throws Exception {
     hrAdminAdapter.deleteCollaborator(usernameBuilder.from("hello@world.fr"));
 
-    verify(userRepository).delete(any(User.class));
+    verify(userRepository).delete(any(UserEntity.class));
   }
 
   @Test
   public void should_get_user_by_username() throws Exception {
-    given(userRepository.findByUsername("john@doe.fr")).willReturn(new User("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     Person collaborator = hrAdminAdapter.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"));
 
@@ -80,13 +80,13 @@ public class HRAdminAdapterTest {
 
   @Test
   public void should_get_user_by_username_in_admin_collaborator_object() throws Exception {
-    User user = new User("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
-    user.setActive(true);
-    user.setCreationDate(new Date());
-    user.setLastUpdateDate(new Date());
-    user.setChangePasswordKey("");
-    user.setChangePasswordExpirationDate(null);
-    given(userRepository.findByUsername("admin@toto.fr")).willReturn(user);
+    UserEntity userEntity = new UserEntity("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    userEntity.setActive(true);
+    userEntity.setCreationDate(new Date());
+    userEntity.setLastUpdateDate(new Date());
+    userEntity.setChangePasswordKey("");
+    userEntity.setChangePasswordExpirationDate(null);
+    given(userRepository.findByUsername("admin@toto.fr")).willReturn(userEntity);
 
     AdminPerson collaborator = hrAdminAdapter.findAdminCollaboratorFromUsername(usernameBuilder.from("admin@toto.fr"));
 
@@ -96,19 +96,19 @@ public class HRAdminAdapterTest {
 
   @Test
   public void should_update_user() throws Exception {
-    User userToUpdate = new User("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
-    given(userRepository.findByUsername("admin@toto.fr")).willReturn(userToUpdate);
+    UserEntity userEntityToUpdate = new UserEntity("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    given(userRepository.findByUsername("admin@toto.fr")).willReturn(userEntityToUpdate);
 
     AdminCollaborator collaboratorToUpdate = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     hrAdminAdapter.updateCollaborator(collaboratorToUpdate);
 
-    User updatedUser = new User("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
-    updatedUser.setActive(true);
-    updatedUser.setCreationDate(new Date());
-    updatedUser.setLastUpdateDate(new Date());
-    updatedUser.setChangePasswordKey("");
-    updatedUser.setChangePasswordExpirationDate(null);
-    verify(userRepository).save(updatedUser);
+    UserEntity updatedUserEntity = new UserEntity("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    updatedUserEntity.setActive(true);
+    updatedUserEntity.setCreationDate(new Date());
+    updatedUserEntity.setLastUpdateDate(new Date());
+    updatedUserEntity.setChangePasswordKey("");
+    updatedUserEntity.setChangePasswordExpirationDate(null);
+    verify(userRepository).save(updatedUserEntity);
   }
 
   @Test
@@ -116,7 +116,7 @@ public class HRAdminAdapterTest {
     AdminCollaborator collaborator = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     hrAdminAdapter.createCollaborator(collaborator);
 
-    User newUser = new User("admin@toto.fr", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
-    verify(userRepository).save(newUser);
+    UserEntity newUserEntity = new UserEntity("admin@toto.fr", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    verify(userRepository).save(newUserEntity);
   }
 }

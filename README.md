@@ -3,7 +3,7 @@
 User microservice based on OAuth2 authentication schema. (Simplified schema without scope notion)
 
 ## Role
-- Authenticate users
+- Authenticate userEntities
 - Send collaborator details
 - Deliver token
 - Verify token validity

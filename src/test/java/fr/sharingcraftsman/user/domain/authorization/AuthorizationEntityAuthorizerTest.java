@@ -21,7 +21,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GroupRoleAuthorizerTest {
+public class AuthorizationEntityAuthorizerTest {
   private Authorizer authorizer;
   private Credentials credentials;
   @Mock

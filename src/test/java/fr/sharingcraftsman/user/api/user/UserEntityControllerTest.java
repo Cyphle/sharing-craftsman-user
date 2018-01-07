@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {UserApplication.class})
 @WebMvcTest(UserController.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class UserControllerTest {
+public class UserEntityControllerTest {
   @Autowired
   private MockMvc mvc;
 

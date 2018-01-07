@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {UserApplication.class})
 @WebMvcTest(UserAdminController.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class UserAdminControllerTest {
+public class UserEntityAdminControllerTest {
   @Autowired
   private MockMvc mvc;
 

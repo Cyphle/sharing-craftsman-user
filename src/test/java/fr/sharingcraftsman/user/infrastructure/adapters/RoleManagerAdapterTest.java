@@ -2,8 +2,8 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
-import fr.sharingcraftsman.user.infrastructure.models.GroupRole;
-import fr.sharingcraftsman.user.infrastructure.repositories.GroupRoleRepository;
+import fr.sharingcraftsman.user.infrastructure.models.AuthorizationEntity;
+import fr.sharingcraftsman.user.infrastructure.repositories.AuthorizationRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,16 +20,16 @@ import static org.mockito.Mockito.verify;
 public class RoleManagerAdapterTest {
   private RoleManagerAdapter roleManagerAdapter;
   @Mock
-  private GroupRoleRepository groupRoleRepository;
+  private AuthorizationRepository authorizationRepository;
 
   @Before
   public void setUp() throws Exception {
-    roleManagerAdapter = new RoleManagerAdapter(groupRoleRepository);
+    roleManagerAdapter = new RoleManagerAdapter(authorizationRepository);
   }
 
   @Test
   public void should_get_roles_of_given_group() throws Exception {
-    given(groupRoleRepository.findByGroup("USERS")).willReturn(Collections.singletonList(new GroupRole("USERS", "ROLE_USER")));
+    given(authorizationRepository.findByGroup("USERS")).willReturn(Collections.singletonList(new AuthorizationEntity("USERS", "ROLE_USER")));
 
     List<Role> roles = roleManagerAdapter.getRolesOf("USERS");
 
@@ -39,12 +39,12 @@ public class RoleManagerAdapterTest {
 
   @Test
   public void should_get_all_roles_with_groups() throws Exception {
-    List<GroupRole> roles = Arrays.asList(
-            new GroupRole("USERS", "ROLE_USER"),
-            new GroupRole("ADMINS", "ROLE_ADMIN"),
-            new GroupRole("ADMINS", "ROLE_USER")
+    List<AuthorizationEntity> roles = Arrays.asList(
+            new AuthorizationEntity("USERS", "ROLE_USER"),
+            new AuthorizationEntity("ADMINS", "ROLE_ADMIN"),
+            new AuthorizationEntity("ADMINS", "ROLE_USER")
     );
-    given(groupRoleRepository.findAll()).willReturn(roles);
+    given(authorizationRepository.findAll()).willReturn(roles);
 
     Set<Group> fetchedRoles = roleManagerAdapter.getAllRolesWithTheirGroups();
 
@@ -62,15 +62,15 @@ public class RoleManagerAdapterTest {
   public void should_create_new_group() throws Exception {
     roleManagerAdapter.createNewGroupsWithRole(Collections.singletonList(new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT"))))));
 
-    verify(groupRoleRepository).save(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
+    verify(authorizationRepository).save(new AuthorizationEntity("SUPER_ADMIN", "ROLE_ROOT"));
   }
 
   @Test
   public void should_delete_group() throws Exception {
-    given(groupRoleRepository.findFromGroupNameAndRole("SUPER_ADMIN", "ROLE_ROOT")).willReturn(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
+    given(authorizationRepository.findFromGroupNameAndRole("SUPER_ADMIN", "ROLE_ROOT")).willReturn(new AuthorizationEntity("SUPER_ADMIN", "ROLE_ROOT"));
 
     roleManagerAdapter.removeRoleFromGroup(new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT")))));
 
-    verify(groupRoleRepository).delete(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
+    verify(authorizationRepository).delete(new AuthorizationEntity("SUPER_ADMIN", "ROLE_ROOT"));
   }
 }

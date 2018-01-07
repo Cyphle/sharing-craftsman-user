@@ -54,7 +54,7 @@ public class RoleService {
 
   public ResponseEntity getAuthorizations(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to see authorizations with unauthorized client: " + clientDTO.getName());
+      log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to see authorizations with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 

@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "tokens")
-public class OAuthToken {
+public class AccessTokenEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
@@ -21,10 +21,10 @@ public class OAuthToken {
   @Column(name = "expiration_date")
   private Date expirationDate;
 
-  public OAuthToken() {
+  public AccessTokenEntity() {
   }
 
-  public OAuthToken(String username, String client, String accessToken, String refreshToken, Date expirationDate) {
+  public AccessTokenEntity(String username, String client, String accessToken, String refreshToken, Date expirationDate) {
     this.username = username;
     this.client = client;
     this.accessToken = accessToken;

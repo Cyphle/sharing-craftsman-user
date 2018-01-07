@@ -1,8 +1,8 @@
-user:
+userEntity:
   profile: prod
   database:
     host: 192.168.1.18
-    user: root
+    userEntity: root
     password: root
     port: 3306
     name: sharingcraftsmanuser

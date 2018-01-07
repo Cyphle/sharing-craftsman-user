@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {UserApplication.class})
 @WebMvcTest(UserAuthorizationAdminController.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class UserAuthorizationAdminControllerTest {
+public class UserEntityAuthorizationAdminControllerTest {
   @Autowired
   private MockMvc mvc;
 

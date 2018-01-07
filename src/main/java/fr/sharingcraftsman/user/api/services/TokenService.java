@@ -44,12 +44,12 @@ public class TokenService {
 
   public ResponseEntity login(ClientDTO clientDTO, LoginDTO loginDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + loginDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
+      log.warn("UserEntity " + loginDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
     try {
-      log.info("User " + loginDTO.getUsername() + " is logging");
+      log.info("UserEntity " + loginDTO.getUsername() + " is logging");
       Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(loginDTO);
       Client client = ClientPivot.fromApiToDomain(clientDTO);
       TokenDTO token = TokenPivot.fromDomainToApi((ValidToken) authenticator.login(credentials, client), credentials);
@@ -67,7 +67,7 @@ public class TokenService {
 
   public ResponseEntity checkToken(ClientDTO clientDTO, TokenDTO token) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + token.getUsername() + " is trying to check token in with unauthorized client: " + clientDTO.getName());
+      log.warn("UserEntity " + token.getUsername() + " is trying to check token in with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
@@ -106,7 +106,7 @@ public class TokenService {
 
   public ResponseEntity refreshToken(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to refresh token with unauthorized client: " + clientDTO.getName());
+      log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to refresh token with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 

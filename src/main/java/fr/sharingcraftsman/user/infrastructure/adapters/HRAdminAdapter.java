@@ -10,7 +10,7 @@ import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.company.Person;
 import fr.sharingcraftsman.user.domain.company.UnknownCollaborator;
-import fr.sharingcraftsman.user.infrastructure.models.User;
+import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,25 +31,25 @@ public class HRAdminAdapter implements HRAdminManager {
 
   @Override
   public List<AdminCollaborator> getAllCollaborators() {
-    List<User> users = Lists.newArrayList(userRepository.findAll());
-    return UserPivot.fromInfraToAdminDomain(users);
+    List<UserEntity> userEntities = Lists.newArrayList(userRepository.findAll());
+    return UserPivot.fromInfraToAdminDomain(userEntities);
   }
 
   @Override
   public void deleteCollaborator(Username username) {
-    User foundUser = userRepository.findByUsername(username.getUsername());
-    userRepository.delete(foundUser);
+    UserEntity foundUserEntity = userRepository.findByUsername(username.getUsername());
+    userRepository.delete(foundUserEntity);
   }
 
   @Override
   public Person findCollaboratorFromUsername(Username username) {
-    User foundUser = userRepository.findByUsername(username.getUsername());
+    UserEntity foundUserEntity = userRepository.findByUsername(username.getUsername());
 
-    if (foundUser == null)
+    if (foundUserEntity == null)
       return new UnknownCollaborator();
 
     try {
-      return UserPivot.fromInfraToDomain(foundUser);
+      return UserPivot.fromInfraToDomain(foundUserEntity);
     } catch (CredentialsException e) {
       return new UnknownCollaborator();
     }
@@ -57,27 +57,27 @@ public class HRAdminAdapter implements HRAdminManager {
 
   @Override
   public void updateCollaborator(AdminCollaborator collaborator) {
-    User foundUser = userRepository.findByUsername(collaborator.getUsernameContent());
-    foundUser.updateFromAdminCollaborator(collaborator);
-    foundUser.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(foundUser);
+    UserEntity foundUserEntity = userRepository.findByUsername(collaborator.getUsernameContent());
+    foundUserEntity.updateFromAdminCollaborator(collaborator);
+    foundUserEntity.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(foundUserEntity);
   }
 
   @Override
   public AdminPerson findAdminCollaboratorFromUsername(Username username) {
-    User foundUser = userRepository.findByUsername(username.getUsername());
+    UserEntity foundUserEntity = userRepository.findByUsername(username.getUsername());
 
-    if (foundUser == null)
+    if (foundUserEntity == null)
       return new UnknownAdminCollaborator();
 
-    return UserPivot.fromInfraToAdminDomain(foundUser);
+    return UserPivot.fromInfraToAdminDomain(foundUserEntity);
   }
 
   @Override
   public void createCollaborator(AdminCollaborator collaborator) {
-    User userToCreate = UserPivot.fromDomainToInfra(collaborator);
-    userToCreate.setCreationDate(dateService.nowInDate());
-    userToCreate.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(userToCreate);
+    UserEntity userEntityToCreate = UserPivot.fromDomainToInfra(collaborator);
+    userEntityToCreate.setCreationDate(dateService.nowInDate());
+    userEntityToCreate.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(userEntityToCreate);
   }
 }

@@ -56,12 +56,12 @@ public class UserService {
 
   public ResponseEntity registerUser(ClientDTO clientDTO, LoginDTO loginDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + loginDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
+      log.warn("UserEntity " + loginDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
     try {
-      log.info("User is registering with username:" + loginDTO.getUsername());
+      log.info("UserEntity is registering with username:" + loginDTO.getUsername());
       Credentials credentials = LoginPivot.fromApiToDomain(loginDTO);
 
       company.createNewCollaborator(credentials);
@@ -77,7 +77,7 @@ public class UserService {
 
   public ResponseEntity requestChangePassword(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to request for change password with unauthorized client: " + clientDTO.getName());
+      log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to request for change password with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
@@ -100,7 +100,7 @@ public class UserService {
 
   public ResponseEntity changePassword(ClientDTO clientDTO, TokenDTO tokenDTO, ChangePasswordDTO changePasswordDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to change password with unauthorized client: " + clientDTO.getName());
+      log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to change password with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
@@ -128,7 +128,7 @@ public class UserService {
 
   public ResponseEntity updateProfile(ClientDTO clientDTO, TokenDTO tokenDTO, ProfileDTO profileDTO) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to change profile with unauthorized client: " + clientDTO.getName());
+      log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to change profile with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
 
