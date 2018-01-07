@@ -2,17 +2,17 @@ package fr.sharingcraftsman.user.api.pivots;
 
 import fr.sharingcraftsman.user.api.models.TokenDTO;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.authentication.ValidToken;
+import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
+import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 
 public class TokenPivot {
-  public static TokenDTO fromDomainToApi(ValidToken token, Credentials credentials) {
+  public static TokenDTO fromDomainToApi(AccessToken token, Credentials credentials) {
     TokenDTO apiToken = new TokenDTO();
     apiToken.setAccessToken(token.getAccessToken());
     apiToken.setRefreshToken(token.getRefreshToken());
@@ -23,7 +23,7 @@ public class TokenPivot {
     return apiToken;
   }
 
-  public static ValidToken fromApiToDomain(TokenDTO token) {
+  public static AccessToken fromApiToDomain(TokenDTO token) {
     return validTokenBuilder
             .withAccessToken(token.getAccessToken())
             .withRefreshToken(token.getRefreshToken())

@@ -2,16 +2,16 @@ package fr.sharingcraftsman.user.api.admin;
 
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
-import fr.sharingcraftsman.user.domain.admin.HRAdminManager;
-import fr.sharingcraftsman.user.domain.admin.UnknownAdminCollaborator;
-import fr.sharingcraftsman.user.domain.authentication.ValidToken;
+import fr.sharingcraftsman.user.domain.admin.UserForBaseUserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
+import fr.sharingcraftsman.user.domain.admin.exceptions.UnknownBaseUserForAdminCollaborator;
+import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authorization.Group;
-import fr.sharingcraftsman.user.domain.authorization.GroupAdministrator;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.Role;
-import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.client.ClientStock;
+import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
 import org.junit.Before;
@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.*;
 
-import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
+import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,20 +38,20 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class AdminServiceTest {
   @Mock
-  private HRAdminManager hrAdminManager;
+  private UserForAdminRepository userForAdminRepository;
   @Mock
-  private GroupAdministrator groupAdministrator;
+  private UserAuthorizationRepository userAuthorizationRepository;
   @Mock
-  private RoleAdministrator roleAdministrator;
+  private AuthorizationRepository authorizationRepository;
   @Mock
-  private ClientStock clientStock;
+  private ClientRepository clientRepository;
   @Mock
   private DateService dateService;
 
   private AdminService adminService;
 
   private ClientDTO clientDTO;
-  private ValidToken validToken;
+  private AccessToken validToken;
   private TokenDTO tokenDTO;
   private AdminUserDTO user;
   private AdminUserDTO adminUser;
@@ -59,7 +59,7 @@ public class AdminServiceTest {
   @Before
   public void setUp() throws Exception {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 30, 12, 0));
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "secret"));
+    given(clientRepository.findClient(any(Client.class))).willReturn(Client.knownClient("client", "secret"));
 
     GroupDTO group = new GroupDTO("USERS");
     group.addRole(new RoleDTO("ROLE_USER"));
@@ -86,30 +86,30 @@ public class AdminServiceTest {
     tokenDTO.setUsername("admin@toto.fr");
     tokenDTO.setAccessToken("aaa");
 
-    adminService = new AdminService(hrAdminManager, clientStock, groupAdministrator, roleAdministrator);
+    adminService = new AdminService(userForAdminRepository, clientRepository, userAuthorizationRepository, authorizationRepository);
   }
 
   @Test
   public void should_get_list_of_users_with_profile_and_authorizations() throws Exception {
-    List<AdminCollaborator> collaborators = Arrays.asList(
-            AdminCollaborator.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date()),
-            AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date())
+    List<UserForBaseUserForAdmin> collaborators = Arrays.asList(
+            UserForBaseUserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date()),
+            UserForBaseUserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date())
     );
-    given(hrAdminManager.getAllCollaborators()).willReturn(collaborators);
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("john@doe.fr"))).willReturn(Collections.singletonList(new Group("USERS")));
-    given(roleAdministrator.getRolesOf("USERS")).willReturn(Collections.singletonList(new Role("ROLE_USER")));
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
-    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(userForAdminRepository.getAllCollaborators()).willReturn(collaborators);
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("john@doe.fr"))).willReturn(Collections.singletonList(new Group("USERS")));
+    given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(new Role("ROLE_USER")));
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
 
     ResponseEntity response = adminService.getUsers(clientDTO, tokenDTO);
 
-    verify(hrAdminManager).getAllCollaborators();
+    verify(userForAdminRepository).getAllCollaborators();
     assertThat(response.getBody()).isEqualTo(Arrays.asList(user, adminUser));
   }
 
   @Test
   public void should_get_unauthorized_if_client_is_not_known() throws Exception {
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.unkownClient());
+    given(clientRepository.findClient(any(Client.class))).willReturn(Client.unkownClient());
 
     ResponseEntity response = adminService.getUsers(clientDTO, tokenDTO);
 
@@ -118,8 +118,8 @@ public class AdminServiceTest {
 
   @Test
   public void should_get_unauthorized_if_requester_has_not_role_admin() throws Exception {
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("USERS")));
-    given(roleAdministrator.getRolesOf("USERS")).willReturn(Collections.singletonList(new Role("ROLE_USER")));
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("USERS")));
+    given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(new Role("ROLE_USER")));
 
     ResponseEntity response = adminService.getUsers(clientDTO, tokenDTO);
 
@@ -128,10 +128,10 @@ public class AdminServiceTest {
 
   @Test
   public void should_delete_user() throws Exception {
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
-    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
-    Mockito.doNothing().when(hrAdminManager).deleteCollaborator(any(Username.class));
-    given(hrAdminManager.findCollaboratorFromUsername(usernameBuilder.from("hello@world.fr"))).willReturn(
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    Mockito.doNothing().when(userForAdminRepository).deleteCollaborator(any(Username.class));
+    given(userForAdminRepository.findCollaboratorFromUsername(usernameBuilder.from("hello@world.fr"))).willReturn(
             new CollaboratorBuilder()
                     .withUsername(usernameBuilder.from("hello@world.fr"))
                     .withPassword(passwordBuilder.from("passwrdo"))
@@ -141,15 +141,15 @@ public class AdminServiceTest {
     ResponseEntity response = adminService.deleteUser(clientDTO, tokenDTO, "hello@world.fr");
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    verify(hrAdminManager).deleteCollaborator(usernameBuilder.from("hello@world.fr"));
+    verify(userForAdminRepository).deleteCollaborator(usernameBuilder.from("hello@world.fr"));
   }
 
   @Test
   public void should_update_user() throws Exception {
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
-    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
-    given(hrAdminManager.findAdminCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(
-            AdminCollaborator.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date())
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(userForAdminRepository.findAdminCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(
+            UserForBaseUserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date())
     );
 
     GroupDTO group = new GroupDTO("USERS");
@@ -160,26 +160,26 @@ public class AdminServiceTest {
     userToUpdate.setPassword("password");
     adminService.updateUser(clientDTO, tokenDTO, userToUpdate);
 
-    AdminCollaborator updatedUser = AdminCollaborator.from("john@doe.fr", "password", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
-    verify(hrAdminManager).updateCollaborator(updatedUser);
+    UserForBaseUserForAdmin updatedUser = UserForBaseUserForAdmin.from("john@doe.fr", "password", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
+    verify(userForAdminRepository).updateCollaborator(updatedUser);
   }
 
   @Test
   public void should_create_a_new_user() throws Exception {
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
-    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
-    given(hrAdminManager.findAdminCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownAdminCollaborator());
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(userForAdminRepository.findAdminCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownBaseUserForAdminCollaborator());
 
     adminService.addUser(clientDTO, tokenDTO, user);
 
-    AdminCollaborator newCollaborator = AdminCollaborator.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
-    verify(hrAdminManager).createCollaborator(newCollaborator);
+    UserForBaseUserForAdmin newCollaborator = UserForBaseUserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
+    verify(userForAdminRepository).createCollaborator(newCollaborator);
   }
 
   @Test
   public void should_get_groups_and_roles() throws Exception {
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
-    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
     Group users = new Group("USERS");
     users.addRole(new Role("ROLE_USER"));
     Group admins = new Group("ADMINS");
@@ -187,7 +187,7 @@ public class AdminServiceTest {
     Set<Group> groups = new HashSet<>();
     groups.add(users);
     groups.add(admins);
-    given(roleAdministrator.getAllRolesWithTheirGroups()).willReturn(groups);
+    given(authorizationRepository.getAllRolesWithTheirGroups()).willReturn(groups);
 
     ResponseEntity response = adminService.getGroups(clientDTO, tokenDTO);
 
@@ -203,8 +203,8 @@ public class AdminServiceTest {
 
   @Test
   public void should_add_group_to_user() throws Exception {
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
-    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
     UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world", "USERS");
 
     ResponseEntity response = adminService.addGroupToUser(clientDTO, tokenDTO, newGroupForUser);
@@ -214,8 +214,8 @@ public class AdminServiceTest {
 
   @Test
   public void should_remove_group_to_user() throws Exception {
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
-    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
     UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world", "USERS");
 
     ResponseEntity response = adminService.removeGroupToUser(clientDTO, tokenDTO, newGroupForUser);
@@ -225,8 +225,8 @@ public class AdminServiceTest {
 
   @Test
   public void should_create_new_group_with_roles() throws Exception {
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
-    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
     Set<RoleDTO> roles = new HashSet<>();
     roles.add(new RoleDTO("ROLE_ROOT"));
     roles.add(new RoleDTO("ROLE_ADMIN"));
@@ -240,8 +240,8 @@ public class AdminServiceTest {
 
   @Test
   public void should_remove_role_from_group() throws Exception {
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
-    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(new Group("ADMINS")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
     Set<RoleDTO> roles = new HashSet<>();
     roles.add(new RoleDTO("ROLE_ROOT"));
     roles.add(new RoleDTO("ROLE_ADMIN"));

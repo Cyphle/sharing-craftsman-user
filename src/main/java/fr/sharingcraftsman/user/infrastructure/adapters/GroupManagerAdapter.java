@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.domain.authorization.Group;
-import fr.sharingcraftsman.user.domain.authorization.GroupAdministrator;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.infrastructure.models.UserAuthorizationEntity;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class GroupManagerAdapter implements GroupAdministrator {
+public class GroupManagerAdapter implements UserAuthorizationRepository {
   private UserAuthorizationJpaRepository userAuthorizationJpaRepository;
 
   @Autowired

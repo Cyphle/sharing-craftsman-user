@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
-import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
+import fr.sharingcraftsman.user.domain.admin.UserForBaseUserForAdmin;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -184,7 +184,7 @@ public class UserEntity {
     linkedin = userEntity.linkedin;
   }
 
-  public void updateFromAdminCollaborator(AdminCollaborator collaborator) {
+  public void updateFromAdminCollaborator(UserForBaseUserForAdmin collaborator) {
     username = collaborator.getUsernameContent();
     firstname = collaborator.getFirstname();
     lastname = collaborator.getLastname();

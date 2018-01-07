@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.client.ClientStock;
+import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.infrastructure.models.ClientEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.ClientPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientJpaRepository;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClientAdapter implements ClientStock {
+public class ClientAdapter implements ClientRepository {
   private ClientJpaRepository clientJpaRepository;
 
   @Autowired

@@ -7,20 +7,22 @@ import fr.sharingcraftsman.user.api.pivots.AdminCollaboratorPivot;
 import fr.sharingcraftsman.user.api.pivots.AuthorizationPivot;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.api.pivots.GroupPivot;
-import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
-import fr.sharingcraftsman.user.domain.admin.HRAdminManager;
-import fr.sharingcraftsman.user.domain.admin.OrganisationAdmin;
+import fr.sharingcraftsman.user.domain.admin.UserForBaseUserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
+import fr.sharingcraftsman.user.domain.admin.AdministrationImpl;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
+import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.authorization.*;
-import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
-import fr.sharingcraftsman.user.domain.client.ClientStock;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
+import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
+import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.user.CollaboratorException;
-import fr.sharingcraftsman.user.domain.ports.admin.CompanyAdmin;
-import fr.sharingcraftsman.user.domain.ports.authorization.Authorizer;
-import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
+import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
+import fr.sharingcraftsman.user.domain.admin.ports.Administration;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
+import fr.sharingcraftsman.user.domain.client.ports.ClientOrganisation;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,19 +41,19 @@ import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 @Service
 public class AdminService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
-  private ClientManager clientManager;
-  private CompanyAdmin company;
-  private Authorizer authorizer;
+  private ClientOrganisation clientOrganisation;
+  private Administration company;
+  private AuthorizationManager authorizationManager;
 
   @Autowired
   public AdminService(
-          HRAdminManager hrAdminManager,
-          ClientStock clientStock,
-          GroupAdministrator groupAdministrator,
-          RoleAdministrator roleAdministrator) {
-    clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
-    company = new OrganisationAdmin(hrAdminManager);
-    authorizer = new GroupRoleAuthorizer(groupAdministrator, roleAdministrator);
+          UserForAdminRepository userForAdminRepository,
+          ClientRepository clientRepository,
+          UserAuthorizationRepository userAuthorizationRepository,
+          AuthorizationRepository authorizationRepository) {
+    clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
+    company = new AdministrationImpl(userForAdminRepository);
+    authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
   }
 
   public ResponseEntity getUsers(ClientDTO clientDTO, TokenDTO tokenDTO) {
@@ -60,7 +62,7 @@ public class AdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    List<AdminCollaborator> collaborators = company.getAllCollaborators();
+    List<UserForBaseUserForAdmin> collaborators = company.getAllCollaborators();
     List<AdminUserDTO> users = collaborators.stream()
             .map(collaborator -> new AdminUserDTO(
                     collaborator.getUsernameContent(),
@@ -80,8 +82,8 @@ public class AdminService {
             .collect(Collectors.toList());
     users.forEach(user -> {
       Credentials credentials = Credentials.buildCredentials(new Username(user.getUsername()), null, false);
-      Authorizations authorizations = authorizer.getAuthorizationsOf(credentials);
-      user.setAuthorizations(AuthorizationPivot.fromDomainToApi(authorizations));
+      Authorization authorization = authorizationManager.getAuthorizationsOf(credentials);
+      user.setAuthorizations(AuthorizationPivot.fromDomainToApi(authorization));
     });
 
     return ResponseEntity.ok(users);
@@ -96,7 +98,7 @@ public class AdminService {
     try {
       company.deleteCollaborator(usernameBuilder.from(usernameToDelete));
       return ResponseEntity.ok().build();
-    } catch (UsernameException | CollaboratorException e) {
+    } catch (UsernameException | UserException e) {
       log.warn("Error while deleting user " + usernameToDelete + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -111,10 +113,10 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      AdminCollaborator collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+      UserForBaseUserForAdmin collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
       company.updateCollaborator(collaborator);
       return ResponseEntity.ok().build();
-    } catch (CollaboratorException e) {
+    } catch (UserException e) {
       log.warn("Error while updating user " + user.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -129,11 +131,11 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      AdminCollaborator collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+      UserForBaseUserForAdmin collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
       company.createCollaborator(collaborator);
-      authorizer.addGroup(Credentials.buildCredentials(usernameBuilder.from(user.getUsername()), null, false), Groups.USERS);
+      authorizationManager.addGroup(Credentials.buildCredentials(usernameBuilder.from(user.getUsername()), null, false), Groups.USERS);
       return ResponseEntity.ok().build();
-    } catch (CollaboratorException | UsernameException e) {
+    } catch (UserException | UsernameException e) {
       log.warn("Error:" + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -147,7 +149,7 @@ public class AdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    Set<GroupDTO> groups = GroupPivot.groupFromDomainToApi(authorizer.getAllRolesWithTheirGroups());
+    Set<GroupDTO> groups = GroupPivot.groupFromDomainToApi(authorizationManager.getAllRolesWithTheirGroups());
     return ResponseEntity.ok(groups);
   }
 
@@ -158,7 +160,7 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      authorizer.addGroup(Credentials.buildCredentials(usernameBuilder.from(userGroupDTO.getUsername()), null, false), Groups.valueOf(userGroupDTO.getGroup()));
+      authorizationManager.addGroup(Credentials.buildCredentials(usernameBuilder.from(userGroupDTO.getUsername()), null, false), Groups.valueOf(userGroupDTO.getGroup()));
       return ResponseEntity.ok().build();
     } catch (UsernameException e) {
       log.warn("Error: " + e.getMessage());
@@ -175,7 +177,7 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      authorizer.removeGroup(Credentials.buildCredentials(usernameBuilder.from(userGroupDTO.getUsername()), null, false), Groups.valueOf(userGroupDTO.getGroup()));
+      authorizationManager.removeGroup(Credentials.buildCredentials(usernameBuilder.from(userGroupDTO.getUsername()), null, false), Groups.valueOf(userGroupDTO.getGroup()));
       return ResponseEntity.ok().build();
     } catch (UsernameException e) {
       log.warn("Error: " + e.getMessage());
@@ -191,7 +193,7 @@ public class AdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    authorizer.createNewGroupWithRoles(GroupPivot.fromApiToDomain(groupDTO));
+    authorizationManager.createNewGroupWithRoles(GroupPivot.fromApiToDomain(groupDTO));
     return ResponseEntity.ok().build();
   }
 
@@ -201,12 +203,12 @@ public class AdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    authorizer.removeRoleFromGroup(GroupPivot.fromApiToDomain(groupDTO));
+    authorizationManager.removeRoleFromGroup(GroupPivot.fromApiToDomain(groupDTO));
     return ResponseEntity.ok().build();
   }
 
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
+    if (!clientOrganisation.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
       return true;
     }
@@ -216,9 +218,9 @@ public class AdminService {
   private HttpStatus isAdmin(TokenDTO tokenDTO) {
     try {
       Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
-      Authorizations requesterAuthorizations = authorizer.getAuthorizationsOf(credentials);
+      Authorization requesterAuthorization = authorizationManager.getAuthorizationsOf(credentials);
 
-      Optional<Group> adminGroup = requesterAuthorizations.getGroups()
+      Optional<Group> adminGroup = requesterAuthorization.getGroups()
               .stream()
               .filter(group -> group.getName().contains("ADMIN"))
               .findAny();

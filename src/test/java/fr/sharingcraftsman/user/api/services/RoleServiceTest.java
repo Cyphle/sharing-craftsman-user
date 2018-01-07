@@ -3,12 +3,14 @@ package fr.sharingcraftsman.user.api.services;
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
-import fr.sharingcraftsman.user.domain.authentication.ValidToken;
+import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
+import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authorization.*;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.client.ClientStock;
-import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
+import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
+import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +24,7 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
+import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -31,31 +33,31 @@ import static org.mockito.Matchers.any;
 @RunWith(MockitoJUnitRunner.class)
 public class RoleServiceTest {
   @Mock
-  private HumanResourceAdministrator humanResourceAdministrator;
+  private UserRepository userRepository;
   @Mock
-  private ClientStock clientStock;
+  private ClientRepository clientRepository;
   @Mock
-  private TokenAdministrator tokenAdministrator;
+  private AccessTokenRepository accessTokenRepository;
   @Mock
-  private GroupAdministrator groupAdministrator;
+  private UserAuthorizationRepository userAuthorizationRepository;
   @Mock
-  private RoleAdministrator roleAdministrator;
+  private AuthorizationRepository authorizationRepository;
   @Mock
   private DateService dateService;
 
   private ClientDTO clientDTO;
   private TokenDTO token;
-  private ValidToken validToken;
+  private AccessToken validToken;
   private RoleService roleService;
 
   @Before
   public void setUp() throws Exception {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    roleService = new RoleService(humanResourceAdministrator, clientStock, tokenAdministrator, groupAdministrator, roleAdministrator, dateService);
+    roleService = new RoleService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService);
 
     clientDTO = new ClientDTO("client", "secret");
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "secret"));
+    given(clientRepository.findClient(any(Client.class))).willReturn(Client.knownClient("client", "secret"));
 
     token = new TokenDTO();
     token.setUsername("john@doe.fr");
@@ -66,14 +68,14 @@ public class RoleServiceTest {
             .withRefreshToken("bbb")
             .expiringThe(dateService.getDayAt(8))
             .build();
-    given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
   }
 
   @Test
   public void should_get_authorizations_of_user() throws Exception {
-    given(groupAdministrator.findGroupsOf(usernameBuilder.from("john@doe.fr"))).willReturn(Arrays.asList(new Group("USERS"), new Group("ADMINS")));
-    given(roleAdministrator.getRolesOf("USERS")).willReturn(Collections.singletonList(new Role("ROLE_USER")));
-    given(roleAdministrator.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
+    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("john@doe.fr"))).willReturn(Arrays.asList(new Group("USERS"), new Group("ADMINS")));
+    given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(new Role("ROLE_USER")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
 
     ResponseEntity response = roleService.getAuthorizations(clientDTO, token);
 

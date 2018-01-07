@@ -3,7 +3,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 import com.google.common.collect.Lists;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
-import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.infrastructure.models.AuthorizationEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.GroupPivot;
 import fr.sharingcraftsman.user.infrastructure.pivots.RolePivot;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class RoleManagerAdapter implements RoleAdministrator {
+public class RoleManagerAdapter implements AuthorizationRepository {
   private AuthorizationJpaRepository authorizationJpaRepository;
 
   @Autowired

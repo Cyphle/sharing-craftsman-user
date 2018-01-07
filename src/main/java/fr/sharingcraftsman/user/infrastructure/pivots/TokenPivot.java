@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.pivots;
 
-import fr.sharingcraftsman.user.domain.authentication.ValidToken;
+import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.AccessTokenEntity;
@@ -10,7 +10,7 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class TokenPivot {
-  public static AccessTokenEntity fromDomainToInfra(User user, Client client, ValidToken token) {
+  public static AccessTokenEntity fromDomainToInfra(User user, Client client, AccessToken token) {
     AccessTokenEntity accessTokenEntity = new AccessTokenEntity();
     accessTokenEntity.setClient(client.getName());
     accessTokenEntity.setUsername(user.getUsername());
@@ -20,7 +20,7 @@ public class TokenPivot {
     return accessTokenEntity;
   }
 
-  public static ValidToken fromInfraToDomain(AccessTokenEntity accessTokenEntity) {
-    return new ValidToken(accessTokenEntity.getAccessToken(), accessTokenEntity.getRefreshToken(), LocalDateTime.ofInstant(accessTokenEntity.getExpirationDate().toInstant(), ZoneId.systemDefault()));
+  public static AccessToken fromInfraToDomain(AccessTokenEntity accessTokenEntity) {
+    return new AccessToken(accessTokenEntity.getAccessToken(), accessTokenEntity.getRefreshToken(), LocalDateTime.ofInstant(accessTokenEntity.getExpirationDate().toInstant(), ZoneId.systemDefault()));
   }
 }

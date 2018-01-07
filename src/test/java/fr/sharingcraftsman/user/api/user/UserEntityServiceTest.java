@@ -4,18 +4,18 @@ import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
-import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
-import fr.sharingcraftsman.user.domain.authentication.ValidToken;
-import fr.sharingcraftsman.user.domain.authorization.GroupAdministrator;
-import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
+import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
+import fr.sharingcraftsman.user.domain.authentication.AccessToken;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.client.ClientStock;
+import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.*;
-import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
+import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +29,7 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
+import static fr.sharingcraftsman.user.domain.authentication.AccessToken.validTokenBuilder;
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,21 +41,21 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class UserEntityServiceTest {
   @Mock
-  private HumanResourceAdministrator humanResourceAdministrator;
+  private UserRepository userRepository;
   @Mock
-  private ClientStock clientStock;
+  private ClientRepository clientRepository;
   @Mock
   private DateService dateService;
   @Mock
-  private TokenAdministrator tokenAdministrator;
+  private AccessTokenRepository accessTokenRepository;
   @Mock
-  private GroupAdministrator groupAdministrator;
+  private UserAuthorizationRepository userAuthorizationRepository;
   @Mock
-  private RoleAdministrator roleAdministrator;
+  private AuthorizationRepository authorizationRepository;
 
   private UserService userService;
   private ClientDTO clientDTO;
-  private ValidToken validToken;
+  private AccessToken validToken;
   private TokenDTO tokenDTO;
 
   @Before
@@ -63,8 +63,8 @@ public class UserEntityServiceTest {
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 27, 12, 0));
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
-    userService = new UserService(humanResourceAdministrator, clientStock, tokenAdministrator, groupAdministrator, roleAdministrator, dateService);
+    given(clientRepository.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
+    userService = new UserService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService);
     clientDTO = new ClientDTO("secret", "clientsecret");
     validToken = validTokenBuilder
             .withAccessToken("aaa")
@@ -76,12 +76,12 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_register_user() throws Exception {
-    given(humanResourceAdministrator.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownUser());
+    given(userRepository.findUserFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownUser());
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
-    verify(humanResourceAdministrator).createNewCollaborator(User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
+    verify(userRepository).createNewUser(User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 
@@ -91,7 +91,7 @@ public class UserEntityServiceTest {
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
-    verify(humanResourceAdministrator, never()).createNewCollaborator(any(User.class));
+    verify(userRepository, never()).createNewUser(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isEqualTo("Username cannot be empty");
   }
@@ -102,14 +102,14 @@ public class UserEntityServiceTest {
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
-    verify(humanResourceAdministrator, never()).createNewCollaborator(any(User.class));
+    verify(userRepository, never()).createNewUser(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isEqualTo("Password cannot be empty");
   }
 
   @Test
   public void should_get_user_already_exists_when_using_already_existing_username() throws Exception {
-    given(humanResourceAdministrator.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(
+    given(userRepository.findUserFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(
             (new CollaboratorBuilder())
                     .withUsername(usernameBuilder.from("john@doe.fr"))
                     .withPassword(passwordBuilder.from("password"))
@@ -119,14 +119,14 @@ public class UserEntityServiceTest {
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
-    verify(humanResourceAdministrator, never()).createNewCollaborator(any(User.class));
+    verify(userRepository, never()).createNewUser(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isEqualTo("User already exists with username: john@doe.fr");
   }
 
   @Test
   public void should_get_unknown_client_response_when_client_is_not_known() throws Exception {
-    given(clientStock.findClient(any(Client.class))).willReturn(Client.unkownClient());
+    given(clientRepository.findClient(any(Client.class))).willReturn(Client.unkownClient());
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
@@ -141,10 +141,10 @@ public class UserEntityServiceTest {
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("password"))
             .build();
-    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(user);
+    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     ChangePasswordKey key = new ChangePasswordKey(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
-    given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
-    given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
+    given(userRepository.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
 
@@ -154,7 +154,7 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_get_unauthorized_if_access_token_is_invalid_when_requesting_password_change() throws Exception {
-    given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(new InvalidToken());
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(new InvalidToken());
     TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa");
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
@@ -164,14 +164,14 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_change_password_when_sending_new_password() throws Exception {
-    given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
     User user = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
             .withChangePasswordKey("aaa")
             .withChangePasswordKeyExpirationDate(LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0))
             .build();
-    given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(user);
+    given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
 
     ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
     changePasswordDTO.setOldPassword("password");
@@ -184,10 +184,10 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_update_profile_with_new_information() throws Exception {
-    given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
     Profile profile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
-    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(profile);
-    given(humanResourceAdministrator.updateProfileOf(any(Profile.class))).willReturn(profile);
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(profile);
+    given(userRepository.updateProfileOf(any(Profile.class))).willReturn(profile);
 
     ProfileDTO profileDTO = new ProfileDTO("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
 
@@ -203,10 +203,10 @@ public class UserEntityServiceTest {
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("password"))
             .build();
-    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(user);
+    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     ChangePasswordKey key = new ChangePasswordKey(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
-    given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
-    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+    given(userRepository.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
 
     ResponseEntity response = userService.generateLostPasswordKey(clientDTO, "john@doe.fr");
 

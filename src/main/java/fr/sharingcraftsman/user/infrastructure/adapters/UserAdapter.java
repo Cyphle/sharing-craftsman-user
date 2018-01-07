@@ -2,11 +2,11 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
+import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.*;
-import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
+import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
@@ -17,7 +17,7 @@ import java.time.ZoneId;
 import java.util.Date;
 
 @Service
-public class UserAdapter implements HumanResourceAdministrator {
+public class UserAdapter implements UserRepository {
   private UserJpaRepository userJpaRepository;
   private DateService dateService;
 
@@ -28,7 +28,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public void createNewCollaborator(User user) {
+  public void createNewUser(User user) {
     UserEntity userEntity = UserPivot.fromDomainToInfra(user);
     userEntity.setCreationDate(dateService.nowInDate());
     userEntity.setLastUpdateDate(dateService.nowInDate());
@@ -36,7 +36,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public BaseUser findCollaboratorFromUsername(Username username) {
+  public BaseUser findUserFromUsername(Username username) {
     UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
     if (foundUserEntity == null)
@@ -50,7 +50,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public BaseUser findCollaboratorFromCredentials(Credentials credentials) {
+  public BaseUser findUserFromCredentials(Credentials credentials) {
     UserEntity foundUserEntity = userJpaRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
 
     if (foundUserEntity == null)
@@ -83,7 +83,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public void updateCollaboratorPassword(User user) {
+  public void updateUserPassword(User user) {
     UserEntity userEntity = userJpaRepository.findByUsername(user.getUsername());
     userEntity.setPassword(user.getPassword());
     userEntity.setLastUpdateDate(dateService.nowInDate());

@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.domain.authentication;
 
+import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import org.junit.Test;
 
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;

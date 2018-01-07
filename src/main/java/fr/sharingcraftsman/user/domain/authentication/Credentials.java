@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.domain.authentication;
 
+import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Password;
 import fr.sharingcraftsman.user.domain.common.Username;
 import lombok.EqualsAndHashCode;
