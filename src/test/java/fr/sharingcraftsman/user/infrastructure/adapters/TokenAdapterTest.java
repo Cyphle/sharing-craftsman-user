@@ -3,7 +3,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.*;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
+import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.AccessTokenEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.AccessTokenRepository;
 import org.junit.Before;
@@ -38,7 +38,7 @@ public class TokenAdapterTest {
   private ValidToken token;
   private Credentials credentials;
   private Client client;
-  private Collaborator collaborator;
+  private User user;
 
   @Before
   public void setUp() throws Exception {
@@ -50,14 +50,14 @@ public class TokenAdapterTest {
             .build();
     credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
     client = Client.knownClient("client", "secret");
-    collaborator = Collaborator.from(credentials);
+    user = User.from(credentials);
   }
 
   @Test
   public void should_delete_tokens_of_collaborator() throws Exception {
     Mockito.doNothing().when(accessTokenRepository).deleteByUsername(any(String.class), any(String.class));
 
-    tokenAdapter.deleteTokensOf(collaborator, client);
+    tokenAdapter.deleteTokensOf(user, client);
 
     verify(accessTokenRepository).deleteByUsername("john@doe.fr", "client");
   }
@@ -73,12 +73,12 @@ public class TokenAdapterTest {
     given(accessTokenRepository.save(any(AccessTokenEntity.class))).willReturn(accessTokenEntity);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     ValidToken token = validTokenBuilder
-            .withAccessToken(generateKey(client.getName() + collaborator.getUsername()))
-            .withRefreshToken(generateKey(client.getName() + collaborator.getUsername()))
+            .withAccessToken(generateKey(client.getName() + user.getUsername()))
+            .withRefreshToken(generateKey(client.getName() + user.getUsername()))
             .expiringThe(dateService.getDayAt(8))
             .build();
 
-    ValidToken createdToken = tokenAdapter.createNewToken(client, collaborator, token);
+    ValidToken createdToken = tokenAdapter.createNewToken(client, user, token);
 
     assertThat(createdToken.getAccessToken()).hasSize(128);
     assertThat(createdToken.getRefreshToken()).hasSize(128);

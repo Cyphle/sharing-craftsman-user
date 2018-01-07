@@ -3,9 +3,9 @@ package fr.sharingcraftsman.user.domain.authentication;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
-import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
-import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
+import fr.sharingcraftsman.user.domain.user.User;
+import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
+import fr.sharingcraftsman.user.domain.user.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class OAuthAuthenticatorTest {
   private ValidToken oAuthToken;
   private Client client;
   private Credentials credentials;
-  private Collaborator collaborator;
+  private User user;
 
   @Before
   public void setUp() throws Exception {
@@ -53,7 +53,7 @@ public class OAuthAuthenticatorTest {
             .build();
     client = Client.knownClient("client", "secret");
     credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    collaborator = (new CollaboratorBuilder())
+    user = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("password"))
             .build();
@@ -66,8 +66,8 @@ public class OAuthAuthenticatorTest {
             .withRefreshToken("bbb")
             .expiringThe(dateService.getDayAt(8))
             .build();
-    given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(collaborator);
-    given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(token);
+    given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(user);
+    given(tokenAdministrator.createNewToken(any(Client.class), any(User.class), any(ValidToken.class))).willReturn(token);
     credentials.setStayLogged(true);
 
     Token expectedToken = identifier.login(credentials, client);
@@ -115,11 +115,11 @@ public class OAuthAuthenticatorTest {
   @Test
   public void should_delete_token_when_logout() throws Exception {
     given(tokenAdministrator.findTokenFromAccessToken(client, credentials, oAuthToken)).willReturn(oAuthToken);
-    given(humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername())).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername())).willReturn(user);
 
     identifier.logout(credentials, client, oAuthToken);
 
-    verify(tokenAdministrator).deleteTokensOf(collaborator, client);
+    verify(tokenAdministrator).deleteTokensOf(user, client);
   }
 
   @Test
@@ -166,8 +166,8 @@ public class OAuthAuthenticatorTest {
             .withRefreshToken("bbb")
             .expiringThe(dateService.getDayAt(8))
             .build();
-    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(collaborator);
-    given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(token);
+    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(user);
+    given(tokenAdministrator.createNewToken(any(Client.class), any(User.class), any(ValidToken.class))).willReturn(token);
     credentials.setStayLogged(true);
 
     Token expectedToken = identifier.createNewToken(credentials, client);

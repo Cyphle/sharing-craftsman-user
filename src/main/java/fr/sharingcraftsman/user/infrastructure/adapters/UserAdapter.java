@@ -5,7 +5,7 @@ import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.company.*;
+import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
@@ -27,38 +27,38 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public void createNewCollaborator(Collaborator collaborator) {
-    UserEntity userEntity = UserPivot.fromDomainToInfra(collaborator);
+  public void createNewCollaborator(User user) {
+    UserEntity userEntity = UserPivot.fromDomainToInfra(user);
     userEntity.setCreationDate(dateService.nowInDate());
     userEntity.setLastUpdateDate(dateService.nowInDate());
     userRepository.save(userEntity);
   }
 
   @Override
-  public Person findCollaboratorFromUsername(Username username) {
+  public BaseUser findCollaboratorFromUsername(Username username) {
     UserEntity foundUserEntity = userRepository.findByUsername(username.getUsername());
 
     if (foundUserEntity == null)
-      return new UnknownCollaborator();
+      return new UnknownUser();
 
     try {
       return UserPivot.fromInfraToDomain(foundUserEntity);
     } catch (CredentialsException e) {
-      return new UnknownCollaborator();
+      return new UnknownUser();
     }
   }
 
   @Override
-  public Person findCollaboratorFromCredentials(Credentials credentials) {
+  public BaseUser findCollaboratorFromCredentials(Credentials credentials) {
     UserEntity foundUserEntity = userRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
 
     if (foundUserEntity == null)
-      return new UnknownCollaborator();
+      return new UnknownUser();
 
     try {
       return UserPivot.fromInfraToDomain(foundUserEntity);
     } catch (CredentialsException e) {
-      return new UnknownCollaborator();
+      return new UnknownUser();
     }
   }
 
@@ -82,9 +82,9 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public void updateCollaboratorPassword(Collaborator collaborator) {
-    UserEntity userEntity = userRepository.findByUsername(collaborator.getUsername());
-    userEntity.setPassword(collaborator.getPassword());
+  public void updateCollaboratorPassword(User user) {
+    UserEntity userEntity = userRepository.findByUsername(user.getUsername());
+    userEntity.setPassword(user.getPassword());
     userEntity.setLastUpdateDate(dateService.nowInDate());
     userRepository.save(userEntity);
   }

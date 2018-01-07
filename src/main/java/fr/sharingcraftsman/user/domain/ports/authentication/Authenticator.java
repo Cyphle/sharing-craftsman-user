@@ -4,7 +4,7 @@ import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.Token;
 import fr.sharingcraftsman.user.domain.authentication.ValidToken;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.company.CollaboratorException;
+import fr.sharingcraftsman.user.domain.user.CollaboratorException;
 
 public interface Authenticator {
   Token login(Credentials credentials, Client client) throws CollaboratorException;

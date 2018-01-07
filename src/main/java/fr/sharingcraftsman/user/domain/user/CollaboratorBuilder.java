@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.domain.company;
+package fr.sharingcraftsman.user.domain.user;
 
 import fr.sharingcraftsman.user.domain.common.Password;
 import fr.sharingcraftsman.user.domain.common.Username;
@@ -31,7 +31,7 @@ public class CollaboratorBuilder {
     return this;
   }
 
-  public Collaborator build() {
-    return new Collaborator(this.username, this.password, changePasswordKey, this.changePasswordKeyExpirationDate);
+  public User build() {
+    return new User(this.username, this.password, changePasswordKey, this.changePasswordKeyExpirationDate);
   }
 }

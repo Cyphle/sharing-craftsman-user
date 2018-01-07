@@ -10,9 +10,9 @@ import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
 import fr.sharingcraftsman.user.domain.authentication.ValidToken;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
-import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
-import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
+import fr.sharingcraftsman.user.domain.user.User;
+import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
+import fr.sharingcraftsman.user.domain.user.HumanResourceAdministrator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +49,7 @@ public class TokenServiceTest {
   private ClientDTO clientDTO;
   private ValidToken validToken;
   private TokenDTO token;
-  private Collaborator collaborator;
+  private User user;
   private Credentials credentials;
 
   @Before
@@ -70,7 +70,7 @@ public class TokenServiceTest {
     token.setUsername("john@doe.fr");
     token.setAccessToken("aaa");
 
-    collaborator = (new CollaboratorBuilder())
+    user = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
             .build();
@@ -80,9 +80,9 @@ public class TokenServiceTest {
 
   @Test
   public void should_login_user() throws Exception {
-    given(humanResourceAdministrator.findCollaboratorFromCredentials(credentials)).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromCredentials(credentials)).willReturn(user);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(validToken);
+    given(tokenAdministrator.createNewToken(any(Client.class), any(User.class), any(ValidToken.class))).willReturn(validToken);
 
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password", true);
     ResponseEntity response = tokenService.login(clientDTO, loginDTO);
@@ -131,9 +131,9 @@ public class TokenServiceTest {
 
   @Test
   public void should_generate_new_token_from_refresh_token() throws Exception {
-    given(humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername())).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername())).willReturn(user);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    given(tokenAdministrator.createNewToken(any(Client.class), any(Collaborator.class), any(ValidToken.class))).willReturn(validToken);
+    given(tokenAdministrator.createNewToken(any(Client.class), any(User.class), any(ValidToken.class))).willReturn(validToken);
     given(tokenAdministrator.findTokenFromRefreshToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     TokenDTO refreshToken = new TokenDTO();
@@ -144,6 +144,6 @@ public class TokenServiceTest {
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isEqualTo(new TokenDTO("john@doe.fr", "aaa", "bbb", 1514631600000L));
-    verify(tokenAdministrator).deleteTokensOf(any(Collaborator.class), any(Client.class));
+    verify(tokenAdministrator).deleteTokensOf(any(User.class), any(Client.class));
   }
 }

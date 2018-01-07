@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.domain.company;
+package fr.sharingcraftsman.user.domain.user;
 
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;

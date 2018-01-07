@@ -5,7 +5,7 @@ import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
-import fr.sharingcraftsman.user.domain.company.*;
+import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
 import org.junit.Before;
@@ -42,9 +42,9 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_save_user_in_repository() throws Exception {
-    Person collaborator = Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
+    BaseUser collaborator = User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
 
-    userAdapter.createNewCollaborator((Collaborator) collaborator);
+    userAdapter.createNewCollaborator((User) collaborator);
 
     UserEntity expectedUserEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     expectedUserEntity.setCreationDate(dateService.nowInDate());
@@ -56,19 +56,19 @@ public class UserEntityAdapterTest {
   public void should_get_user_by_username() throws Exception {
     given(userRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    Person collaborator = userAdapter.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"));
+    BaseUser collaborator = userAdapter.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"));
 
-    Collaborator expected = Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
-    assertThat((Collaborator) collaborator).isEqualTo(expected);
+    User expected = User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
+    assertThat((User) collaborator).isEqualTo(expected);
   }
 
   @Test
   public void should_find_user_by_username_and_password() throws Exception {
     given(userRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    Person collaborator = userAdapter.findCollaboratorFromCredentials(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
+    BaseUser collaborator = userAdapter.findCollaboratorFromCredentials(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
 
-    assertThat((Collaborator) collaborator).isEqualTo(Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
+    assertThat((User) collaborator).isEqualTo(User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
   }
 
   @Test
@@ -104,11 +104,11 @@ public class UserEntityAdapterTest {
   public void should_update_user_with_new_password() throws Exception {
     given(userRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    Collaborator collaborator = (new CollaboratorBuilder())
+    User user = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("newpassword"))
             .build();
-    userAdapter.updateCollaboratorPassword(collaborator);
+    userAdapter.updateCollaboratorPassword(user);
 
     UserEntity userEntity = new UserEntity("john@doe.fr", "newpassword");
     verify(userRepository).save(userEntity);

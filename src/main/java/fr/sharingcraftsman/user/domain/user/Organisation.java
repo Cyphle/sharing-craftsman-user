@@ -1,7 +1,6 @@
-package fr.sharingcraftsman.user.domain.company;
+package fr.sharingcraftsman.user.domain.user;
 
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Email;
@@ -26,11 +25,11 @@ public class Organisation implements Company {
   @Override
   public void createNewCollaborator(Credentials credentials) throws CollaboratorException, CredentialsException {
     if (collaboratorExists(credentials.getUsername()))
-      throw new AlreadyExistingCollaboratorException("Collaborator already exists with username: " + credentials.getUsernameContent());
+      throw new AlreadyExistingCollaboratorException("User already exists with username: " + credentials.getUsernameContent());
 
     Credentials encryptedCredentials = Credentials.buildEncryptedCredentials(credentials.getUsername(), credentials.getPassword(), credentials.stayLogged());
-    Collaborator newCollaborator = Collaborator.from(encryptedCredentials);
-    humanResourceAdministrator.createNewCollaborator(newCollaborator);
+    User newUser = User.from(encryptedCredentials);
+    humanResourceAdministrator.createNewCollaborator(newUser);
   }
 
   @Override
@@ -52,15 +51,15 @@ public class Organisation implements Company {
 
   @Override
   public void changePassword(Credentials credentials, ChangePassword changePassword) throws CollaboratorException {
-    Person person = humanResourceAdministrator.findCollaboratorFromCredentials(credentials);
+    BaseUser baseUser = humanResourceAdministrator.findCollaboratorFromCredentials(credentials);
 
-    if (!person.isKnown())
+    if (!baseUser.isKnown())
       throw new UnknownCollaboratorException("Unknown collaborator");
 
-    checkChangePasswordKeyValidity(changePassword, (Collaborator) person);
+    checkChangePasswordKeyValidity(changePassword, (User) baseUser);
 
-    ((Collaborator) person).setPassword(changePassword.getNewPassword().getEncryptedVersion());
-    humanResourceAdministrator.updateCollaboratorPassword((Collaborator) person);
+    ((User) baseUser).setPassword(changePassword.getNewPassword().getEncryptedVersion());
+    humanResourceAdministrator.updateCollaboratorPassword((User) baseUser);
     humanResourceAdministrator.deleteChangePasswordKeyOf(credentials);
   }
 
@@ -94,7 +93,7 @@ public class Organisation implements Company {
     return Email.from("");
   }
 
-  private void checkChangePasswordKeyValidity(ChangePassword changePassword, Collaborator person) throws InvalidChangePasswordKeyException {
+  private void checkChangePasswordKeyValidity(ChangePassword changePassword, User person) throws InvalidChangePasswordKeyException {
     if (!changePassword.getChangePasswordKey().equals(person.getChangePasswordKey()) || person.getChangePasswordKeyExpirationDate().isBefore(dateService.now()))
       throw new InvalidChangePasswordKeyException("Invalid token to change password");
   }

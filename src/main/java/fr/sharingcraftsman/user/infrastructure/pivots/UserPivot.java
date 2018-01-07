@@ -6,10 +6,10 @@ import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
-import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
-import fr.sharingcraftsman.user.domain.company.KnownProfile;
-import fr.sharingcraftsman.user.domain.company.ProfileBuilder;
+import fr.sharingcraftsman.user.domain.user.User;
+import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
+import fr.sharingcraftsman.user.domain.user.KnownProfile;
+import fr.sharingcraftsman.user.domain.user.ProfileBuilder;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 
 import java.time.LocalDateTime;
@@ -21,11 +21,11 @@ import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 
 public class UserPivot {
-  public static UserEntity fromDomainToInfra(Collaborator collaborator) {
-    return new UserEntity(collaborator.getUsername(), collaborator.getPassword());
+  public static UserEntity fromDomainToInfra(User user) {
+    return new UserEntity(user.getUsername(), user.getPassword());
   }
 
-  public static Collaborator fromInfraToDomain(UserEntity userEntity) throws CredentialsException {
+  public static User fromInfraToDomain(UserEntity userEntity) throws CredentialsException {
     String changePasswordKey = userEntity.getChangePasswordKey() != null ? userEntity.getChangePasswordKey() : "";
     LocalDateTime changePasswordKeyExpirationDate = userEntity.getChangePasswordExpirationDate() != null ? LocalDateTime.ofInstant(userEntity.getChangePasswordExpirationDate().toInstant(), ZoneId.systemDefault()) : null;
 

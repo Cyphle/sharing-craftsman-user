@@ -1,12 +1,12 @@
 package fr.sharingcraftsman.user.domain.authentication;
 
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
+import fr.sharingcraftsman.user.domain.user.User;
 
 public interface TokenAdministrator {
-  void deleteTokensOf(Collaborator collaborator, Client client);
+  void deleteTokensOf(User user, Client client);
 
-  ValidToken createNewToken(Client client, Collaborator collaborator, ValidToken token);
+  ValidToken createNewToken(Client client, User user, ValidToken token);
 
   Token findTokenFromAccessToken(Client client, Credentials credentials, ValidToken token);
 

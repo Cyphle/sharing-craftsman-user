@@ -16,7 +16,7 @@ import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.company.*;
+import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 import fr.sharingcraftsman.user.domain.ports.authorization.Authorizer;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;

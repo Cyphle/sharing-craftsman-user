@@ -1,20 +1,20 @@
-package fr.sharingcraftsman.user.domain.company;
+package fr.sharingcraftsman.user.domain.user;
 
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.Username;
 
 public interface HumanResourceAdministrator {
-  void createNewCollaborator(Collaborator collaborator);
+  void createNewCollaborator(User user);
 
-  Person findCollaboratorFromUsername(Username username);
+  BaseUser findCollaboratorFromUsername(Username username);
 
-  Person findCollaboratorFromCredentials(Credentials credentials);
+  BaseUser findCollaboratorFromCredentials(Credentials credentials);
 
   void deleteChangePasswordKeyOf(Credentials credentials);
 
   ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey);
 
-  void updateCollaboratorPassword(Collaborator collaborator);
+  void updateCollaboratorPassword(User user);
 
   Profile findProfileOf(Username username);
 

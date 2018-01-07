@@ -2,7 +2,7 @@ package fr.sharingcraftsman.user.domain.authentication;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.company.*;
+import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 
 import java.security.SecureRandom;
@@ -26,11 +26,11 @@ public class OAuthAuthenticator implements Authenticator {
 
   @Override
   public Token login(Credentials credentials, Client client) throws CollaboratorException {
-    Person person = humanResourceAdministrator.findCollaboratorFromCredentials(credentials);
-    verifyCollaboratorIsKnown(person);
-    Collaborator collaborator = (Collaborator) person;
-    tokenAdministrator.deleteTokensOf(collaborator, client);
-    return generateToken(credentials, client, collaborator);
+    BaseUser baseUser = humanResourceAdministrator.findCollaboratorFromCredentials(credentials);
+    verifyCollaboratorIsKnown(baseUser);
+    User user = (User) baseUser;
+    tokenAdministrator.deleteTokensOf(user, client);
+    return generateToken(credentials, client, user);
   }
 
   @Override
@@ -59,30 +59,30 @@ public class OAuthAuthenticator implements Authenticator {
 
   @Override
   public Token createNewToken(Credentials credentials, Client client) throws CollaboratorException {
-    Person person = humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername());
-    verifyCollaboratorIsKnown(person);
-    Collaborator collaborator = (Collaborator) person;
-    return generateToken(credentials, client, collaborator);
+    BaseUser baseUser = humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername());
+    verifyCollaboratorIsKnown(baseUser);
+    User user = (User) baseUser;
+    return generateToken(credentials, client, user);
   }
 
-  private void verifyCollaboratorIsKnown(Person person) throws UnknownCollaboratorException {
-    if (!person.isKnown())
+  private void verifyCollaboratorIsKnown(BaseUser baseUser) throws UnknownCollaboratorException {
+    if (!baseUser.isKnown())
       throw new UnknownCollaboratorException("Unknown collaborator");
   }
 
-  private Token generateToken(Credentials credentials, Client client, Collaborator collaborator) {
+  private Token generateToken(Credentials credentials, Client client, User user) {
     ValidToken token = validTokenBuilder
-            .withAccessToken(generateKey(client.getName() + collaborator.getUsername()))
-            .withRefreshToken(generateKey(client.getName() + collaborator.getUsername()))
+            .withAccessToken(generateKey(client.getName() + user.getUsername()))
+            .withRefreshToken(generateKey(client.getName() + user.getUsername()))
             .expiringThe(dateService.getDayAt(credentials.stayLogged() ? LONG_VALIDITY_OFFSET : SHORT_VALIDITY_OFFSET))
             .build();
 
-    return tokenAdministrator.createNewToken(client, collaborator, token);
+    return tokenAdministrator.createNewToken(client, user, token);
   }
 
   private void deleteToken(Credentials credentials, Client client) {
-    Collaborator collaborator = (Collaborator) humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername());
-    tokenAdministrator.deleteTokensOf(collaborator, client);
+    User user = (User) humanResourceAdministrator.findCollaboratorFromUsername(credentials.getUsername());
+    tokenAdministrator.deleteTokensOf(user, client);
   }
 
   private boolean verifyTokenValidity(Token foundToken) {

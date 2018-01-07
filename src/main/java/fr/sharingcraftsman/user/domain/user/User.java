@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.domain.company;
+package fr.sharingcraftsman.user.domain.user;
 
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.Password;
@@ -10,24 +10,24 @@ import java.time.LocalDateTime;
 
 @EqualsAndHashCode
 @ToString
-public class Collaborator extends Person {
+public class User extends BaseUser {
   private Username username;
   private Password password;
   private String changePasswordKey;
   private LocalDateTime changePasswordKeyExpirationDate;
 
-  public Collaborator(Username username) {
+  public User(Username username) {
     this.username = username;
     this.changePasswordKey = "";
   }
 
-  Collaborator(Username username, Password password) {
+  User(Username username, Password password) {
     this.username = username;
     this.password = password;
     changePasswordKey = "";
   }
 
-  public Collaborator(Username username, Password password, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate) {
+  public User(Username username, Password password, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate) {
     this(username, password);
     this.changePasswordKey = changePasswordKey;
     this.changePasswordKeyExpirationDate = changePasswordKeyExpirationDate;
@@ -58,9 +58,9 @@ public class Collaborator extends Person {
     return true;
   }
 
-  public static Collaborator from(Credentials credentials) {
-    Collaborator collaborator = new Collaborator(credentials.getUsername());
-    collaborator.setPassword(credentials.getPassword());
-    return collaborator;
+  public static User from(Credentials credentials) {
+    User user = new User(credentials.getUsername());
+    user.setPassword(credentials.getPassword());
+    return user;
   }
 }

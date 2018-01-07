@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.api.pivots;
 
 import fr.sharingcraftsman.user.api.models.ChangePasswordKeyDTO;
-import fr.sharingcraftsman.user.domain.company.ChangePasswordKey;
+import fr.sharingcraftsman.user.domain.user.ChangePasswordKey;
 
 public class ChangePasswordTokenPivot {
   public static ChangePasswordKeyDTO fromDomainToApi(ChangePasswordKey changePasswordKey) {

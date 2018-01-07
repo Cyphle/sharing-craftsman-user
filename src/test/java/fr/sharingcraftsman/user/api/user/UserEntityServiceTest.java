@@ -14,7 +14,7 @@ import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.company.*;
+import fr.sharingcraftsman.user.domain.user.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,12 +75,12 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_register_user() throws Exception {
-    given(humanResourceAdministrator.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownCollaborator());
+    given(humanResourceAdministrator.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownUser());
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
-    verify(humanResourceAdministrator).createNewCollaborator(Collaborator.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
+    verify(humanResourceAdministrator).createNewCollaborator(User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 
@@ -90,7 +90,7 @@ public class UserEntityServiceTest {
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
-    verify(humanResourceAdministrator, never()).createNewCollaborator(any(Collaborator.class));
+    verify(humanResourceAdministrator, never()).createNewCollaborator(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isEqualTo("Username cannot be empty");
   }
@@ -101,7 +101,7 @@ public class UserEntityServiceTest {
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
-    verify(humanResourceAdministrator, never()).createNewCollaborator(any(Collaborator.class));
+    verify(humanResourceAdministrator, never()).createNewCollaborator(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     assertThat(response.getBody()).isEqualTo("Password cannot be empty");
   }
@@ -118,9 +118,9 @@ public class UserEntityServiceTest {
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
-    verify(humanResourceAdministrator, never()).createNewCollaborator(any(Collaborator.class));
+    verify(humanResourceAdministrator, never()).createNewCollaborator(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    assertThat(response.getBody()).isEqualTo("Collaborator already exists with username: john@doe.fr");
+    assertThat(response.getBody()).isEqualTo("User already exists with username: john@doe.fr");
   }
 
   @Test
@@ -136,12 +136,12 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_get_change_password_token_when_requesting_to_change_password() throws Exception {
-    Collaborator collaborator = (new CollaboratorBuilder())
+    User user = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("password"))
             .build();
-    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(collaborator);
-    ChangePasswordKey key = new ChangePasswordKey(collaborator, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
+    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(user);
+    ChangePasswordKey key = new ChangePasswordKey(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
     given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
 
@@ -164,13 +164,13 @@ public class UserEntityServiceTest {
   @Test
   public void should_change_password_when_sending_new_password() throws Exception {
     given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
-    Collaborator collaborator = (new CollaboratorBuilder())
+    User user = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
             .withChangePasswordKey("aaa")
             .withChangePasswordKeyExpirationDate(LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0))
             .build();
-    given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(collaborator);
+    given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(user);
 
     ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
     changePasswordDTO.setOldPassword("password");
@@ -198,12 +198,12 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_generate_key_when_lost_password() throws Exception {
-    Collaborator collaborator = (new CollaboratorBuilder())
+    User user = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("password"))
             .build();
-    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(collaborator);
-    ChangePasswordKey key = new ChangePasswordKey(collaborator, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
+    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(user);
+    ChangePasswordKey key = new ChangePasswordKey(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
     given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
 

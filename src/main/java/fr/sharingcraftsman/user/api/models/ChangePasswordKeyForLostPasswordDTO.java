@@ -2,7 +2,7 @@ package fr.sharingcraftsman.user.api.models;
 
 import fr.sharingcraftsman.user.api.pivots.ChangePasswordTokenPivot;
 import fr.sharingcraftsman.user.domain.common.Email;
-import fr.sharingcraftsman.user.domain.company.ChangePasswordKey;
+import fr.sharingcraftsman.user.domain.user.ChangePasswordKey;
 
 public class ChangePasswordKeyForLostPasswordDTO {
   private final ChangePasswordKeyDTO changePasswordKey;

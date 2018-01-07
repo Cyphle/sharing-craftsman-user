@@ -1,10 +1,10 @@
 package fr.sharingcraftsman.user.domain.admin;
 
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.company.AlreadyExistingCollaboratorException;
-import fr.sharingcraftsman.user.domain.company.CollaboratorException;
-import fr.sharingcraftsman.user.domain.company.Person;
-import fr.sharingcraftsman.user.domain.company.UnknownCollaboratorException;
+import fr.sharingcraftsman.user.domain.user.AlreadyExistingCollaboratorException;
+import fr.sharingcraftsman.user.domain.user.CollaboratorException;
+import fr.sharingcraftsman.user.domain.user.BaseUser;
+import fr.sharingcraftsman.user.domain.user.UnknownCollaboratorException;
 import fr.sharingcraftsman.user.domain.ports.admin.CompanyAdmin;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class OrganisationAdmin implements CompanyAdmin {
 
   @Override
   public void deleteCollaborator(Username username) throws CollaboratorException {
-    Person collaborator = hrAdminManager.findCollaboratorFromUsername(username);
+    BaseUser collaborator = hrAdminManager.findCollaboratorFromUsername(username);
 
     if (!collaborator.isKnown())
       throw new UnknownCollaboratorException("Unknown collaborator");
@@ -47,7 +47,7 @@ public class OrganisationAdmin implements CompanyAdmin {
     AdminPerson foundCollaborator = hrAdminManager.findAdminCollaboratorFromUsername(collaborator.getUsername());
 
     if (foundCollaborator.isKnown())
-      throw new AlreadyExistingCollaboratorException("Collaborator already exists with username: " + collaborator.getUsernameContent());
+      throw new AlreadyExistingCollaboratorException("User already exists with username: " + collaborator.getUsernameContent());
 
     hrAdminManager.createCollaborator(collaborator);
   }

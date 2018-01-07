@@ -8,7 +8,7 @@ import fr.sharingcraftsman.user.domain.authentication.ValidToken;
 import fr.sharingcraftsman.user.domain.authorization.*;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
-import fr.sharingcraftsman.user.domain.company.HumanResourceAdministrator;
+import fr.sharingcraftsman.user.domain.user.HumanResourceAdministrator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

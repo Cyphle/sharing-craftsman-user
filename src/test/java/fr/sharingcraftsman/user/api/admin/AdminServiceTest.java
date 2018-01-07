@@ -13,7 +13,7 @@ import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
+import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

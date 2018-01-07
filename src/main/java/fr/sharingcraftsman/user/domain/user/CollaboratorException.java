@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.domain.company;
+package fr.sharingcraftsman.user.domain.user;
 
 public class CollaboratorException extends Exception {
   public CollaboratorException(String message) {

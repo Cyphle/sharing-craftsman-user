@@ -2,7 +2,7 @@ package fr.sharingcraftsman.user.infrastructure.pivots;
 
 import fr.sharingcraftsman.user.domain.authentication.ValidToken;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
+import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.AccessTokenEntity;
 
 import java.time.LocalDateTime;
@@ -10,10 +10,10 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class TokenPivot {
-  public static AccessTokenEntity fromDomainToInfra(Collaborator collaborator, Client client, ValidToken token) {
+  public static AccessTokenEntity fromDomainToInfra(User user, Client client, ValidToken token) {
     AccessTokenEntity accessTokenEntity = new AccessTokenEntity();
     accessTokenEntity.setClient(client.getName());
-    accessTokenEntity.setUsername(collaborator.getUsername());
+    accessTokenEntity.setUsername(user.getUsername());
     accessTokenEntity.setAccessToken(token.getAccessToken());
     accessTokenEntity.setRefreshToken(token.getRefreshToken());
     accessTokenEntity.setExpirationDate(Date.from(token.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));

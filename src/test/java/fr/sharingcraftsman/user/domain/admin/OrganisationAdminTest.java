@@ -1,9 +1,9 @@
 package fr.sharingcraftsman.user.domain.admin;
 
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
-import fr.sharingcraftsman.user.domain.company.CollaboratorException;
-import fr.sharingcraftsman.user.domain.company.UnknownCollaborator;
+import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
+import fr.sharingcraftsman.user.domain.user.CollaboratorException;
+import fr.sharingcraftsman.user.domain.user.UnknownUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +57,7 @@ public class OrganisationAdminTest {
   @Test
   public void should_throw_unknown_collaborator_exception_if_collaborator_not_found() throws Exception {
     try {
-      given(hrAdminManager.findCollaboratorFromUsername(any(Username.class))).willReturn(new UnknownCollaborator());
+      given(hrAdminManager.findCollaboratorFromUsername(any(Username.class))).willReturn(new UnknownUser());
       organisation.deleteCollaborator(usernameBuilder.from("hello@world.fr"));
       fail("Should have throw collaborator exception when not found");
     } catch (CollaboratorException e) {
