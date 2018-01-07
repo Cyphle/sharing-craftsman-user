@@ -1,6 +1,8 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import fr.sharingcraftsman.user.domain.client.BaseClient;
 import fr.sharingcraftsman.user.domain.client.Client;
+import fr.sharingcraftsman.user.domain.client.UnknownClient;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.infrastructure.models.ClientEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.ClientPivot;
@@ -18,23 +20,23 @@ public class ClientAdapter implements ClientRepository {
   }
 
   @Override
-  public Client findClient(Client client) {
+  public BaseClient findClient(Client client) {
     ClientEntity foundClient = clientJpaRepository.findByNameAndSecret(client.getName(), client.getSecret());
 
     if (foundClient == null)
-      return Client.unkownClient();
+      return UnknownClient.get();
 
-    return Client.knownClient(foundClient.getName(), foundClient.getSecret());
+    return Client.from(foundClient.getName(), foundClient.getSecret());
   }
 
   @Override
-  public Client findClientByName(Client client) {
+  public BaseClient findClientByName(Client client) {
     ClientEntity foundClient = clientJpaRepository.findByName(client.getName());
 
     if (foundClient == null)
-      return Client.unkownClient();
+      return UnknownClient.get();
 
-    return Client.knownClient(foundClient.getName(), foundClient.getSecret());
+    return Client.from(foundClient.getName(), foundClient.getSecret());
   }
 
   @Override

@@ -11,6 +11,7 @@ import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepo
 import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
+import fr.sharingcraftsman.user.domain.client.UnknownClient;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
@@ -58,7 +59,7 @@ public class AdminServiceTest {
   @Before
   public void setUp() throws Exception {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 30, 12, 0));
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.knownClient("client", "secret"));
+    given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "secret"));
 
     GroupDTO group = new GroupDTO("USERS");
     group.addRole(new RoleDTO("ROLE_USER"));
@@ -104,7 +105,7 @@ public class AdminServiceTest {
 
   @Test
   public void should_get_unauthorized_if_client_is_not_known() throws Exception {
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.unkownClient());
+    given(clientRepository.findClient(any(Client.class))).willReturn(UnknownClient.get());
 
     ResponseEntity response = adminService.getUsers(clientDTO, tokenDTO);
 

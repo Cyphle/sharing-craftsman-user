@@ -55,7 +55,7 @@ public class AuthenticationServiceTest {
   public void setUp() throws Exception {
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 30, 12, 0));
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.knownClient("client", "secret"));
+    given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "secret"));
 
     authenticationService = new AuthenticationService(userRepository, accessTokenRepository, clientRepository, dateService);
     clientDTO = new ClientDTO("client", "secret");

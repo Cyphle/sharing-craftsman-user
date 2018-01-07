@@ -29,8 +29,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
-
 @Service
 public class AuthorizationService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -75,7 +73,7 @@ public class AuthorizationService {
   }
 
   private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Credentials credentials) {
-    Client client = new Client(clientDTO.getName(), "", false);
+    Client client = Client.from(clientDTO.getName(), "");
     return !authenticationManager.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO));
   }
 }

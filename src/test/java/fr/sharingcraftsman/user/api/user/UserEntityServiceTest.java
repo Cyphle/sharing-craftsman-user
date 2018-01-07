@@ -9,6 +9,7 @@ import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepositor
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
+import fr.sharingcraftsman.user.domain.client.UnknownClient;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
@@ -62,7 +63,7 @@ public class UserEntityServiceTest {
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 27, 12, 0));
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clietnsercret"));
+    given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "clietnsercret"));
     userService = new UserService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService);
     clientDTO = new ClientDTO("secret", "clientsecret");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
@@ -121,7 +122,7 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_get_unknown_client_response_when_client_is_not_known() throws Exception {
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.unkownClient());
+    given(clientRepository.findClient(any(Client.class))).willReturn(UnknownClient.get());
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);

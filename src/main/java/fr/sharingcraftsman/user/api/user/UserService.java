@@ -113,7 +113,7 @@ public class UserService {
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      authenticationManager.logout(credentials, new Client(clientDTO.getName(), "", false), TokenPivot.fromApiToDomain(tokenDTO));
+      authenticationManager.logout(credentials, Client.from(clientDTO.getName(), ""), TokenPivot.fromApiToDomain(tokenDTO));
       userOrganisation.changePassword(credentials, ChangePasswordPivot.fromApiToDomain(changePasswordDTO));
       return ResponseEntity.ok().build();
     } catch (CredentialsException | UserException e) {
@@ -173,7 +173,7 @@ public class UserService {
   }
 
   private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Credentials credentials) {
-    Client client = new Client(clientDTO.getName(), "", false);
+    Client client = Client.from(clientDTO.getName(), "");
     return !authenticationManager.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO));
   }
 }

@@ -47,7 +47,7 @@ public class BaseTokenAdapterTest {
     tokenAdapter = new AccessTokenAdapter(accessTokenJpaRepository);
     token = AccessToken.from("aaa", "bbb", LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
-    client = Client.knownClient("client", "secret");
+    client = Client.from("client", "secret");
     user = User.from(credentials);
   }
 

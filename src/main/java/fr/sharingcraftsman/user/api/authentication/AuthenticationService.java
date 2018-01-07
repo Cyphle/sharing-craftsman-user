@@ -26,8 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
-
 @Service
 public class AuthenticationService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -76,7 +74,7 @@ public class AuthenticationService {
     try {
       log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
       Credentials credentials = Credentials.build(token.getUsername(), "NOPASSWORD");
-      Client client = new Client(clientDTO.getName(), "", false);
+      Client client = Client.from(clientDTO.getName(), "");
 
       if (authenticationManager.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(token))) {
         return ResponseEntity.ok().build();
@@ -95,7 +93,7 @@ public class AuthenticationService {
     try {
       log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
       Credentials credentials = Credentials.build(token.getUsername(), "NOPASSWORD");
-      Client client = new Client(clientDTO.getName(), "", false);
+      Client client = Client.from(clientDTO.getName(), "");
       authenticationManager.logout(credentials, client, TokenPivot.fromApiToDomain(token));
       return ResponseEntity.ok().build();
     } catch (CredentialsException e) {
@@ -114,7 +112,7 @@ public class AuthenticationService {
 
     try {
       Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
-      Client client = new Client(clientDTO.getName(), "", false);
+      Client client = Client.from(clientDTO.getName(), "");
       if (authenticationManager.isRefreshTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO))) {
         authenticationManager.deleteToken(credentials, client, TokenPivot.fromApiToDomain(tokenDTO));
         TokenDTO token = TokenPivot.fromDomainToApi((AccessToken) authenticationManager.createNewToken(credentials, client), credentials);

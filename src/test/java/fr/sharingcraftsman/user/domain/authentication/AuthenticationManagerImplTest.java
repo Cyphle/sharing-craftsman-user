@@ -47,7 +47,7 @@ public class AuthenticationManagerImplTest {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     identifier = new AuthenticationManagerImpl(userRepository, accessTokenRepository, dateService);
     oAuthToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
-    client = Client.knownClient("client", "secret");
+    client = Client.from("client", "secret");
     credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
     user = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))

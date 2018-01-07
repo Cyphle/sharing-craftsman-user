@@ -30,7 +30,7 @@ public class ClientOrganisationImplTest {
 
   @Test
   public void should_validate_client() throws Exception {
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.knownClient("client", "clientsecret"));
+    given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "clientsecret"));
 
     Client client = Client.from("client", "clientsecret");
 
@@ -39,7 +39,7 @@ public class ClientOrganisationImplTest {
 
   @Test
   public void should_return_false_if_client_does_not_exists() throws Exception {
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.unkownClient());
+    given(clientRepository.findClient(any(Client.class))).willReturn(UnknownClient.get());
 
     Client client = Client.from("client", "clientsecret");
 
@@ -49,7 +49,7 @@ public class ClientOrganisationImplTest {
   @Test
   public void should_create_new_client() throws Exception {
     given(secretGenerator.generateSecret()).willReturn("secret");
-    given(clientRepository.findClientByName(any(Client.class))).willReturn(Client.unkownClient());
+    given(clientRepository.findClientByName(any(Client.class))).willReturn(UnknownClient.get());
     Client client = Client.from("sharingcraftsman", "");
 
     clientOrganisationImpl.createNewClient(client);
@@ -60,7 +60,7 @@ public class ClientOrganisationImplTest {
   @Test
   public void should_throw_already_existing_client_if_client_already_exists() throws Exception {
     given(secretGenerator.generateSecret()).willReturn("secret");
-    given(clientRepository.findClientByName(any(Client.class))).willReturn(Client.knownClient("sharingcraftsman", "secret"));
+    given(clientRepository.findClientByName(any(Client.class))).willReturn(Client.from("sharingcraftsman", "secret"));
     Client client = Client.from("sharingcraftsman", "");
 
     try {
