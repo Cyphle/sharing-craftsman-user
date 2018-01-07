@@ -1,6 +1,6 @@
-package fr.sharingcraftsman.user.api.models;
+package fr.sharingcraftsman.user.api.admin;
 
-import lombok.EqualsAndHashCode;
+import fr.sharingcraftsman.user.api.models.AuthorizationsDTO;
 import lombok.ToString;
 
 @ToString
@@ -61,6 +61,10 @@ public class AdminUserDTO {
     this.username = username;
   }
 
+  public String getPassword() {
+    return password;
+  }
+
   public void setPassword(String password) {
     this.password = password;
   }
@@ -119,6 +123,14 @@ public class AdminUserDTO {
 
   public void setAuthorizations(AuthorizationsDTO authorizations) {
     this.authorizations = authorizations;
+  }
+
+  public String getChangePasswordKey() {
+    return changePasswordKey;
+  }
+
+  public long getChangePasswordKeyExpirationDate() {
+    return changePasswordKeyExpirationDate;
   }
 
   public boolean isActive() {

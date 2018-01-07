@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.acceptance;
 
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -22,8 +23,8 @@ public class UpdateProfileStepsDef extends SpringAcceptanceTestConfig {
   private ProfileDsl profileDsl;
   private ProfileDsl newProfile;
 
-  @Given("The application is initialized with client")
-  public void setupApplication() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     if (this.mvc == null) {
       this.mvc = MockMvcBuilders
               .webAppContextSetup(context)
@@ -40,7 +41,7 @@ public class UpdateProfileStepsDef extends SpringAcceptanceTestConfig {
             .andExpect(status().isOk());
   }
 
-  @Given("I have a connected account with credentials <(.*)> and <(.*)>")
+  @Given("^I have a connected account with credentials <(.*)> and <(.*)>$")
   public void registerAndConnect(String username, String password) throws Exception {
     login = new LoginDsl(username, password);
     response = this.mvc
@@ -66,7 +67,7 @@ public class UpdateProfileStepsDef extends SpringAcceptanceTestConfig {
     token = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), TokenDsl.class);
   }
 
-  @When("I update my account with firstname <(.*)>, lastname <(.*)>, email <(.*)>, website <(.*)>, github <(.*)>, linkedin <(.*)>")
+  @When("^I update my account with firstname <(.*)>, lastname <(.*)>, email <(.*)>, website <(.*)>, github <(.*)>, linkedin <(.*)>$")
   public void updateProfile(String firstname, String lastname, String email, String website, String github, String linkedin) throws Exception {
     profileDsl = new ProfileDsl(firstname, lastname, email, website, github, linkedin);
 
@@ -85,7 +86,7 @@ public class UpdateProfileStepsDef extends SpringAcceptanceTestConfig {
     newProfile = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), ProfileDsl.class);
   }
 
-  @Then("I have my profile updated")
+  @Then("^I have my profile updated$")
   public void checkNewToken() throws IOException {
     assertThat(profileDsl).isEqualTo(newProfile);
   }

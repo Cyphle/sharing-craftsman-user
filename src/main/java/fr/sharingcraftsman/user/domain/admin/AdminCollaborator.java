@@ -1,26 +1,29 @@
 package fr.sharingcraftsman.user.domain.admin;
 
 import fr.sharingcraftsman.user.domain.common.*;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-public class AdminCollaborator {
-  private final Username username;
-  private final Password password;
-  private final Name firstname;
-  private final Name lastname;
-  private final Email email;
-  private final Link website;
-  private final Link github;
-  private final Link linkedin;
-  private final String changePasswordKey;
-  private final LocalDateTime changePasswordKeyExpirationDate;
-  private final boolean isActive;
-  private final LocalDateTime creationDate;
-  private final LocalDateTime lastUpdateDate;
+@ToString
+public class AdminCollaborator extends AdminPerson {
+  private Username username;
+  private Password password;
+  private Name firstname;
+  private Name lastname;
+  private Email email;
+  private Link website;
+  private Link github;
+  private Link linkedin;
+  private String changePasswordKey;
+  private LocalDateTime changePasswordKeyExpirationDate;
+  private boolean isActive;
+  private LocalDateTime creationDate;
+  private LocalDateTime lastUpdateDate;
 
   public AdminCollaborator(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, Date changePasswordExpirationDate, boolean active, Date creationDate, Date lastUpdateDate) {
     this.username = new Username(username);
@@ -38,9 +41,28 @@ public class AdminCollaborator {
     this.lastUpdateDate = fromDateToLocalDatetime(lastUpdateDate);
   }
 
-  public String getUsername() {
+  public AdminCollaborator(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate, boolean isActive, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
+    this.username = new Username(username);
+    this.password = new Password(password);
+    this.firstname = Name.of(firstname);
+    this.lastname = Name.of(lastname);
+    this.email = Email.from(email);
+    this.website = Link.to(website);
+    this.github = Link.to(github);
+    this.linkedin = Link.to(linkedin);
+    this.changePasswordKey = changePasswordKey;
+    this.changePasswordKey = changePasswordKey;
+    this.changePasswordKeyExpirationDate = changePasswordKeyExpirationDate;
+    this.isActive = isActive;
+    this.creationDate = creationDate;
+    this.lastUpdateDate = lastUpdateDate;
+  }
+
+  public String getUsernameContent() {
     return username.getUsername();
   }
+
+  public Username getUsername() { return username; }
 
   public String getPassword() {
     return password.getPassword();
@@ -90,7 +112,27 @@ public class AdminCollaborator {
     return fromLocalDatetimeToLong(lastUpdateDate);
   }
 
+  public void updateFields(AdminCollaborator collaborator) {
+    username = collaborator.username;
+    firstname = collaborator.firstname;
+    lastname = collaborator.lastname;
+    email = collaborator.email;
+    website = collaborator.website;
+    github = collaborator.github;
+    linkedin = collaborator.linkedin;
+    isActive = collaborator.isActive;
+  }
+
+  @Override
+  public boolean isKnown() {
+    return true;
+  }
+
   public static AdminCollaborator from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, Date changePasswordExpirationDate, boolean active, Date creationDate, Date lastUpdateDate) {
+    return new AdminCollaborator(username, password, firstname, lastname, email, website, github, linkedin, changePasswordKey, changePasswordExpirationDate, active, creationDate, lastUpdateDate);
+  }
+
+  public static AdminCollaborator from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, LocalDateTime changePasswordExpirationDate, boolean active, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
     return new AdminCollaborator(username, password, firstname, lastname, email, website, github, linkedin, changePasswordKey, changePasswordExpirationDate, active, creationDate, lastUpdateDate);
   }
 
@@ -101,5 +143,39 @@ public class AdminCollaborator {
 
   private LocalDateTime fromDateToLocalDatetime(Date date) {
     return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    AdminCollaborator that = (AdminCollaborator) o;
+
+    if (isActive != that.isActive) return false;
+    if (username != null ? !username.equals(that.username) : that.username != null) return false;
+    if (password != null ? !password.equals(that.password) : that.password != null) return false;
+    if (firstname != null ? !firstname.equals(that.firstname) : that.firstname != null) return false;
+    if (lastname != null ? !lastname.equals(that.lastname) : that.lastname != null) return false;
+    if (email != null ? !email.equals(that.email) : that.email != null) return false;
+    if (website != null ? !website.equals(that.website) : that.website != null) return false;
+    if (github != null ? !github.equals(that.github) : that.github != null) return false;
+    if (linkedin != null ? !linkedin.equals(that.linkedin) : that.linkedin != null) return false;
+    return changePasswordKey != null ? changePasswordKey.equals(that.changePasswordKey) : that.changePasswordKey == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = username != null ? username.hashCode() : 0;
+    result = 31 * result + (password != null ? password.hashCode() : 0);
+    result = 31 * result + (firstname != null ? firstname.hashCode() : 0);
+    result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
+    result = 31 * result + (email != null ? email.hashCode() : 0);
+    result = 31 * result + (website != null ? website.hashCode() : 0);
+    result = 31 * result + (github != null ? github.hashCode() : 0);
+    result = 31 * result + (linkedin != null ? linkedin.hashCode() : 0);
+    result = 31 * result + (changePasswordKey != null ? changePasswordKey.hashCode() : 0);
+    result = 31 * result + (isActive ? 1 : 0);
+    return result;
   }
 }

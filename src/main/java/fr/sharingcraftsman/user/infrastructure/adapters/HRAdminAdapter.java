@@ -3,7 +3,9 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 import com.google.common.collect.Lists;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
+import fr.sharingcraftsman.user.domain.admin.AdminPerson;
 import fr.sharingcraftsman.user.domain.admin.HRAdminManager;
+import fr.sharingcraftsman.user.domain.admin.UnknownAdminCollaborator;
 import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.company.Person;
@@ -51,5 +53,31 @@ public class HRAdminAdapter implements HRAdminManager {
     } catch (CredentialsException e) {
       return new UnknownCollaborator();
     }
+  }
+
+  @Override
+  public void updateCollaborator(AdminCollaborator collaborator) {
+    User foundUser = userRepository.findByUsername(collaborator.getUsernameContent());
+    foundUser.updateFromAdminCollaborator(collaborator);
+    foundUser.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(foundUser);
+  }
+
+  @Override
+  public AdminPerson findAdminCollaboratorFromUsername(Username username) {
+    User foundUser = userRepository.findByUsername(username.getUsername());
+
+    if (foundUser == null)
+      return new UnknownAdminCollaborator();
+
+    return UserPivot.fromInfraToAdminDomain(foundUser);
+  }
+
+  @Override
+  public void createCollaborator(AdminCollaborator collaborator) {
+    User userToCreate = UserPivot.fromDomainToInfra(collaborator);
+    userToCreate.setCreationDate(dateService.nowInDate());
+    userToCreate.setLastUpdateDate(dateService.nowInDate());
+    userRepository.save(userToCreate);
   }
 }

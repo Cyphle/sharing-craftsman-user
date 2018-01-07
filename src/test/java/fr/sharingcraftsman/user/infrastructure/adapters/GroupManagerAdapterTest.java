@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
@@ -44,8 +43,17 @@ public class GroupManagerAdapterTest {
   public void should_add_group_to_user() throws Exception {
     given(userGroupRepository.save(any(UserGroup.class))).willReturn(new UserGroup("john@doe.fr", "USERS"));
 
-    groupManagerAdapter.addGroup(usernameBuilder.from("john@doe.fr"), Groups.USERS);
+    groupManagerAdapter.addGroupToCollaborator(usernameBuilder.from("john@doe.fr"), Groups.USERS);
 
     verify(userGroupRepository).save(new UserGroup("john@doe.fr", "USERS"));
+  }
+
+  @Test
+  public void should_remove_group_from_user() throws Exception {
+    given(userGroupRepository.findByUsernameAndGroup("hello@world.fr", Groups.USERS.name())).willReturn(new UserGroup("hello@world.fr", Groups.USERS.name()));
+
+    groupManagerAdapter.removeGroupFromCollaborator(usernameBuilder.from("hello@world.fr"), Groups.USERS);
+
+    verify(userGroupRepository).delete(new UserGroup("hello@world.fr", "USERS"));
   }
 }

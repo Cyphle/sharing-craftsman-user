@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.acceptance;
 
+import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -24,8 +25,8 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
   private TokenDsl newToken;
   private AuthorizationDsl authorization;
 
-  @Given("The application is setup")
-  public void setupApplication() {
+  @Before
+  public void setUp() {
     if (this.mvc == null) {
       this.mvc = MockMvcBuilders
               .webAppContextSetup(context)
@@ -33,7 +34,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
     }
   }
 
-  @And("A client <(.*)> is registered")
+  @Given("^A client <(.*)> is registered$")
   public void createClient(String clientName) throws Exception {
     ClientDTO client = new ClientDTO();
     client.setName(clientName);
@@ -42,11 +43,10 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
             .perform(post(getBaseUri() + "/clients/register")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(Mapper.fromObjectToJsonString(client))
-            )
-            .andExpect(status().isOk());
+            );
   }
 
-  @Given("I register to the application with my credentials <(.*)> and password <(.*)>")
+  @Given("^I register to the application with my credentials <(.*)> and password <(.*)>$")
   public void register(String email, String password) throws Exception {
     LoginDsl login = new LoginDsl(email, password);
     response = this.mvc
@@ -60,7 +60,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
             .andReturn();
   }
 
-  @When("I connect to the application with my credentials <(.*)> and password <(.*)>")
+  @When("^I connect to the application with my credentials <(.*)> and password <(.*)>$")
   public void connect(String email, String password) throws Exception {
     login = new LoginDsl(email, password);
     response = this.mvc
@@ -76,7 +76,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
     token = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), TokenDsl.class);
   }
 
-  @When("I ask to change my password")
+  @When("^I ask to change my password$")
   public void requestPasswordChange() throws Exception {
     response = this.mvc
             .perform(get(getBaseUri() + "/users/request-change-password")
@@ -91,7 +91,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
     changePasswordToken = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), ChangePasswordTokenDsl.class);
   }
 
-  @And("I change my password with new password <(.*)>")
+  @And("^I change my password with new password <(.*)>$")
   public void changePassword(String newPassword) throws Exception {
     ChangePasswordDsl changePasswordDsl = new ChangePasswordDsl(changePasswordToken.getToken(), login.getPassword(), newPassword);
 
@@ -108,7 +108,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
             .andReturn();
   }
 
-  @And("I refresh my token")
+  @And("^I refresh my token$")
   public void refreshToken() throws Exception {
     response = this.mvc
             .perform(get(getBaseUri() + "/tokens/refresh-token")
@@ -123,7 +123,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
     newToken = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), TokenDsl.class);
   }
 
-  @And("I ask for my groups")
+  @And("^I ask for my groups$")
   public void getAuthorizations() throws Exception {
     response = this.mvc
             .perform(get(getBaseUri() + "/roles")
@@ -138,7 +138,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
     authorization = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), AuthorizationDsl.class);
   }
 
-  @And("I have the group <(.*)>")
+  @And("^I have the group <(.*)>$")
   public void verifyGroup(String group) {
     if (group.equals("USERS")) {
       List<String> groupNames = authorization.getGroups()
@@ -149,7 +149,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
     }
   }
 
-  @Then("I have a new token")
+  @Then("^I have a new token$")
   public void checkNewToken() throws IOException {
     assertThat(newToken.getAccessToken()).isNotEmpty();
     assertThat(newToken.getRefreshToken()).isNotEmpty();
@@ -157,7 +157,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
     assertThat(newToken.getRefreshToken()).isNotEqualTo(token.getRefreshToken());
   }
 
-  @Then("I am connected")
+  @Then("^I am connected$")
   public void checkTokenPresent() throws IOException {
     assertThat(token.getAccessToken()).isNotEmpty();
     assertThat(token.getRefreshToken()).isNotEmpty();

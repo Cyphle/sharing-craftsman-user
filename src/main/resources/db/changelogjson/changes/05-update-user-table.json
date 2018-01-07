@@ -1,0 +1,21 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "05-update-user-table.json",
+        "author": "cphamle",
+        "changes": [
+          {
+            "sqlFile": {
+              "encoding": "utf8",
+              "path": "../sql/05-update-user-table.sql",
+              "relativeToChangelogFile": true,
+              "splitStatements": true,
+              "stripComments": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
+import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -181,6 +182,16 @@ public class User {
     website = user.website;
     github = user.github;
     linkedin = user.linkedin;
+  }
+
+  public void updateFromAdminCollaborator(AdminCollaborator collaborator) {
+    username = collaborator.getUsernameContent();
+    firstname = collaborator.getFirstname();
+    lastname = collaborator.getLastname();
+    email = collaborator.getEmail();
+    website = collaborator.getWebsite();
+    github = collaborator.getGithub();
+    linkedin = collaborator.getLinkedin();
   }
 
   @Override

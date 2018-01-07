@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "group_roles_mapping")
 @ToString
+@EqualsAndHashCode
 public class GroupRole {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)

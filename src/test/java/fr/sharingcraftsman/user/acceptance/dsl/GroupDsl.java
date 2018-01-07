@@ -1,17 +1,35 @@
 package fr.sharingcraftsman.user.acceptance.dsl;
 
-import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+import java.util.HashSet;
+import java.util.Set;
+
+@EqualsAndHashCode
+@ToString
 public class GroupDsl {
-  private List<RoleDsl> roles;
+  private Set<RoleDsl> roles;
   private String name;
 
-  public List<RoleDsl> getRoles() {
+  public GroupDsl() {
+  }
+
+  public GroupDsl(String name) {
+    this.name = name;
+    this.roles = new HashSet<>();
+  }
+
+  public Set<RoleDsl> getRoles() {
     return roles;
   }
 
-  public void setRoles(List<RoleDsl> roles) {
+  public void setRoles(Set<RoleDsl> roles) {
     this.roles = roles;
+  }
+
+  public void addRole(RoleDsl role) {
+    this.roles.add(role);
   }
 
   public String getName() {

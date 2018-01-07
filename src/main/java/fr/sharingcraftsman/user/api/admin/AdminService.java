@@ -1,10 +1,12 @@
-package fr.sharingcraftsman.user.api.services;
+package fr.sharingcraftsman.user.api.admin;
 
-import fr.sharingcraftsman.user.api.models.AdminUserDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.models.GroupDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.api.pivots.AdminCollaboratorPivot;
 import fr.sharingcraftsman.user.api.pivots.AuthorizationPivot;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
+import fr.sharingcraftsman.user.api.pivots.GroupPivot;
 import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.admin.HRAdminManager;
 import fr.sharingcraftsman.user.domain.admin.OrganisationAdmin;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
@@ -60,7 +63,7 @@ public class AdminService {
     List<AdminCollaborator> collaborators = company.getAllCollaborators();
     List<AdminUserDTO> users = collaborators.stream()
             .map(collaborator -> new AdminUserDTO(
-                    collaborator.getUsername(),
+                    collaborator.getUsernameContent(),
                     collaborator.getPassword(),
                     collaborator.getFirstname(),
                     collaborator.getLastname(),
@@ -99,6 +102,107 @@ public class AdminService {
               .badRequest()
               .body(e.getMessage());
     }
+  }
+
+  public ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    try {
+      AdminCollaborator collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+      company.updateCollaborator(collaborator);
+      return ResponseEntity.ok().build();
+    } catch (CollaboratorException e) {
+      log.warn("Error while updating user " + user.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
+  public ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    try {
+      AdminCollaborator collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+      company.createCollaborator(collaborator);
+      authorizer.addGroup(Credentials.buildCredentials(usernameBuilder.from(user.getUsername()), null, false), Groups.USERS);
+      return ResponseEntity.ok().build();
+    } catch (CollaboratorException | UsernameException e) {
+      log.warn("Error:" + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
+  public ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    Set<GroupDTO> groups = GroupPivot.groupFromDomainToApi(authorizer.getAllRolesWithTheirGroups());
+    return ResponseEntity.ok(groups);
+  }
+
+  public ResponseEntity addGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    try {
+      authorizer.addGroup(Credentials.buildCredentials(usernameBuilder.from(userGroupDTO.getUsername()), null, false), Groups.valueOf(userGroupDTO.getGroup()));
+      return ResponseEntity.ok().build();
+    } catch (UsernameException e) {
+      log.warn("Error: " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
+  public ResponseEntity removeGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    try {
+      authorizer.removeGroup(Credentials.buildCredentials(usernameBuilder.from(userGroupDTO.getUsername()), null, false), Groups.valueOf(userGroupDTO.getGroup()));
+      return ResponseEntity.ok().build();
+    } catch (UsernameException e) {
+      log.warn("Error: " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
+  public ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    authorizer.createNewGroupWithRoles(GroupPivot.fromApiToDomain(groupDTO));
+    return ResponseEntity.ok().build();
+  }
+
+  public ResponseEntity removeRoleFromGroup(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    authorizer.removeRoleFromGroup(GroupPivot.fromApiToDomain(groupDTO));
+    return ResponseEntity.ok().build();
   }
 
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {

@@ -1,8 +1,7 @@
 Feature: Change password
 
   Background: Setup application
-    Given The application is setup
-    And A client <sharingcraftsman> is registered
+    Given A client <sharingcraftsman> is registered
 
   Scenario: Change my password
     Given I register to the application with my credentials <john@doe.fr> and password <helloworld>

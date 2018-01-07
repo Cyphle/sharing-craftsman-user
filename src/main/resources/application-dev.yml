@@ -68,3 +68,7 @@ bonecp:
   partitionCount: 2
   acquireIncrement: 5
   statementsCacheSize: 100
+
+# Liquibase
+#liquibase:
+#  change-log: classpath:db/changelog/db.changelog-master.json

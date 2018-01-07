@@ -1,9 +1,11 @@
 package fr.sharingcraftsman.user.domain.authorization;
 
+import com.google.common.collect.Lists;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.ports.authorization.Authorizer;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GroupRoleAuthorizer implements Authorizer {
   private GroupAdministrator groupAdministrator;
@@ -27,16 +29,51 @@ public class GroupRoleAuthorizer implements Authorizer {
   @Override
   public void addGroup(Credentials credentials, Groups groupToAdd) {
     List<Group> groups = groupAdministrator.findGroupsOf(credentials.getUsername());
-    if (isNotAdminGroup(groupToAdd) && doesNotAlreadyHaveGroup(groupToAdd, groups)) {
-      groupAdministrator.addGroup(credentials.getUsername(), groupToAdd);
+    if (doesNotAlreadyHaveGroup(groupToAdd, groups)) {
+      groupAdministrator.addGroupToCollaborator(credentials.getUsername(), groupToAdd);
     }
+  }
+
+  @Override
+  public Set<Group> getAllRolesWithTheirGroups() {
+    return roleAdministrator.getAllRolesWithTheirGroups();
+  }
+
+  @Override
+  public void removeGroup(Credentials credentials, Groups groupToRemove) {
+    List<Group> groups = groupAdministrator.findGroupsOf(credentials.getUsername());
+    if (hasGivenGroup(groupToRemove, groups)) {
+      groupAdministrator.removeGroupFromCollaborator(credentials.getUsername(), groupToRemove);
+    }
+  }
+
+  @Override
+  public void createNewGroupWithRoles(Group group) {
+    Group foundGroup = roleAdministrator.getAllRolesWithTheirGroups()
+            .stream()
+            .filter(fetchedGroup -> fetchedGroup.getName().equals(group.getName()))
+            .findFirst()
+            .orElse(new Group(""));
+
+    List<Group> rolesToAdd = group.asSeparatedGroupByRole()
+            .stream()
+            .filter(role -> !foundGroup.getRoles().contains(Lists.newArrayList(role.getRoles()).get(0)))
+            .collect(Collectors.toList());
+
+    roleAdministrator.createNewGroupsWithRole(rolesToAdd);
+  }
+
+  @Override
+  public void removeRoleFromGroup(Group group) {
+    Group filteredGroup = new Group(group.getName(), new HashSet<>(Collections.singletonList(Lists.newArrayList(group.getRoles()).get(0))));
+    roleAdministrator.removeRoleFromGroup(filteredGroup);
+  }
+
+  private boolean hasGivenGroup(Groups groupToRemove, List<Group> groups) {
+    return groups.stream().anyMatch(group -> group.getName().equals(groupToRemove.name()));
   }
 
   private boolean doesNotAlreadyHaveGroup(Groups groupToAdd, List<Group> groups) {
     return groups.stream().noneMatch(group -> group.getName().equals(groupToAdd.name()));
-  }
-
-  private boolean isNotAdminGroup(Groups groupToAdd) {
-    return !groupToAdd.name().contains("ADMIN");
   }
 }

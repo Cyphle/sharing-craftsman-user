@@ -11,4 +11,10 @@ public interface HRAdminManager {
   void deleteCollaborator(Username username);
 
   Person findCollaboratorFromUsername(Username username);
+
+  void updateCollaborator(AdminCollaborator collaborator);
+
+  AdminPerson findAdminCollaboratorFromUsername(Username username);
+
+  void createCollaborator(AdminCollaborator collaborator);
 }

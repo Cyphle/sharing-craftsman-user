@@ -29,10 +29,22 @@ public class UserPivot {
 
     return (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from(user.getUsername()))
-            .withPassword(passwordBuilder.from(user.getPassword()))
+            .withPassword(user.getPassword() != null ? passwordBuilder.from(user.getPassword()) : null)
             .withChangePasswordKey(changePasswordKey)
             .withChangePasswordKeyExpirationDate(changePasswordKeyExpirationDate)
             .build();
+  }
+
+  public static User fromDomainToInfra(AdminCollaborator collaborator) {
+    return new User(
+            collaborator.getUsernameContent(),
+            collaborator.getFirstname(),
+            collaborator.getLastname(),
+            collaborator.getEmail(),
+            collaborator.getWebsite(),
+            collaborator.getGithub(),
+            collaborator.getLinkedin()
+    );
   }
 
   public static List<AdminCollaborator> fromInfraToAdminDomain(List<User> users) {
@@ -53,6 +65,23 @@ public class UserPivot {
                     user.getLastUpdateDate()
             ))
             .collect(Collectors.toList());
+  }
+
+  public static AdminCollaborator fromInfraToAdminDomain(User user) {
+    return AdminCollaborator.from(
+            user.getUsername(),
+            user.getPassword(),
+            user.getFirstname(),
+            user.getLastname(),
+            user.getEmail(),
+            user.getWebsite(),
+            user.getGithub(),
+            user.getLinkedin(),
+            user.getChangePasswordKey(),
+            user.getChangePasswordExpirationDate(),
+            user.isActive(),
+            user.getCreationDate(),
+            user.getLastUpdateDate());
   }
 
   public static KnownProfile fromInfraToDomainProfile(User user) throws UsernameException {
