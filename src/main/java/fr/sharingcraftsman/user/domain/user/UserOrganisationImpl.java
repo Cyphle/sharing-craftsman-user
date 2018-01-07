@@ -35,7 +35,7 @@ public class UserOrganisationImpl implements UserOrganisation {
   }
 
   @Override
-  public ChangePasswordKey createChangePasswordKeyFor(Credentials credentials) throws UnknownUserException {
+  public ChangePasswordKey createChangePasswordTokenFor(Credentials credentials) throws UnknownUserException {
     if (!collaboratorExists(credentials.getUsername()))
       throw new UnknownUserException("Unknown collaborator");
 
@@ -53,7 +53,7 @@ public class UserOrganisationImpl implements UserOrganisation {
 
   @Override
   public void changePassword(Credentials credentials, ChangePassword changePassword) throws UserException {
-    BaseUser baseUser = userRepository.findUserFromCredentials(credentials);
+    BaseUser baseUser = userRepository.findUserFromCredentials(credentials.getEncryptedVersion());
 
     if (!baseUser.isKnown())
       throw new UnknownUserException("Unknown collaborator");

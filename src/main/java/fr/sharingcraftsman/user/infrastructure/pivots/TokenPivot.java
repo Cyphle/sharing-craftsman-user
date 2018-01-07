@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.pivots;
 
+import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.user.User;
@@ -21,6 +22,6 @@ public class TokenPivot {
   }
 
   public static AccessToken fromInfraToDomain(AccessTokenEntity accessTokenEntity) {
-    return new AccessToken(accessTokenEntity.getAccessToken(), accessTokenEntity.getRefreshToken(), LocalDateTime.ofInstant(accessTokenEntity.getExpirationDate().toInstant(), ZoneId.systemDefault()));
+    return AccessToken.from(accessTokenEntity.getAccessToken(), accessTokenEntity.getRefreshToken(), DateConverter.fromDateToLocalDateTime(accessTokenEntity.getExpirationDate()));
   }
 }

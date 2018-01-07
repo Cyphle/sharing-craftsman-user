@@ -9,11 +9,10 @@ import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 
 public class LoginPivot {
   public static Credentials fromApiToDomain(LoginDTO loginDTO) throws CredentialsException {
-    Credentials credentials = Credentials.buildWithPersistentLogging(
+    return Credentials.buildWithPersistentLogging(
             loginDTO.getUsername(),
             loginDTO.getPassword(),
             loginDTO.isPersistentLogging()
     );
-    return credentials;
   }
 }

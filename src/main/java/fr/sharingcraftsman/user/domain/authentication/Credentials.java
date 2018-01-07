@@ -48,10 +48,6 @@ public class Credentials {
     return new Credentials(Username.from(username), Password.from(password).getEncryptedVersion(), false);
   }
 
-  public static Credentials buildWithEncryptionAndPersistentLogging(String username, String password, boolean persistentLogging) throws PasswordException, UsernameException {
-    return new Credentials(Username.from(username), Password.from(password).getEncryptedVersion(), persistentLogging);
-  }
-
   public static Credentials build(String username, String password) throws UsernameException, PasswordException {
     return new Credentials(Username.from(username), Password.from(password), false);
   }

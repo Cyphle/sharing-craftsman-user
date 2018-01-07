@@ -90,7 +90,7 @@ public class UserService {
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordKeyFor(credentials);
+      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(credentials);
       return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordKey));
     } catch (UsernameException | PasswordException | UnknownUserException e) {
       log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
@@ -108,7 +108,7 @@ public class UserService {
 
     try {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.buildWithEncryption(tokenDTO.getUsername(), changePasswordDTO.getOldPassword());
+      Credentials credentials = Credentials.build(tokenDTO.getUsername(), changePasswordDTO.getOldPassword());
 
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
@@ -160,7 +160,7 @@ public class UserService {
 
     try {
       Credentials credentials = Credentials.build(username, "NOPASSWORD");
-      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordKeyFor(credentials);
+      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(credentials);
       Email email = userOrganisation.findEmailOf(credentials);
       ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordKey, email);
       return ResponseEntity.ok(changePasswordKeyForLostPassword);

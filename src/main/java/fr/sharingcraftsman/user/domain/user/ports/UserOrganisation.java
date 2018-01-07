@@ -10,7 +10,7 @@ import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
 public interface UserOrganisation {
   void createNewCollaborator(Credentials credentials) throws UserException, CredentialsException;
 
-  ChangePasswordKey createChangePasswordKeyFor(Credentials credentials) throws UnknownUserException;
+  ChangePasswordKey createChangePasswordTokenFor(Credentials credentials) throws UnknownUserException;
 
   void changePassword(Credentials credentials, ChangePassword changePassword) throws UserException;
 

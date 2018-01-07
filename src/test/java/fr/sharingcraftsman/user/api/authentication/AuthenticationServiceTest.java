@@ -10,6 +10,7 @@ import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
@@ -49,7 +50,6 @@ public class AuthenticationServiceTest {
   private AccessToken validToken;
   private TokenDTO token;
   private User user;
-  private Credentials credentials;
 
   @Before
   public void setUp() throws Exception {
@@ -69,8 +69,6 @@ public class AuthenticationServiceTest {
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
             .build();
-
-    credentials = Credentials.buildWithEncryptionAndPersistentLogging("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", true);
   }
 
   @Test
@@ -126,7 +124,7 @@ public class AuthenticationServiceTest {
 
   @Test
   public void should_generate_new_token_from_refresh_token() throws Exception {
-    given(userRepository.findUserFromUsername(credentials.getUsername())).willReturn(user);
+    given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(user);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(validToken);
     given(accessTokenRepository.findTokenFromRefreshToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);

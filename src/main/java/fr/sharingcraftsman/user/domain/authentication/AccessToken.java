@@ -11,7 +11,7 @@ public class AccessToken extends BaseToken {
   private String refreshToken;
   private LocalDateTime expirationDate;
 
-  public AccessToken(String accessToken, String refreshToken, LocalDateTime expirationDate) {
+  private AccessToken(String accessToken, String refreshToken, LocalDateTime expirationDate) {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     this.expirationDate = expirationDate;
@@ -33,7 +33,7 @@ public class AccessToken extends BaseToken {
     return new AccessToken(accessToken, refreshToken, expirationDate);
   }
 
-  public static AccessToken fromOnlyAccessToken(String accessToken) {
+  static AccessToken fromOnlyAccessToken(String accessToken) {
     return new AccessToken(accessToken, "", DateConverter.fromLongToLocalDateTime(0));
   }
 
