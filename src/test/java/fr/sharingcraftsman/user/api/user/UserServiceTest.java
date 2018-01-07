@@ -194,4 +194,18 @@ public class UserServiceTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isEqualTo(profileDTO);
   }
+
+  @Test
+  public void should_generate_key_when_lost_password() throws Exception {
+    ResponseEntity response = userService.generateLostPasswordKey(clientDTO, "john@doe.fr", "http://www.mysuperapp.fr/lostpassword");
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  /*
+  @Test
+  public void should_send_exception_when_no_email_is_set() throws Exception {
+
+  }
+   */
 }

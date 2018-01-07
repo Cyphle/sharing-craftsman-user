@@ -14,6 +14,7 @@ import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
+import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
@@ -89,7 +90,7 @@ public class UserService {
 
       ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
       return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordKey));
-    } catch (UsernameException e) {
+    } catch (UsernameException | UnknownCollaboratorException e) {
       log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -153,8 +154,35 @@ public class UserService {
     }
   }
 
+
+  /*
+  1. Lost password will check username and send email to email if set (or username if it is a mail and no email is set)
+  Otherwise, send error no email given
+  2. Generate change password key
+  3. Send by mail ? (will need a host)
+  4. Then use existing rouge change-password
+   */
   public ResponseEntity generateLostPasswordKey(ClientDTO clientDTO, String username, String frontEndHost) {
-    throw new UnsupportedOperationException();
+    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
+      log.warn("Un authorized client:" + clientDTO.getName());
+      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+    }
+
+    try {
+      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(username), null, false);
+      ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
+
+      // HERE SEND TOKEN TO mail with frontEndHost/changePasswordKey
+      Email email = company.findEmailOf(credentials);
+      // THIS SERVICE WILL BE IN CHARGE TO CALL SEND EMAIL SERVICE (NOT DOMAIN)
+
+      return ResponseEntity.ok(changePasswordKey);
+    } catch (UsernameException | CollaboratorException e) {
+      log.warn("Error: " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
   }
 
   private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Credentials credentials) {

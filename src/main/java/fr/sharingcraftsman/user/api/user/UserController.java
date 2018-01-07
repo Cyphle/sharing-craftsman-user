@@ -65,13 +65,6 @@ public class UserController {
     return userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
   }
 
-  /*
-  1. Lost password will check username and send email to email if set (or username if it is a mail and no email is set)
-  Otherwise, send error no email given
-  2. Generate change password key
-  3. Send by mail ? (will need a host)
-  4. Then use existing rouge change-password
-   */
   @ApiOperation(value = "Endpoint to generate key when lost password", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
