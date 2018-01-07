@@ -1,7 +1,12 @@
 package fr.sharingcraftsman.user.acceptance.dsl;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import java.util.List;
 
+@EqualsAndHashCode
+@ToString
 public class AuthorizationDsl {
   private List<GroupDsl> groups;
 

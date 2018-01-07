@@ -131,9 +131,10 @@ public class AdminService {
     try {
       AdminCollaborator collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
       company.createCollaborator(collaborator);
+      authorizer.addGroup(Credentials.buildCredentials(usernameBuilder.from(user.getUsername()), null, false), Groups.USERS);
       return ResponseEntity.ok().build();
-    } catch (CollaboratorException e) {
-      log.warn("Error while creating user " + user.getUsername() + ": " + e.getMessage());
+    } catch (CollaboratorException | UsernameException e) {
+      log.warn("Error:" + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());

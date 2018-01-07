@@ -1,6 +1,5 @@
 package fr.sharingcraftsman.user.acceptance;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -19,11 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -94,7 +89,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
     token = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), TokenDsl.class);
   }
 
-  @And("^I create the following authorizations$")
+  @Given("^I create the following authorizations$")
   public void createAuthorizations(List<GroupRoleDsl> groupsRoleDsl) throws Exception {
     groupsRoleDsl.forEach(groupRoleDsl -> {
       GroupDsl groupDsl = new GroupDsl();
@@ -102,15 +97,13 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
       groupDsl.setRoles(new HashSet<>(Collections.singletonList(new RoleDsl(groupRoleDsl.getRole()))));
 
       try {
-        this.mvc
-                .perform(post(getBaseUri() + "/admin/roles/groups")
-                        .header("client", "sharingcraftsman")
-                        .header("secret", "secret")
-                        .header("username", login.getUsername())
-                        .header("access-token", token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(Mapper.fromObjectToJsonString(groupDsl))
-                )
+        this.mvc.perform(post(getBaseUri() + "/admin/roles/groups")
+                .header("client", "sharingcraftsman")
+                .header("secret", "secret")
+                .header("username", login.getUsername())
+                .header("access-token", token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Mapper.fromObjectToJsonString(groupDsl)))
                 .andExpect(status().isOk())
                 .andReturn();
       } catch (Exception e) {
@@ -119,21 +112,79 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
     });
   }
 
+  @Given("^I create the following users$")
+  public void createUsers(List<UserDsl> users) {
+    users.forEach(userDsl -> {
+      try {
+        this.mvc.perform(post(getBaseUri() + "/admin/users")
+                .header("client", "sharingcraftsman")
+                .header("secret", "secret")
+                .header("username", login.getUsername())
+                .header("access-token", token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Mapper.fromObjectToJsonString(userDsl)))
+                .andExpect(status().isOk())
+                .andReturn();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
+  }
+
+  @When("^I update users$")
+  public void updateUsers(List<UserDsl> users) throws Exception {
+    users.forEach(user -> {
+      try {
+        this.mvc.perform(put(getBaseUri() + "/admin/users")
+                .header("client", "sharingcraftsman")
+                .header("secret", "secret")
+                .header("username", login.getUsername())
+                .header("access-token", token.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(Mapper.fromObjectToJsonString(user)))
+                .andExpect(status().isOk())
+                .andReturn();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
+  }
+
+  @And("^I delete user <(.*)>$")
+  public void deleteUser(String username) throws Exception {
+    this.mvc.perform(delete(getBaseUri() + "/admin/users/" + username)
+            .header("client", "sharingcraftsman")
+            .header("secret", "secret")
+            .header("username", login.getUsername())
+            .header("access-token", token.getAccessToken()))
+            .andExpect(status().isOk())
+            .andReturn();
+  }
+
   @When("^I delete the role <(.*)> from the group <(.*)>$")
   public void deleteAuthorization(String role, String group) throws Exception {
     GroupDsl groupDsl = new GroupDsl();
     groupDsl.setName(group);
     groupDsl.setRoles(new HashSet<>(Collections.singletonList(new RoleDsl(role))));
 
-    this.mvc
-            .perform(delete(getBaseUri() + "/admin/roles/groups")
-                    .header("client", "sharingcraftsman")
-                    .header("secret", "secret")
-                    .header("username", login.getUsername())
-                    .header("access-token", token.getAccessToken())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(Mapper.fromObjectToJsonString(groupDsl))
-            )
+    this.mvc.perform(delete(getBaseUri() + "/admin/roles/groups")
+            .header("client", "sharingcraftsman")
+            .header("secret", "secret")
+            .header("username", login.getUsername())
+            .header("access-token", token.getAccessToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(groupDsl)))
+            .andExpect(status().isOk())
+            .andReturn();
+  }
+
+  @When("^I consult all users profiles$")
+  public void getAllUsers() throws Exception {
+    response = this.mvc.perform(get(getBaseUri() + "/admin/users")
+            .header("client", "sharingcraftsman")
+            .header("secret", "secret")
+            .header("username", login.getUsername())
+            .header("access-token", token.getAccessToken()))
             .andExpect(status().isOk())
             .andReturn();
   }
@@ -141,11 +192,10 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
   @And("^I consult all the groups and roles$")
   public void consultAllGroupsWithRoles() throws Exception {
     response = this.mvc.perform(get(getBaseUri() + "/admin/roles/groups")
-                    .header("client", "sharingcraftsman")
-                    .header("secret", "secret")
-                    .header("username", login.getUsername())
-                    .header("access-token", token.getAccessToken())
-            )
+            .header("client", "sharingcraftsman")
+            .header("secret", "secret")
+            .header("username", login.getUsername())
+            .header("access-token", token.getAccessToken()))
             .andExpect(status().isOk())
             .andReturn();
   }
@@ -166,5 +216,39 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
     Set<GroupDsl> groups = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), Set.class, GroupDsl.class);
 
     assertThat(groups).isEqualTo(expectedGroups);
+  }
+
+  @Then("^I get the profiles$")
+  public void checkProfiles(List<AdminProfileDsl> expectedProfiles) throws IOException {
+    List<UserDsl> expectedUsers = expectedProfiles.stream()
+            .map(profile -> {
+              UserDsl user = new UserDsl();
+              user.setUsername(profile.getUsername());
+              user.setFirstname(profile.getFirstname());
+              user.setLastname(profile.getLastname());
+              user.setEmail(profile.getEmail());
+              user.setWebsite(profile.getWebsite());
+              user.setGithub(profile.getGithub());
+              user.setLinkedin(profile.getLinkedin());
+              user.setActive(profile.isActive());
+
+              List<GroupDsl> groups = new ArrayList<>();
+              GroupDsl group = new GroupDsl(profile.getAuthorizations());
+              group.addRole(new RoleDsl(profile.getRoles()));
+              groups.add(group);
+              AuthorizationDsl authorization = new AuthorizationDsl();
+              authorization.setGroups(groups);
+              user.setAuthorizations(authorization);
+
+              return user;
+            })
+            .collect(Collectors.toList());
+
+    List<UserDsl> fetchedUsers = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), List.class, UserDsl.class);
+    fetchedUsers = fetchedUsers.stream()
+            .filter(user -> !((UserDsl) user).getUsername().equals("admin@scuser.fr"))
+            .collect(Collectors.toList());
+
+    assertThat(fetchedUsers).isEqualTo(expectedUsers);
   }
 }

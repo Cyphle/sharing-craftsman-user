@@ -29,7 +29,7 @@ public class UserPivot {
 
     return (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from(user.getUsername()))
-            .withPassword(passwordBuilder.from(user.getPassword()))
+            .withPassword(user.getPassword() != null ? passwordBuilder.from(user.getPassword()) : null)
             .withChangePasswordKey(changePasswordKey)
             .withChangePasswordKeyExpirationDate(changePasswordKeyExpirationDate)
             .build();
