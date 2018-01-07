@@ -8,7 +8,7 @@ import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
-import fr.sharingcraftsman.user.domain.user.KnownProfile;
+import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.ProfileBuilder;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 
@@ -86,7 +86,7 @@ public class UserPivot {
             userEntity.getLastUpdateDate());
   }
 
-  public static KnownProfile fromInfraToDomainProfile(UserEntity userEntity) throws UsernameException {
+  public static Profile fromInfraToDomainProfile(UserEntity userEntity) throws UsernameException {
     return new ProfileBuilder()
             .withUsername(usernameBuilder.from(userEntity.getUsername()))
             .withFirstname(Name.of(userEntity.getFirstname()))
@@ -98,7 +98,7 @@ public class UserPivot {
             .build();
   }
 
-  public static UserEntity fromDomainToInfraProfile(KnownProfile profile) {
+  public static UserEntity fromDomainToInfraProfile(Profile profile) {
     return new UserEntity(profile.getUsernameContent(), profile.getFirstnameContent(), profile.getLastnameContent(), profile.getEmailContent(), profile.getWebsiteContent(), profile.getGithubContent(), profile.getLinkedinContent());
   }
 }

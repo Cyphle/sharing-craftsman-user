@@ -184,9 +184,9 @@ public class UserEntityServiceTest {
   @Test
   public void should_update_profile_with_new_information() throws Exception {
     given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
-    KnownProfile profile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    Profile profile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
     given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(profile);
-    given(humanResourceAdministrator.updateProfileOf(any(KnownProfile.class))).willReturn(profile);
+    given(humanResourceAdministrator.updateProfileOf(any(Profile.class))).willReturn(profile);
 
     ProfileDTO profileDTO = new ProfileDTO("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
 
@@ -205,7 +205,7 @@ public class UserEntityServiceTest {
     given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(user);
     ChangePasswordKey key = new ChangePasswordKey(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
-    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
 
     ResponseEntity response = userService.generateLostPasswordKey(clientDTO, "john@doe.fr");
 

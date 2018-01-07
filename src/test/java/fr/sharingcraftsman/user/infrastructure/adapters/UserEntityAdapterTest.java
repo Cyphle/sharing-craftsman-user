@@ -119,10 +119,10 @@ public class UserEntityAdapterTest {
     UserEntity userEntity = new UserEntity("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
     given(userRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
 
-    Profile foundProfile = userAdapter.findProfileOf(usernameBuilder.from("john@doe.fr"));
+    BaseProfile foundBaseProfile = userAdapter.findProfileOf(usernameBuilder.from("john@doe.fr"));
 
-    KnownProfile expectedProfile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
-    assertThat((KnownProfile) foundProfile).isEqualTo(expectedProfile);
+    Profile expectedProfile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    assertThat((Profile) foundBaseProfile).isEqualTo(expectedProfile);
     verify(userRepository).findByUsername("john@doe.fr");
   }
 
@@ -131,11 +131,11 @@ public class UserEntityAdapterTest {
     UserEntity userEntity = new UserEntity("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
     given(userRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
     given(userRepository.save(any(UserEntity.class))).willReturn(userEntity);
-    KnownProfile profile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    Profile profile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
 
-    Profile foundProfile = userAdapter.updateProfileOf(profile);
+    BaseProfile foundBaseProfile = userAdapter.updateProfileOf(profile);
 
-    assertThat((KnownProfile) foundProfile).isEqualTo(profile);
+    assertThat((Profile) foundBaseProfile).isEqualTo(profile);
     verify(userRepository).findByUsername("john@doe.fr");
   }
 }

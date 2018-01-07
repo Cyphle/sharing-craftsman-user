@@ -64,25 +64,25 @@ public class Organisation implements Company {
   }
 
   @Override
-  public KnownProfile updateProfile(Profile profile) throws CollaboratorException {
-    Profile profileToUpdate = humanResourceAdministrator.findProfileOf(((KnownProfile) profile).getUsername());
+  public Profile updateProfile(BaseProfile baseProfile) throws CollaboratorException {
+    BaseProfile baseProfileToUpdate = humanResourceAdministrator.findProfileOf(((Profile) baseProfile).getUsername());
 
-    if (!profileToUpdate.isKnown())
+    if (!baseProfileToUpdate.isKnown())
       throw new UnknownCollaboratorException("Unknown collaborator");
 
-    List<ValidationError> errors = ((KnownProfile) profile).validate();
+    List<ValidationError> errors = ((Profile) baseProfile).validate();
     if (!errors.isEmpty())
       throw new ProfileException("Invalid profile", errors);
 
-    ((KnownProfile) profileToUpdate).updateFrom((KnownProfile) profile);
-    return (KnownProfile) humanResourceAdministrator.updateProfileOf((KnownProfile) profileToUpdate);
+    ((Profile) baseProfileToUpdate).updateFrom((Profile) baseProfile);
+    return (Profile) humanResourceAdministrator.updateProfileOf((Profile) baseProfileToUpdate);
   }
 
   @Override
   public Email findEmailOf(Credentials credentials) {
-    Profile profile = humanResourceAdministrator.findProfileOf(credentials.getUsername());
+    BaseProfile baseProfile = humanResourceAdministrator.findProfileOf(credentials.getUsername());
 
-    KnownProfile knownProfile = (KnownProfile) profile;
+    Profile knownProfile = (Profile) baseProfile;
     if (knownProfile.getEmail() != null && knownProfile.getEmail().isValid())
       return knownProfile.getEmail();
 

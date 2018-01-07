@@ -139,8 +139,8 @@ public class UserService {
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      Profile updatedProfile = company.updateProfile(ProfilePivot.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
-      return ResponseEntity.ok(ProfilePivot.fromDomainToApi((KnownProfile) updatedProfile));
+      BaseProfile updatedBaseProfile = company.updateProfile(ProfilePivot.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
+      return ResponseEntity.ok(ProfilePivot.fromDomainToApi((Profile) updatedBaseProfile));
      } catch (ProfileException e) {
       log.warn("Validation errors with update profile:" + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity

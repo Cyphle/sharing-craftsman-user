@@ -5,14 +5,14 @@ import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.user.KnownProfile;
+import fr.sharingcraftsman.user.domain.user.BaseProfile;
 import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.ProfileBuilder;
 
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 
 public class ProfilePivot {
-  public static Profile fromApiToDomain(String username, ProfileDTO profileDTO) throws UsernameException {
+  public static BaseProfile fromApiToDomain(String username, ProfileDTO profileDTO) throws UsernameException {
     return new ProfileBuilder()
             .withUsername(usernameBuilder.from(username))
             .withFirstname(Name.of(profileDTO.getFirstname()))
@@ -24,7 +24,7 @@ public class ProfilePivot {
             .build();
   }
 
-  public static ProfileDTO fromDomainToApi(KnownProfile profile) {
+  public static ProfileDTO fromDomainToApi(Profile profile) {
     return new ProfileDTO(
             profile.getFirstnameContent(),
             profile.getLastnameContent(),

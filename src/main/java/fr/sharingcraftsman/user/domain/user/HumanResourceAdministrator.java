@@ -16,7 +16,7 @@ public interface HumanResourceAdministrator {
 
   void updateCollaboratorPassword(User user);
 
-  Profile findProfileOf(Username username);
+  BaseProfile findProfileOf(Username username);
 
-  Profile updateProfileOf(KnownProfile profileToUpdate);
+  BaseProfile updateProfileOf(Profile profileToUpdate);
 }

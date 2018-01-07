@@ -90,7 +90,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public Profile findProfileOf(Username username) {
+  public BaseProfile findProfileOf(Username username) {
     UserEntity userEntity = userRepository.findByUsername(username.getUsername());
 
     if (userEntity == null)
@@ -104,7 +104,7 @@ public class UserAdapter implements HumanResourceAdministrator {
   }
 
   @Override
-  public Profile updateProfileOf(KnownProfile profileToUpdate) {
+  public BaseProfile updateProfileOf(Profile profileToUpdate) {
     UserEntity userEntity = userRepository.findByUsername(profileToUpdate.getUsernameContent());
     userEntity.updateFromProfile(UserPivot.fromDomainToInfraProfile(profileToUpdate));
     userEntity.setLastUpdateDate(dateService.nowInDate());

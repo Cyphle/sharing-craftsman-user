@@ -12,7 +12,7 @@ public interface Company {
 
   void changePassword(Credentials credentials, ChangePassword changePassword) throws CollaboratorException;
 
-  Profile updateProfile(Profile profile) throws CollaboratorException;
+  BaseProfile updateProfile(BaseProfile baseProfile) throws CollaboratorException;
 
   Email findEmailOf(Credentials credentials);
 }

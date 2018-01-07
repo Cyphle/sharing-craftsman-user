@@ -21,7 +21,7 @@ public class User extends BaseUser {
     this.changePasswordKey = "";
   }
 
-  User(Username username, Password password) {
+  public User(Username username, Password password) {
     this.username = username;
     this.password = password;
     changePasswordKey = "";

@@ -175,24 +175,24 @@ public class OrganisationTest {
 
   @Test
   public void should_update_profile_of_collaborator() throws Exception {
-    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
-    KnownProfile profileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
-    given(humanResourceAdministrator.updateProfileOf(any(KnownProfile.class))).willReturn(profileToUpdate);
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+    Profile profileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    given(humanResourceAdministrator.updateProfileOf(any(Profile.class))).willReturn(profileToUpdate);
 
-    Profile profile = organisation.updateProfile(profileToUpdate);
+    BaseProfile baseProfile = organisation.updateProfile(profileToUpdate);
 
-    KnownProfile expectedProfile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
-    assertThat(profile).isEqualTo(expectedProfile);
+    Profile expectedProfile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+    assertThat(baseProfile).isEqualTo(expectedProfile);
   }
 
   @Test
   public void should_throw_profile_exception_if_email_is_invalid_when_updating_profile() throws Exception {
     try {
-      given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
-      Profile profileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+      given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+      BaseProfile baseProfileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
 
-      Profile profile = organisation.updateProfile(profileToUpdate);
-      fail("Should have throw a profile exception when email is invalid");
+      BaseProfile baseProfile = organisation.updateProfile(baseProfileToUpdate);
+      fail("Should have throw a baseProfile exception when email is invalid");
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid profile");
     }
@@ -202,9 +202,9 @@ public class OrganisationTest {
   public void should_throw_collaborator_exception_if_profile_is_not_known() throws Exception {
     try {
       given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new UnknownProfile());
-      Profile profileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
+      BaseProfile baseProfileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
 
-      Profile profile = organisation.updateProfile(profileToUpdate);
+      BaseProfile baseProfile = organisation.updateProfile(baseProfileToUpdate);
       fail("Should have throw a collaborator exception when email is invalid");
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
@@ -213,7 +213,7 @@ public class OrganisationTest {
 
   @Test
   public void should_find_email_of_collaborator_if_email_is_present() throws Exception {
-    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("john@doe.fr"), null, null, Email.from("johndoe@myapp.fr"), null, null, null));
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, Email.from("johndoe@myapp.fr"), null, null, null));
 
     Email email = organisation.findEmailOf(credentials);
 
@@ -222,7 +222,7 @@ public class OrganisationTest {
 
   @Test
   public void should_find_email_if_email_is_not_present_but_username_if_an_email() throws Exception {
-    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
 
     Email email = organisation.findEmailOf(credentials);
 
@@ -231,7 +231,7 @@ public class OrganisationTest {
 
   @Test
   public void should_return_empty_email_if_no_email_is_found() throws Exception {
-    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("johndoe"), null, null, null, null, null, null));
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("johndoe"), null, null, null, null, null, null));
     Credentials badCredentials = Credentials.buildCredentials(usernameBuilder.from("johndoe"), null, false);
 
     Email email = organisation.findEmailOf(badCredentials);
