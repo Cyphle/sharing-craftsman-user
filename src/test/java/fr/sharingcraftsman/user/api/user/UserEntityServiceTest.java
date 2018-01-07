@@ -11,11 +11,11 @@ import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepo
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.UnknownClient;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
-import fr.sharingcraftsman.user.domain.common.Email;
-import fr.sharingcraftsman.user.domain.common.Link;
-import fr.sharingcraftsman.user.domain.common.Name;
-import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.*;
+import fr.sharingcraftsman.user.domain.common.*;
+import fr.sharingcraftsman.user.domain.user.ChangePasswordKey;
+import fr.sharingcraftsman.user.domain.user.Profile;
+import fr.sharingcraftsman.user.domain.user.UnknownUser;
+import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +30,6 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -72,7 +70,7 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_register_user() throws Exception {
-    given(userRepository.findUserFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownUser());
+    given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUser());
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
@@ -105,7 +103,7 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_get_user_already_exists_when_using_already_existing_username() throws Exception {
-    given(userRepository.findUserFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(User.from("john@doe.fr", "password"));
+    given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(User.from("john@doe.fr", "password"));
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
@@ -153,7 +151,7 @@ public class UserEntityServiceTest {
   @Test
   public void should_change_password_when_sending_new_password() throws Exception {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
-    User user = User.from(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="), "aaa", LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
+    User user = User.from(Username.from("john@doe.fr"), Password.from("T49xWf/l7gatvfVwethwDw=="), "aaa", LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
 
     ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
@@ -168,7 +166,7 @@ public class UserEntityServiceTest {
   @Test
   public void should_update_profile_with_new_information() throws Exception {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
-    Profile profile = Profile.from(usernameBuilder.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"));
+    Profile profile = Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"));
     given(userRepository.findProfileOf(any(Username.class))).willReturn(profile);
     given(userRepository.updateProfileOf(any(Profile.class))).willReturn(profile);
 
@@ -186,7 +184,7 @@ public class UserEntityServiceTest {
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     ChangePasswordKey key = ChangePasswordKey.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(userRepository.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
 
     ResponseEntity response = userService.generateLostPasswordKey(clientDTO, "john@doe.fr");
 

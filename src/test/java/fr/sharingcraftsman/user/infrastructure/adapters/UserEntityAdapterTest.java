@@ -5,6 +5,7 @@ import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
@@ -20,7 +21,6 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -56,7 +56,7 @@ public class UserEntityAdapterTest {
   public void should_get_user_by_username() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    BaseUser collaborator = userAdapter.findUserFromUsername(usernameBuilder.from("john@doe.fr"));
+    BaseUser collaborator = userAdapter.findUserFromUsername(Username.from("john@doe.fr"));
 
     User expected = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
     assertThat((User) collaborator).isEqualTo(expected);
@@ -113,10 +113,10 @@ public class UserEntityAdapterTest {
     UserEntity userEntity = new UserEntity("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
 
-    BaseProfile foundBaseProfile = userAdapter.findProfileOf(usernameBuilder.from("john@doe.fr"));
+    BaseProfile foundBaseProfile = userAdapter.findProfileOf(Username.from("john@doe.fr"));
 
     Profile expectedProfile = Profile.from(
-            usernameBuilder.from("john@doe.fr"),
+            Username.from("john@doe.fr"),
             Name.of("John"),
             Name.of("Doe"),
             Email.from("john@doe.fr"),
@@ -133,7 +133,7 @@ public class UserEntityAdapterTest {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
     given(userJpaRepository.save(any(UserEntity.class))).willReturn(userEntity);
     Profile profile = Profile.from(
-            usernameBuilder.from("john@doe.fr"),
+            Username.from("john@doe.fr"),
             Name.of("John"),
             Name.of("Doe"),
             Email.from("john@doe.fr"),

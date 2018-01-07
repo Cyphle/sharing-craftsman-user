@@ -2,10 +2,7 @@ package fr.sharingcraftsman.user.domain.user;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.common.Email;
-import fr.sharingcraftsman.user.domain.common.Link;
-import fr.sharingcraftsman.user.domain.common.Name;
-import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.common.*;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
@@ -17,8 +14,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.time.LocalDateTime;
 import java.time.Month;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.BDDMockito.given;
@@ -56,7 +51,7 @@ public class UserOrganisationImplTest {
   @Test
   public void should_throw_collaborator_exception_if_user_already_exists() throws Exception {
     try {
-      given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from(usernameBuilder.from("john@doe.fr")));
+      given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from(Username.from("john@doe.fr")));
       Credentials credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
 
       userOrganisationImpl.createNewCollaborator(credentials);
@@ -82,7 +77,7 @@ public class UserOrganisationImplTest {
   @Test
   public void should_throw_exception_if_collaborator_does_not_exists_when_creating_change_password_key() throws Exception {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
-    given(userRepository.findUserFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownUser());
+    given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUser());
 
     try {
       Credentials credentials = Credentials.build("john@doe.fr", "NOPASSWORD");
@@ -96,8 +91,8 @@ public class UserOrganisationImplTest {
   @Test
   public void should_change_password_with_new_password() throws Exception {
     User user = User.from(
-            usernameBuilder.from("john@doe.fr"),
-            passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="),
+            Username.from("john@doe.fr"),
+            Password.from("T49xWf/l7gatvfVwethwDw=="),
             "aaa",
             LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
@@ -106,8 +101,8 @@ public class UserOrganisationImplTest {
     userOrganisationImpl.changePassword(credentials, changePassword);
 
     User updatedUser = User.from(
-            usernameBuilder.from("john@doe.fr"),
-            passwordBuilder.from("hXYHz1OSnuod1SuvLcgD4A=="),
+            Username.from("john@doe.fr"),
+            Password.from("hXYHz1OSnuod1SuvLcgD4A=="),
             "aaa",
             LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
     verify(userRepository).updateUserPassword(updatedUser);
@@ -143,8 +138,8 @@ public class UserOrganisationImplTest {
   public void should_throw_invalid_change_password_key_exception_if_key_is_expired() throws Exception {
     try {
       User user = User.from(
-              usernameBuilder.from("john@doe.fr"),
-              passwordBuilder.from("hXYHz1OSnuod1SuvLcgD4A=="),
+              Username.from("john@doe.fr"),
+              Password.from("hXYHz1OSnuod1SuvLcgD4A=="),
               "aaa",
               LocalDateTime.of(2017, 12, 10, 12, 0));
       given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
@@ -159,9 +154,9 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_update_profile_of_collaborator() throws Exception {
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
     Profile profileToUpdate = Profile.from(
-            usernameBuilder.from("john@doe.fr"),
+            Username.from("john@doe.fr"),
             Name.of("John"),
             Name.of("Doe"),
             Email.from("john@doe.fr"),
@@ -173,7 +168,7 @@ public class UserOrganisationImplTest {
     BaseProfile baseProfile = userOrganisationImpl.updateProfile(profileToUpdate);
 
     Profile expectedProfile = Profile.from(
-            usernameBuilder.from("john@doe.fr"),
+            Username.from("john@doe.fr"),
             Name.of("John"),
             Name.of("Doe"),
             Email.from("john@doe.fr"),
@@ -186,9 +181,9 @@ public class UserOrganisationImplTest {
   @Test
   public void should_throw_profile_exception_if_email_is_invalid_when_updating_profile() throws Exception {
     try {
-      given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+      given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
       BaseProfile baseProfileToUpdate = Profile.from(
-              usernameBuilder.from("john@doe.fr"),
+              Username.from("john@doe.fr"),
               Name.of("John"),
               Name.of("Doe"),
               Email.from("john"),
@@ -208,7 +203,7 @@ public class UserOrganisationImplTest {
     try {
       given(userRepository.findProfileOf(any(Username.class))).willReturn(new UnknownProfile());
       BaseProfile baseProfileToUpdate = Profile.from(
-              usernameBuilder.from("john@doe.fr"),
+              Username.from("john@doe.fr"),
               Name.of("John"),
               Name.of("Doe"),
               Email.from("john@doe.fr"),
@@ -225,7 +220,7 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_find_email_of_collaborator_if_email_is_present() throws Exception {
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(usernameBuilder.from("john@doe.fr"), null, null, Email.from("johndoe@myapp.fr"), null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, Email.from("johndoe@myapp.fr"), null, null, null));
 
     Email email = userOrganisationImpl.findEmailOf(credentials);
 
@@ -234,7 +229,7 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_find_email_if_email_is_not_present_but_username_if_an_email() throws Exception {
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
 
     Email email = userOrganisationImpl.findEmailOf(credentials);
 
@@ -243,7 +238,7 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_return_empty_email_if_no_email_is_found() throws Exception {
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(usernameBuilder.from("johndoe"), null, null, null, null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("johndoe"), null, null, null, null, null, null));
     Credentials badCredentials = Credentials.build("johndoe", "NOPASSWORD");
 
     Email email = userOrganisationImpl.findEmailOf(badCredentials);

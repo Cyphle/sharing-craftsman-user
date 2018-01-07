@@ -4,7 +4,6 @@ import fr.sharingcraftsman.user.domain.utils.Crypter;
 import fr.sharingcraftsman.user.domain.utils.CrypterFactory;
 
 public class Password {
-  public static PasswordBuilder passwordBuilder = new PasswordBuilder();
   public static Crypter crypter = CrypterFactory.getCrypter();
 
   private String password;
@@ -41,14 +40,5 @@ public class Password {
   @Override
   public int hashCode() {
     return password != null ? password.hashCode() : 0;
-  }
-
-  public static class PasswordBuilder {
-    public Password from(String password) throws PasswordException {
-      if (password.isEmpty())
-        throw new PasswordException("Password cannot be empty");
-
-      return new Password(password);
-    }
   }
 }

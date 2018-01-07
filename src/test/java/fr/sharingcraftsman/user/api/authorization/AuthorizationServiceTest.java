@@ -1,6 +1,5 @@
 package fr.sharingcraftsman.user.api.authorization;
 
-import fr.sharingcraftsman.user.api.authorization.AuthorizationService;
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
@@ -12,6 +11,7 @@ import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationReposito
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,6 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -71,7 +70,7 @@ public class AuthorizationServiceTest {
 
   @Test
   public void should_get_authorizations_of_user() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("john@doe.fr"))).willReturn(Arrays.asList(Group.from("USERS"), Group.from("ADMINS")));
+    given(userAuthorizationRepository.findGroupsOf(Username.from("john@doe.fr"))).willReturn(Arrays.asList(Group.from("USERS"), Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
 

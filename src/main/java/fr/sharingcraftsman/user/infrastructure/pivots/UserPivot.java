@@ -2,10 +2,7 @@ package fr.sharingcraftsman.user.infrastructure.pivots;
 
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
-import fr.sharingcraftsman.user.domain.common.Email;
-import fr.sharingcraftsman.user.domain.common.Link;
-import fr.sharingcraftsman.user.domain.common.Name;
-import fr.sharingcraftsman.user.domain.common.UsernameException;
+import fr.sharingcraftsman.user.domain.common.*;
 import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
@@ -14,9 +11,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 
 public class UserPivot {
   public static UserEntity fromDomainToInfra(User user) {
@@ -28,8 +22,8 @@ public class UserPivot {
     LocalDateTime changePasswordKeyExpirationDate = userEntity.getChangePasswordExpirationDate() != null ? LocalDateTime.ofInstant(userEntity.getChangePasswordExpirationDate().toInstant(), ZoneId.systemDefault()) : null;
 
     return User.from(
-            usernameBuilder.from(userEntity.getUsername()),
-            userEntity.getPassword() != null ? passwordBuilder.from(userEntity.getPassword()) : null,
+            Username.from(userEntity.getUsername()),
+            userEntity.getPassword() != null ? Password.from(userEntity.getPassword()) : null,
             changePasswordKey,
             changePasswordKeyExpirationDate);
   }
@@ -85,7 +79,7 @@ public class UserPivot {
 
   public static Profile fromInfraToDomainProfile(UserEntity userEntity) throws UsernameException {
     return Profile.from(
-            usernameBuilder.from(userEntity.getUsername()),
+            Username.from(userEntity.getUsername()),
             Name.of(userEntity.getFirstname()),
             Name.of(userEntity.getLastname()),
             Email.from(userEntity.getEmail()),

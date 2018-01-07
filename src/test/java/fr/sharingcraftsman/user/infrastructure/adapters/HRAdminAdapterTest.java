@@ -1,10 +1,12 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.BaseUserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.user.*;
+import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.user.BaseUser;
+import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
 import org.junit.Before;
@@ -19,8 +21,6 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -63,7 +63,7 @@ public class HRAdminAdapterTest {
 
   @Test
   public void should_delete_user() throws Exception {
-    hrAdminAdapter.deleteCollaborator(usernameBuilder.from("hello@world.fr"));
+    hrAdminAdapter.deleteCollaborator(Username.from("hello@world.fr"));
 
     verify(userJpaRepository).delete(any(UserEntity.class));
   }
@@ -72,7 +72,7 @@ public class HRAdminAdapterTest {
   public void should_get_user_by_username() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    BaseUser collaborator = hrAdminAdapter.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"));
+    BaseUser collaborator = hrAdminAdapter.findCollaboratorFromUsername(Username.from("john@doe.fr"));
 
     User expected = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
     assertThat((User) collaborator).isEqualTo(expected);
@@ -88,7 +88,7 @@ public class HRAdminAdapterTest {
     userEntity.setChangePasswordExpirationDate(null);
     given(userJpaRepository.findByUsername("admin@toto.fr")).willReturn(userEntity);
 
-    BaseUserForAdmin collaborator = hrAdminAdapter.findAdminCollaboratorFromUsername(usernameBuilder.from("admin@toto.fr"));
+    BaseUserForAdmin collaborator = hrAdminAdapter.findAdminCollaboratorFromUsername(Username.from("admin@toto.fr"));
 
     UserForAdmin expectedCollaborator = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     assertThat(collaborator).isEqualTo(expectedCollaborator);

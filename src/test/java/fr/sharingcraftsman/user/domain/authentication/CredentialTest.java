@@ -1,10 +1,9 @@
 package fr.sharingcraftsman.user.domain.authentication;
 
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
+import fr.sharingcraftsman.user.domain.common.Password;
 import org.junit.Test;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -13,7 +12,7 @@ public class CredentialTest {
   public void should_crypt_password_when_created() throws Exception {
     Credentials credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
 
-    assertThat(credentials.getPassword()).isEqualTo(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="));
+    assertThat(credentials.getPassword()).isEqualTo(Password.from("T49xWf/l7gatvfVwethwDw=="));
   }
 
   @Test

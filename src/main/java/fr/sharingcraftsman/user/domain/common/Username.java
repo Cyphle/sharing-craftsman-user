@@ -4,8 +4,6 @@ import lombok.ToString;
 
 @ToString
 public class Username {
-  public static UsernameBuilder usernameBuilder = new UsernameBuilder();
-
   private String username;
 
   public Username(String username) {
@@ -36,14 +34,5 @@ public class Username {
   @Override
   public int hashCode() {
     return username != null ? username.hashCode() : 0;
-  }
-
-  public static class UsernameBuilder {
-    public Username from(String username) throws UsernameException {
-      if (username.isEmpty())
-        throw new UsernameException("Username cannot be empty");
-
-      return new Username(username);
-    }
   }
 }

@@ -1,10 +1,10 @@
 package fr.sharingcraftsman.user.domain.authorization;
 
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;

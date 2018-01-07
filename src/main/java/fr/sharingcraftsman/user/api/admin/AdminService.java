@@ -7,22 +7,26 @@ import fr.sharingcraftsman.user.api.pivots.AdminCollaboratorPivot;
 import fr.sharingcraftsman.user.api.pivots.AuthorizationPivot;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.api.pivots.GroupPivot;
-import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
-import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.admin.AdministrationImpl;
+import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.ports.Administration;
+import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
-import fr.sharingcraftsman.user.domain.authorization.*;
+import fr.sharingcraftsman.user.domain.authorization.Authorization;
+import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
+import fr.sharingcraftsman.user.domain.authorization.Group;
+import fr.sharingcraftsman.user.domain.authorization.Groups;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
+import fr.sharingcraftsman.user.domain.client.ports.ClientOrganisation;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.PasswordException;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
-import fr.sharingcraftsman.user.domain.admin.ports.Administration;
-import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
-import fr.sharingcraftsman.user.domain.client.ports.ClientOrganisation;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +39,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 
 @Service
 public class AdminService {
@@ -100,7 +102,7 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      company.deleteCollaborator(usernameBuilder.from(usernameToDelete));
+      company.deleteCollaborator(Username.from(usernameToDelete));
       return ResponseEntity.ok().build();
     } catch (UsernameException | UserException e) {
       log.warn("Error while deleting user " + usernameToDelete + ": " + e.getMessage());

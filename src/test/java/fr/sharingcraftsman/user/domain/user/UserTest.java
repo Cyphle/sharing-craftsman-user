@@ -1,10 +1,8 @@
 package fr.sharingcraftsman.user.domain.user;
 
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.common.Password;
 import org.junit.Test;
 
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserTest {

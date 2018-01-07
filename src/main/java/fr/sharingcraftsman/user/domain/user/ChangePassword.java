@@ -3,8 +3,6 @@ package fr.sharingcraftsman.user.domain.user;
 import fr.sharingcraftsman.user.domain.common.Password;
 import fr.sharingcraftsman.user.domain.common.PasswordException;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-
 public class ChangePassword {
   private String changePasswordKey;
   private final Password oldPassword;
@@ -21,7 +19,7 @@ public class ChangePassword {
   }
 
   public static ChangePassword from(String changePasswordKey, String oldPassword, String newPassword) throws PasswordException {
-    return new ChangePassword(changePasswordKey, passwordBuilder.from(oldPassword), passwordBuilder.from(newPassword));
+    return new ChangePassword(changePasswordKey, Password.from(oldPassword), Password.from(newPassword));
   }
 
   public String getChangePasswordKey() {
