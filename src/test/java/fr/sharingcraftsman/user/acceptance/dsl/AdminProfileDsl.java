@@ -1,5 +1,12 @@
 package fr.sharingcraftsman.user.acceptance.dsl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class AdminProfileDsl {
   private String username;
   private String firstname;
@@ -10,7 +17,6 @@ public class AdminProfileDsl {
   private String linkedin;
   private boolean isActive;
   private String authorizations;
-  private String roles;
 
   public String getUsername() {
     return username;
@@ -84,11 +90,30 @@ public class AdminProfileDsl {
     this.authorizations = authorizations;
   }
 
-  public String getRoles() {
-    return roles;
-  }
+  public AuthorizationDsl getAuthorizationAsDsl() {
+    String[] groups = authorizations.split(";");
+    List<GroupDsl> groupsDsl = new ArrayList<>();
 
-  public void setRoles(String roles) {
-    this.roles = roles;
+    Arrays.stream(groups)
+            .forEach(group -> {
+              Pattern groupPattern = Pattern.compile("^(.*)=");
+              Matcher groupMatcher = groupPattern.matcher(group);
+              if (groupMatcher.find()) {
+                GroupDsl groupDsl = new GroupDsl(groupMatcher.group(1));
+
+                Pattern rolesPattern = Pattern.compile("=(.*)$");
+                Matcher rolesMatcher = rolesPattern.matcher(group);
+                rolesMatcher.find();
+                List<String> roles = Arrays.asList(rolesMatcher.group(1).split(","));
+                roles.forEach(role -> groupDsl.addRole(new RoleDsl(role)));
+
+                groupsDsl.add(groupDsl);
+              }
+            });
+
+    AuthorizationDsl authorizationDsl = new AuthorizationDsl();
+    authorizationDsl.setGroups(groupsDsl);
+
+    return authorizationDsl;
   }
 }

@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.acceptance;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -189,6 +190,36 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
             .andReturn();
   }
 
+  @When("^I add authorization <(.*)> to <(.*)>$")
+  public void addAuthorization(String group, String username) throws Exception {
+    UserGroupDsl userGroup = new UserGroupDsl(username, group);
+
+    this.mvc.perform(post(getBaseUri() + "/admin/users/groups")
+            .header("client", "sharingcraftsman")
+            .header("secret", "secret")
+            .header("username", login.getUsername())
+            .header("access-token", token.getAccessToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(userGroup)))
+            .andExpect(status().isOk())
+            .andReturn();
+  }
+
+  @And("^I remove authorization <(.*)> to <(.*)>$")
+  public void removeAuthorization(String group, String username) throws Exception {
+    UserGroupDsl userGroup = new UserGroupDsl(username, group);
+
+    this.mvc.perform(delete(getBaseUri() + "/admin/users/groups")
+            .header("client", "sharingcraftsman")
+            .header("secret", "secret")
+            .header("username", login.getUsername())
+            .header("access-token", token.getAccessToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(userGroup)))
+            .andExpect(status().isOk())
+            .andReturn();
+  }
+
   @And("^I consult all the groups and roles$")
   public void consultAllGroupsWithRoles() throws Exception {
     response = this.mvc.perform(get(getBaseUri() + "/admin/roles/groups")
@@ -231,15 +262,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
               user.setGithub(profile.getGithub());
               user.setLinkedin(profile.getLinkedin());
               user.setActive(profile.isActive());
-
-              List<GroupDsl> groups = new ArrayList<>();
-              GroupDsl group = new GroupDsl(profile.getAuthorizations());
-              group.addRole(new RoleDsl(profile.getRoles()));
-              groups.add(group);
-              AuthorizationDsl authorization = new AuthorizationDsl();
-              authorization.setGroups(groups);
-              user.setAuthorizations(authorization);
-
+              user.setAuthorizations(profile.getAuthorizationAsDsl());
               return user;
             })
             .collect(Collectors.toList());

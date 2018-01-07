@@ -39,30 +39,23 @@ Feature: Admin functionalities
     And I delete user <misterhello>
     And I consult all users profiles
     Then I get the profiles
-      | Username    | Firstname | Lastname | Email              | Website        | Github             | Linkedin             | isActive | Authorizations | Roles     |
-      | john@doe.fr | John      | Doe      | johndoe@thebest.eu | www.johndoe.eu | github.com/johndoe | linkedin.com/johndoe | true     | USERS          | ROLE_USER |
-      | foo@bar.com | Foo       | Bar      | foo@bar.com        | www.foobar.de  | github.com/foobar  | linkedin.com/foobar  | true     | USERS          | ROLE_USER |
+      | Username    | Firstname | Lastname | Email              | Website        | Github             | Linkedin             | isActive | Authorizations  |
+      | john@doe.fr | John      | Doe      | johndoe@thebest.eu | www.johndoe.eu | github.com/johndoe | linkedin.com/johndoe | true     | USERS=ROLE_USER |
+      | foo@bar.com | Foo       | Bar      | foo@bar.com        | www.foobar.de  | github.com/foobar  | linkedin.com/foobar  | true     | USERS=ROLE_USER |
 
-#
-#  Initialize application by adding roles and group (use autowired rolerepo
-#  Add admin (use userrepo and grouprepo)
-#
-#  - Get all collaborators
-#  - Delete one
-#- Deactivate user + Modify user (send all user except authorizations)
-#- Modify user ?
-#- Add user
-#- Get list of roles, groups
-#- Add/remove roles groups (impact on user groups)
-#- Get list of authorizations -> OK
-#- Add/remove authorizations (roles and groups) -> OK
-
-#  Background: Setup application
-#    Given The application is setup
-#    And A client <sharingcraftsman> is registered
-#
-#  Scenario: Register to the application
-#    Given I register to the application with my credentials <john@doe.fr> and password <helloworld>
-#    When I connect to the application with my credentials <john@doe.fr> and password <helloworld>
-#    And I refresh my token
-#    Then I have a new token
+  Scenario: Change user authorizations
+    Given I create the following users
+      | Username    | Firstname | Lastname | Email       | Website        | Github             | Linkedin             |
+      | john@doe.fr | John      | Doe      | john@doe.fr | www.johndoe.fr | github.com/johndoe | linkedin.com/johndoe |
+      | foo@bar.com | Foo       | Bar      | foo@bar.com | www.foobar.de  | github.com/foobar  | linkedin.com/foobar  |
+    And I create the following authorizations
+      | Group  | Role      |
+      | USERS  | ROLE_USER |
+      | ADMINS | ROLE_USER |
+    When I add authorization <ADMINS> to <john@doe.fr>
+    And I remove authorization <USERS> to <foo@bar.com>
+    And I consult all users profiles
+    Then I get the profiles
+      | Username    | Firstname | Lastname | Email       | Website        | Github             | Linkedin             | isActive | Authorizations                              |
+      | john@doe.fr | John      | Doe      | john@doe.fr | www.johndoe.fr | github.com/johndoe | linkedin.com/johndoe | true     | USERS=ROLE_USER;ADMINS=ROLE_ADMIN,ROLE_USER |
+      | foo@bar.com | Foo       | Bar      | foo@bar.com | www.foobar.de  | github.com/foobar  | linkedin.com/foobar  | true     |                                             |

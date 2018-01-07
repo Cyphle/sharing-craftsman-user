@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/admin/users")
 @Api(description = "Endpoints to for admin")
 public class UserAdminController {
   private AdminService adminService;
@@ -26,7 +26,7 @@ public class UserAdminController {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.GET, value = "/users")
+  @RequestMapping(method = RequestMethod.GET)
   public ResponseEntity verify(@RequestHeader("client") String client,
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
@@ -41,7 +41,7 @@ public class UserAdminController {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.DELETE, value = "/users/{usernameToDelete}")
+  @RequestMapping(method = RequestMethod.DELETE, value = "/{usernameToDelete}")
   public ResponseEntity verify(@RequestHeader("client") String client,
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
@@ -57,7 +57,7 @@ public class UserAdminController {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.PUT, value = "/users")
+  @RequestMapping(method = RequestMethod.PUT)
   public ResponseEntity updateUser(@RequestHeader("client") String client,
                                    @RequestHeader("secret") String secret,
                                    @RequestHeader("username") String username,
@@ -73,7 +73,7 @@ public class UserAdminController {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.POST, value = "/users")
+  @RequestMapping(method = RequestMethod.POST)
   public ResponseEntity addUser(@RequestHeader("client") String client,
                                 @RequestHeader("secret") String secret,
                                 @RequestHeader("username") String username,

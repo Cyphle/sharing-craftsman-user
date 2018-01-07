@@ -27,7 +27,7 @@ public class UserAuthorizationAdminController {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.POST, value = "/groups/add")
+  @RequestMapping(method = RequestMethod.POST, value = "/groups")
   public ResponseEntity addGroup(@RequestHeader("client") String client,
                                  @RequestHeader("secret") String secret,
                                  @RequestHeader("username") String username,
@@ -43,7 +43,7 @@ public class UserAuthorizationAdminController {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.POST, value = "/groups/remove")
+  @RequestMapping(method = RequestMethod.DELETE, value = "/groups")
   public ResponseEntity removeGroup(@RequestHeader("client") String client,
                                     @RequestHeader("secret") String secret,
                                     @RequestHeader("username") String username,

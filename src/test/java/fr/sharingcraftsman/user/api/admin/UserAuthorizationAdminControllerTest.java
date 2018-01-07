@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,7 +45,7 @@ public class UserAuthorizationAdminControllerTest {
   public void should_add_group_to_user() throws Exception {
     UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world.fr", "USERS");
 
-    this.mvc.perform(post("/admin/users/groups/add")
+    this.mvc.perform(post("/admin/users/groups")
             .header("client", "client")
             .header("secret", "clientsecret")
             .header("username", "john@doe.fr")
@@ -58,7 +59,7 @@ public class UserAuthorizationAdminControllerTest {
   public void should_remove_group_from_user() throws Exception {
     UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world.fr", "USERS");
 
-    this.mvc.perform(post("/admin/users/groups/remove")
+    this.mvc.perform(delete("/admin/users/groups")
             .header("client", "client")
             .header("secret", "clientsecret")
             .header("username", "john@doe.fr")
