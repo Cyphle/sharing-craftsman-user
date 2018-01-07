@@ -48,7 +48,7 @@ public class AuthenticationManagerImplTest {
     identifier = new AuthenticationManagerImpl(userRepository, accessTokenRepository, dateService);
     oAuthToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     client = Client.knownClient("client", "secret");
-    credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+    credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
     user = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("password"))
@@ -60,7 +60,7 @@ public class AuthenticationManagerImplTest {
     AccessToken token = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(token);
-    credentials.setStayLogged(true);
+    credentials.setPersistentLogging(true);
 
     BaseToken expectedBaseToken = identifier.login(credentials, client);
 
@@ -140,7 +140,7 @@ public class AuthenticationManagerImplTest {
     AccessToken token = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(token);
-    credentials.setStayLogged(true);
+    credentials.setPersistentLogging(true);
 
     BaseToken expectedBaseToken = identifier.createNewToken(credentials, client);
 

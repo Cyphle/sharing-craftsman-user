@@ -29,7 +29,7 @@ public class UserUserOrganisationImpl implements UserOrganisation {
     if (collaboratorExists(credentials.getUsername()))
       throw new AlreadyExistingUserException("User already exists with username: " + credentials.getUsernameContent());
 
-    Credentials encryptedCredentials = Credentials.buildEncryptedCredentials(credentials.getUsername(), credentials.getPassword(), credentials.stayLogged());
+    Credentials encryptedCredentials = Credentials.buildWithEncryptionAndPersistentLogging(credentials.getUsernameContent(), credentials.getPasswordContent(), credentials.isPersistentLogging());
     User newUser = User.from(encryptedCredentials);
     userRepository.createNewUser(newUser);
   }

@@ -28,11 +28,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
   @Override
   public BaseToken login(Credentials credentials, Client client) throws UserException {
-    BaseUser baseUser = userRepository.findUserFromCredentials(credentials);
-    verifyCollaboratorIsKnown(baseUser);
-    User user = (User) baseUser;
-    accessTokenRepository.deleteTokensOf(user, client);
-    return generateToken(credentials, client, user);
+    BaseUser user = userRepository.findUserFromCredentials(credentials.getEncryptedVersion());
+    verifyCollaboratorIsKnown(user);
+    accessTokenRepository.deleteTokensOf((User) user, client);
+    return generateToken(credentials, client, (User) user);
   }
 
   @Override
@@ -76,7 +75,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     AccessToken token = AccessToken.from(
             generateToken(client.getName() + user.getUsername()),
             generateToken(client.getName() + user.getUsername()),
-            dateService.getDayAt(credentials.stayLogged() ? LONG_VALIDITY_OFFSET : SHORT_VALIDITY_OFFSET)
+            dateService.getDayAt(credentials.isPersistentLogging() ? LONG_VALIDITY_OFFSET : SHORT_VALIDITY_OFFSET)
     );
 
     return accessTokenRepository.createNewToken(client, user, token);

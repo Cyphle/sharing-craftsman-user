@@ -76,7 +76,7 @@ public class UserEntityServiceTest {
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
-    verify(userRepository).createNewUser(User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
+    verify(userRepository).createNewUser(User.from(Credentials.buildWithEncryption("john@doe.fr", "password")));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 

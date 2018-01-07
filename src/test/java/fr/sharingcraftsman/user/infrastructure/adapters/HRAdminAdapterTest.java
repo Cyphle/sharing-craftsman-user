@@ -74,7 +74,7 @@ public class HRAdminAdapterTest {
 
     BaseUser collaborator = hrAdminAdapter.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"));
 
-    User expected = User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
+    User expected = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
     assertThat((User) collaborator).isEqualTo(expected);
   }
 

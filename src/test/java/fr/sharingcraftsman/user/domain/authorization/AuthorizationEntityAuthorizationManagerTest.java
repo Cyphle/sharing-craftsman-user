@@ -35,7 +35,7 @@ public class AuthorizationEntityAuthorizationManagerTest {
   public void setUp() throws Exception {
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
 
-    credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false);
+    credentials = Credentials.build("john@doe.fr", "NOPASSWORD");
   }
 
   @Test

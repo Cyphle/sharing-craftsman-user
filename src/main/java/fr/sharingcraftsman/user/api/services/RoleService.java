@@ -59,7 +59,7 @@ public class RoleService {
 
     try {
       log.info("Request to get authotizations of:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
+      Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
 
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);

@@ -17,6 +17,7 @@ import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationReposito
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
+import fr.sharingcraftsman.user.domain.common.PasswordException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
@@ -81,9 +82,13 @@ public class AdminService {
             ))
             .collect(Collectors.toList());
     users.forEach(user -> {
-      Credentials credentials = Credentials.buildCredentials(new Username(user.getUsername()), null, false);
-      Authorization authorization = authorizationManager.getAuthorizationsOf(credentials);
-      user.setAuthorizations(AuthorizationPivot.fromDomainToApi(authorization));
+      try {
+        Credentials credentials = Credentials.build(user.getUsername(), "NOPASSWORD");
+        Authorization authorization = authorizationManager.getAuthorizationsOf(credentials);
+        user.setAuthorizations(AuthorizationPivot.fromDomainToApi(authorization));
+      } catch (UsernameException | PasswordException e) {
+        e.printStackTrace();
+      }
     });
 
     return ResponseEntity.ok(users);
@@ -133,9 +138,9 @@ public class AdminService {
     try {
       UserForAdmin collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
       company.createCollaborator(collaborator);
-      authorizationManager.addGroup(Credentials.buildCredentials(usernameBuilder.from(user.getUsername()), null, false), Groups.USERS);
+      authorizationManager.addGroup(Credentials.build(user.getUsername(), "NOPASSWORD"), Groups.USERS);
       return ResponseEntity.ok().build();
-    } catch (UserException | UsernameException e) {
+    } catch (UserException | UsernameException | PasswordException e) {
       log.warn("Error:" + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -160,9 +165,9 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      authorizationManager.addGroup(Credentials.buildCredentials(usernameBuilder.from(userGroupDTO.getUsername()), null, false), Groups.valueOf(userGroupDTO.getGroup()));
+      authorizationManager.addGroup(Credentials.build(userGroupDTO.getUsername(), "NOPASSWORD"), Groups.valueOf(userGroupDTO.getGroup()));
       return ResponseEntity.ok().build();
-    } catch (UsernameException e) {
+    } catch (UsernameException | PasswordException e) {
       log.warn("Error: " + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -177,9 +182,9 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      authorizationManager.removeGroup(Credentials.buildCredentials(usernameBuilder.from(userGroupDTO.getUsername()), null, false), Groups.valueOf(userGroupDTO.getGroup()));
+      authorizationManager.removeGroup(Credentials.build(userGroupDTO.getUsername(), "NOPASSWORD"), Groups.valueOf(userGroupDTO.getGroup()));
       return ResponseEntity.ok().build();
-    } catch (UsernameException e) {
+    } catch (UsernameException | PasswordException e) {
       log.warn("Error: " + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -217,7 +222,7 @@ public class AdminService {
 
   private HttpStatus isAdmin(TokenDTO tokenDTO) {
     try {
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
+      Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
       Authorization requesterAuthorization = authorizationManager.getAuthorizationsOf(credentials);
 
       Optional<Group> adminGroup = requesterAuthorization.getGroups()

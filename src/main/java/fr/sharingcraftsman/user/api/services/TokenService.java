@@ -52,7 +52,7 @@ public class TokenService {
 
     try {
       log.info("UserEntity " + loginDTO.getUsername() + " is logging");
-      Credentials credentials = LoginPivot.fromApiToDomainWithEncryption(loginDTO);
+      Credentials credentials = LoginPivot.fromApiToDomain(loginDTO);
       Client client = ClientPivot.fromApiToDomain(clientDTO);
       TokenDTO token = TokenPivot.fromDomainToApi((AccessToken) authenticationManager.login(credentials, client), credentials);
       return ResponseEntity.ok(token);
@@ -75,7 +75,7 @@ public class TokenService {
 
     try {
       log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(token.getUsername()), null, false);
+      Credentials credentials = Credentials.build(token.getUsername(), "NOPASSWORD");
       Client client = new Client(clientDTO.getName(), "", false);
 
       if (authenticationManager.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(token))) {
@@ -94,7 +94,7 @@ public class TokenService {
   public ResponseEntity logout(ClientDTO clientDTO, TokenDTO token) {
     try {
       log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(token.getUsername()), null, false);
+      Credentials credentials = Credentials.build(token.getUsername(), "NOPASSWORD");
       Client client = new Client(clientDTO.getName(), "", false);
       authenticationManager.logout(credentials, client, TokenPivot.fromApiToDomain(token));
       return ResponseEntity.ok().build();
@@ -113,7 +113,7 @@ public class TokenService {
     }
 
     try {
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
+      Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
       Client client = new Client(clientDTO.getName(), "", false);
       if (authenticationManager.isRefreshTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO))) {
         authenticationManager.deleteToken(credentials, client, TokenPivot.fromApiToDomain(tokenDTO));
@@ -128,12 +128,5 @@ public class TokenService {
               .badRequest()
               .body(e.getMessage());
     }
-
-
-    /*
-      - Verify refresh token is ok
-      - Delete existing token
-      - Create new token
-     */
   }
 }

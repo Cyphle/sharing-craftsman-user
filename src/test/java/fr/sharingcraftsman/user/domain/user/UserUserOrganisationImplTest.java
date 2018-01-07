@@ -38,20 +38,14 @@ public class UserUserOrganisationImplTest {
   @Before
   public void setUp() throws Exception {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
-
-    credentials = Credentials.buildEncryptedCredentials(
-            usernameBuilder.from("john@doe.fr"),
-            passwordBuilder.from("password"),
-            false
-    );
-
+    credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
     userOrganisationImpl = new UserUserOrganisationImpl(userRepository, dateService);
   }
 
   @Test
   public void should_save_user_when_registering() throws Exception {
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(new UnknownUser());
-    Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+    Credentials credentials = Credentials.build("john@doe.fr", "password");
 
     userOrganisationImpl.createNewCollaborator(credentials);
 
@@ -69,7 +63,7 @@ public class UserUserOrganisationImplTest {
       given(userRepository.findUserFromUsername(any(Username.class))).willReturn(
               new User(usernameBuilder.from("john@doe.fr"))
       );
-      Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
+      Credentials credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
 
       userOrganisationImpl.createNewCollaborator(credentials);
       fail("Should throw UserException");
@@ -86,7 +80,7 @@ public class UserUserOrganisationImplTest {
             .build();
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
-    Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false);
+    Credentials credentials = Credentials.build("john@doe.fr", "NOPASSWORD");
 
     userOrganisationImpl.createChangePasswordKeyFor(credentials);
 
@@ -100,7 +94,7 @@ public class UserUserOrganisationImplTest {
     given(userRepository.findUserFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownUser());
 
     try {
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false);
+      Credentials credentials = Credentials.build("john@doe.fr", "NOPASSWORD");
       userOrganisationImpl.createChangePasswordKeyFor(credentials);
       fail("Should have throw unknown collaborator exception");
     } catch (UserException e) {
@@ -234,7 +228,7 @@ public class UserUserOrganisationImplTest {
   @Test
   public void should_return_empty_email_if_no_email_is_found() throws Exception {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("johndoe"), null, null, null, null, null, null));
-    Credentials badCredentials = Credentials.buildCredentials(usernameBuilder.from("johndoe"), null, false);
+    Credentials badCredentials = Credentials.build("johndoe", "NOPASSWORD");
 
     Email email = userOrganisationImpl.findEmailOf(badCredentials);
 

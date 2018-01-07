@@ -9,14 +9,14 @@ import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 
 public class LoginPivot {
   public static Credentials fromApiToDomainWithEncryption(LoginDTO loginDTO) throws CredentialsException {
-    return Credentials.buildEncryptedCredentials(usernameBuilder.from(loginDTO.getUsername()), passwordBuilder.from(loginDTO.getPassword()), loginDTO.stayLogged());
+    return Credentials.buildWithEncryptionAndPersistentLogging(loginDTO.getUsername(), loginDTO.getPassword(), loginDTO.isPersistentLogging());
   }
 
   public static Credentials fromApiToDomain(LoginDTO loginDTO) throws CredentialsException {
-    Credentials credentials = Credentials.buildCredentials(
-            usernameBuilder.from(loginDTO.getUsername()),
-            passwordBuilder.from(loginDTO.getPassword()),
-            loginDTO.stayLogged()
+    Credentials credentials = Credentials.buildWithPersistentLogging(
+            loginDTO.getUsername(),
+            loginDTO.getPassword(),
+            loginDTO.isPersistentLogging()
     );
     return credentials;
   }

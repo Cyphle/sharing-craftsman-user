@@ -43,7 +43,7 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_save_user_in_repository() throws Exception {
-    BaseUser collaborator = User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
+    BaseUser collaborator = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
 
     userAdapter.createNewUser((User) collaborator);
 
@@ -59,7 +59,7 @@ public class UserEntityAdapterTest {
 
     BaseUser collaborator = userAdapter.findUserFromUsername(usernameBuilder.from("john@doe.fr"));
 
-    User expected = User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
+    User expected = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
     assertThat((User) collaborator).isEqualTo(expected);
   }
 
@@ -67,16 +67,16 @@ public class UserEntityAdapterTest {
   public void should_find_user_by_username_and_password() throws Exception {
     given(userJpaRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    BaseUser collaborator = userAdapter.findUserFromCredentials(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
+    BaseUser collaborator = userAdapter.findUserFromCredentials(Credentials.buildWithEncryption("john@doe.fr", "password"));
 
-    assertThat((User) collaborator).isEqualTo(User.from(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false)));
+    assertThat((User) collaborator).isEqualTo(User.from(Credentials.buildWithEncryption("john@doe.fr", "password")));
   }
 
   @Test
   public void should_delete_user_change_password_key() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    userAdapter.deleteChangePasswordKeyOf(Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false));
+    userAdapter.deleteChangePasswordKeyOf(Credentials.buildWithPersistentLogging("john@doe.fr", "NOPASSWORD", false));
 
     UserEntity userEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     verify(userJpaRepository).save(userEntity);

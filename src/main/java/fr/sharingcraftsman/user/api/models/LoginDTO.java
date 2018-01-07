@@ -40,7 +40,7 @@ public class LoginDTO {
     this.password = password;
   }
 
-  public boolean stayLogged() {
+  public boolean isPersistentLogging() {
     return stayLogged;
   }
 }

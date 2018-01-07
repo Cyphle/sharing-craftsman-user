@@ -15,6 +15,7 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Email;
+import fr.sharingcraftsman.user.domain.common.PasswordException;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
@@ -87,14 +88,14 @@ public class UserService {
 
     try {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
+      Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
 
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
       ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordKeyFor(credentials);
       return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordKey));
-    } catch (UsernameException | UnknownUserException e) {
+    } catch (UsernameException | PasswordException | UnknownUserException e) {
       log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -110,11 +111,7 @@ public class UserService {
 
     try {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.buildEncryptedCredentials(
-              usernameBuilder.from(tokenDTO.getUsername()),
-              passwordBuilder.from(changePasswordDTO.getOldPassword()),
-              false
-      );
+      Credentials credentials = Credentials.buildWithEncryption(tokenDTO.getUsername(), changePasswordDTO.getOldPassword());
 
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
@@ -138,7 +135,7 @@ public class UserService {
 
     try {
       log.info("Request for a update profile with token:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
+      Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
 
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
@@ -165,12 +162,12 @@ public class UserService {
     }
 
     try {
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(username), null, false);
+      Credentials credentials = Credentials.build(username, "NOPASSWORD");
       ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordKeyFor(credentials);
       Email email = userOrganisation.findEmailOf(credentials);
       ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordKey, email);
       return ResponseEntity.ok(changePasswordKeyForLostPassword);
-    } catch (UsernameException | UserException e) {
+    } catch (UsernameException | PasswordException | UserException e) {
       log.warn("Error: " + e.getMessage());
       return ResponseEntity
               .badRequest()

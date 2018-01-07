@@ -34,7 +34,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BaseTokenServiceTest {
+public class TokenServiceTest {
   @Mock
   private UserRepository userRepository;
   @Mock
@@ -70,12 +70,12 @@ public class BaseTokenServiceTest {
             .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
             .build();
 
-    credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="), false);
+    credentials = Credentials.buildWithEncryptionAndPersistentLogging("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", true);
   }
 
   @Test
   public void should_login_user() throws Exception {
-    given(userRepository.findUserFromCredentials(credentials)).willReturn(user);
+    given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(validToken);
 
