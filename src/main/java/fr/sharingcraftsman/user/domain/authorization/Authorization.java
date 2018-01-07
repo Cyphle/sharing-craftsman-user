@@ -11,11 +11,11 @@ import java.util.List;
 public class Authorization {
   private List<Group> groups;
 
-  public Authorization() {
+  private Authorization() {
     this.groups = new ArrayList<>();
   }
 
-  public Authorization(List<Group> groups) {
+  private Authorization(List<Group> groups) {
     this.groups = groups;
   }
 
@@ -25,5 +25,13 @@ public class Authorization {
 
   public List<Group> getGroups() {
     return groups;
+  }
+
+  public static Authorization get() {
+    return new Authorization();
+  }
+
+  public static Authorization get(List<Group> groups) {
+    return new Authorization(groups);
   }
 }

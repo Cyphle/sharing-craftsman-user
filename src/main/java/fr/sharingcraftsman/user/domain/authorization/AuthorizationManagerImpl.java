@@ -25,7 +25,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
       List<Role> roles = authorizationRepository.getRolesOf(group.getName());
       group.addRoles(roles);
     }
-    return new Authorization(groups);
+    return Authorization.get(groups);
   }
 
   @Override

@@ -48,7 +48,7 @@ public class AuthorizationEntityAuthorizationManagerTest {
     Role role = Role.from("ROLE_USER");
     Group group = Group.from("USERS");
     group.addRole(role);
-    Authorization expectedAuthorization = new Authorization();
+    Authorization expectedAuthorization = Authorization.get();
     expectedAuthorization.addGroup(group);
     assertThat(authorization).isEqualTo(expectedAuthorization);
   }
