@@ -41,10 +41,7 @@ public class UserOrganisationImpl implements UserOrganisation {
 
     userRepository.deleteChangePasswordKeyOf(credentials);
     ChangePasswordKey changePasswordKey = ChangePasswordKey.from(
-            (new CollaboratorBuilder())
-                    .withUsername(credentials.getUsername())
-                    .withPassword(null)
-                    .build(),
+            User.from(credentials.getUsername()),
             crypter.encrypt(credentials.getUsernameContent()),
             dateService.getDayAt(1)
     );

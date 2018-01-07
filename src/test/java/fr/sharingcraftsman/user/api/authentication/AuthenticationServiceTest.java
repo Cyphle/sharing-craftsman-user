@@ -11,7 +11,6 @@ import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepositor
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
@@ -27,8 +26,6 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -65,10 +62,7 @@ public class AuthenticationServiceTest {
     token.setUsername("john@doe.fr");
     token.setAccessToken("aaa");
 
-    user = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
-            .build();
+    user = User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
   }
 
   @Test

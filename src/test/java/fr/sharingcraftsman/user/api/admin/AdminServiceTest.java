@@ -3,18 +3,18 @@ package fr.sharingcraftsman.user.api.admin;
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
-import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.admin.exceptions.UnknownBaseUserForAdminCollaborator;
+import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authorization.Group;
-import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.UnknownClient;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
+import fr.sharingcraftsman.user.domain.user.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.*;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -127,12 +126,7 @@ public class AdminServiceTest {
     given(userAuthorizationRepository.findGroupsOf(usernameBuilder.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
     Mockito.doNothing().when(userForAdminRepository).deleteCollaborator(any(Username.class));
-    given(userForAdminRepository.findCollaboratorFromUsername(usernameBuilder.from("hello@world.fr"))).willReturn(
-            new CollaboratorBuilder()
-                    .withUsername(usernameBuilder.from("hello@world.fr"))
-                    .withPassword(passwordBuilder.from("passwrdo"))
-                    .build()
-    );
+    given(userForAdminRepository.findCollaboratorFromUsername(usernameBuilder.from("hello@world.fr"))).willReturn(User.from("hello@world.fr", "passwrdo"));
 
     ResponseEntity response = adminService.deleteUser(clientDTO, tokenDTO, "hello@world.fr");
 

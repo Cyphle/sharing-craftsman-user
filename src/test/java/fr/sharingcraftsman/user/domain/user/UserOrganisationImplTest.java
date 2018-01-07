@@ -49,20 +49,14 @@ public class UserOrganisationImplTest {
 
     userOrganisationImpl.createNewCollaborator(credentials);
 
-    User updatedUser = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
-            .withChangePasswordKey("")
-            .build();
+    User updatedUser = User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     verify(userRepository).createNewUser(updatedUser);
   }
 
   @Test
   public void should_throw_collaborator_exception_if_user_already_exists() throws Exception {
     try {
-      given(userRepository.findUserFromUsername(any(Username.class))).willReturn(
-              new User(usernameBuilder.from("john@doe.fr"))
-      );
+      given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from(usernameBuilder.from("john@doe.fr")));
       Credentials credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
 
       userOrganisationImpl.createNewCollaborator(credentials);
@@ -74,10 +68,7 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_delete_change_request_key_and_create_change_request_key() throws Exception {
-    User user = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("password"))
-            .build();
+    User user = User.from("john@doe.fr",  "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     Credentials credentials = Credentials.build("john@doe.fr", "NOPASSWORD");
@@ -104,23 +95,21 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_change_password_with_new_password() throws Exception {
-    User user = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
-            .withChangePasswordKey("aaa")
-            .withChangePasswordKeyExpirationDate(LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0))
-            .build();
+    User user = User.from(
+            usernameBuilder.from("john@doe.fr"),
+            passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="),
+            "aaa",
+            LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
     ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
     userOrganisationImpl.changePassword(credentials, changePassword);
 
-    User updatedUser = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("hXYHz1OSnuod1SuvLcgD4A=="))
-            .withChangePasswordKey("aaa")
-            .withChangePasswordKeyExpirationDate(LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0))
-            .build();
+    User updatedUser = User.from(
+            usernameBuilder.from("john@doe.fr"),
+            passwordBuilder.from("hXYHz1OSnuod1SuvLcgD4A=="),
+            "aaa",
+            LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
     verify(userRepository).updateUserPassword(updatedUser);
   }
 
@@ -153,12 +142,11 @@ public class UserOrganisationImplTest {
   @Test
   public void should_throw_invalid_change_password_key_exception_if_key_is_expired() throws Exception {
     try {
-      User user = (new CollaboratorBuilder())
-              .withUsername(usernameBuilder.from("john@doe.fr"))
-              .withPassword(passwordBuilder.from("hXYHz1OSnuod1SuvLcgD4A=="))
-              .withChangePasswordKey("aaa")
-              .withChangePasswordKeyExpirationDate(LocalDateTime.of(2017, 12, 10, 12, 0))
-              .build();
+      User user = User.from(
+              usernameBuilder.from("john@doe.fr"),
+              passwordBuilder.from("hXYHz1OSnuod1SuvLcgD4A=="),
+              "aaa",
+              LocalDateTime.of(2017, 12, 10, 12, 0));
       given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
       ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 

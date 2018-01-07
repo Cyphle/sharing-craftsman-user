@@ -2,10 +2,13 @@ package fr.sharingcraftsman.user.domain.user;
 
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.Password;
+import fr.sharingcraftsman.user.domain.common.PasswordException;
 import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.common.UsernameException;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode
@@ -16,18 +19,18 @@ public class User extends BaseUser {
   private String changePasswordKey;
   private LocalDateTime changePasswordKeyExpirationDate;
 
-  public User(Username username) {
+  private User(Username username) {
     this.username = username;
     this.changePasswordKey = "";
   }
 
-  public User(Username username, Password password) {
+  private User(Username username, Password password) {
     this.username = username;
     this.password = password;
     changePasswordKey = "";
   }
 
-  public User(Username username, Password password, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate) {
+  private User(Username username, Password password, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate) {
     this(username, password);
     this.changePasswordKey = changePasswordKey;
     this.changePasswordKeyExpirationDate = changePasswordKeyExpirationDate;
@@ -62,5 +65,18 @@ public class User extends BaseUser {
     User user = new User(credentials.getUsername());
     user.setPassword(credentials.getPassword());
     return user;
+  }
+
+  public static User from(Username username) {
+    return new User(username);
+  }
+
+  public static User from(String username, String password) throws UsernameException, PasswordException {
+    return new User(Username.from(username), Password.from(password));
+  }
+
+  // TODO To delete changepasswordkey and changepasswordkeyexpierationdate
+  public static User from(Username username, Password password, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate) {
+    return new User(username, password, changePasswordKey, changePasswordKeyExpirationDate);
   }
 }

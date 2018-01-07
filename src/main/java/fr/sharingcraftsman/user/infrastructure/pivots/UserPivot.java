@@ -7,7 +7,6 @@ import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.User;
-import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
 import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.ProfileBuilder;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
@@ -29,12 +28,11 @@ public class UserPivot {
     String changePasswordKey = userEntity.getChangePasswordKey() != null ? userEntity.getChangePasswordKey() : "";
     LocalDateTime changePasswordKeyExpirationDate = userEntity.getChangePasswordExpirationDate() != null ? LocalDateTime.ofInstant(userEntity.getChangePasswordExpirationDate().toInstant(), ZoneId.systemDefault()) : null;
 
-    return (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from(userEntity.getUsername()))
-            .withPassword(userEntity.getPassword() != null ? passwordBuilder.from(userEntity.getPassword()) : null)
-            .withChangePasswordKey(changePasswordKey)
-            .withChangePasswordKeyExpirationDate(changePasswordKeyExpirationDate)
-            .build();
+    return User.from(
+            usernameBuilder.from(userEntity.getUsername()),
+            userEntity.getPassword() != null ? passwordBuilder.from(userEntity.getPassword()) : null,
+            changePasswordKey,
+            changePasswordKeyExpirationDate);
   }
 
   public static UserEntity fromDomainToInfra(UserForAdmin collaborator) {

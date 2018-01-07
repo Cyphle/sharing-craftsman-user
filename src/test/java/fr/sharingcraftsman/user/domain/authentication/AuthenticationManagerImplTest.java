@@ -5,7 +5,6 @@ import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepositor
 import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
@@ -17,8 +16,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.time.LocalDateTime;
 import java.time.Month;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -49,10 +46,7 @@ public class AuthenticationManagerImplTest {
     oAuthToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     client = Client.from("client", "secret");
     credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
-    user = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("password"))
-            .build();
+    user = User.from("john@doe.fr", "password");
   }
 
   @Test

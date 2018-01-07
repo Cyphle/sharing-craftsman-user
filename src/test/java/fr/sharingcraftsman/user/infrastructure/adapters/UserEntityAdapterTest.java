@@ -87,10 +87,7 @@ public class UserEntityAdapterTest {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     ChangePasswordKey changePasswordKey = ChangePasswordKey.from(
-            (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("aaa"))
-            .build(),
+            User.from("john@doe.fr", "aaa"),
             "aaa",
             LocalDateTime.of(2017, 12, 25, 12, 0)
     );
@@ -105,10 +102,7 @@ public class UserEntityAdapterTest {
   public void should_update_user_with_new_password() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    User user = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("newpassword"))
-            .build();
+    User user = User.from("john@doe.fr", "newpassword");
     userAdapter.updateUserPassword(user);
 
     UserEntity userEntity = new UserEntity("john@doe.fr", "newpassword");

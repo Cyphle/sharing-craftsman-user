@@ -105,12 +105,7 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_get_user_already_exists_when_using_already_existing_username() throws Exception {
-    given(userRepository.findUserFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(
-            (new CollaboratorBuilder())
-                    .withUsername(usernameBuilder.from("john@doe.fr"))
-                    .withPassword(passwordBuilder.from("password"))
-                    .build()
-    );
+    given(userRepository.findUserFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(User.from("john@doe.fr", "password"));
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
@@ -133,10 +128,7 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_get_change_password_token_when_requesting_to_change_password() throws Exception {
-    User user = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("password"))
-            .build();
+    User user = User.from("john@doe.fr", "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     ChangePasswordKey key = new ChangePasswordKey(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(userRepository.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
@@ -161,12 +153,7 @@ public class UserEntityServiceTest {
   @Test
   public void should_change_password_when_sending_new_password() throws Exception {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
-    User user = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="))
-            .withChangePasswordKey("aaa")
-            .withChangePasswordKeyExpirationDate(LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0))
-            .build();
+    User user = User.from(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("T49xWf/l7gatvfVwethwDw=="), "aaa", LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
 
     ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
@@ -195,10 +182,7 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_generate_key_when_lost_password() throws Exception {
-    User user = (new CollaboratorBuilder())
-            .withUsername(usernameBuilder.from("john@doe.fr"))
-            .withPassword(passwordBuilder.from("password"))
-            .build();
+    User user = User.from("john@doe.fr", "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     ChangePasswordKey key = new ChangePasswordKey(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(userRepository.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
