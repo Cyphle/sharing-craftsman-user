@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.services;
+package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.api.pivots.*;
@@ -14,6 +14,7 @@ import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
+import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.company.*;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
@@ -89,7 +90,7 @@ public class UserService {
 
       ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
       return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordKey));
-    } catch (UsernameException e) {
+    } catch (UsernameException | UnknownCollaboratorException e) {
       log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -147,6 +148,26 @@ public class UserService {
               .body(e.getErrors());
     } catch (CredentialsException | CollaboratorException e) {
       log.warn("Error with update profile " + tokenDTO.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
+  public ResponseEntity generateLostPasswordKey(ClientDTO clientDTO, String username) {
+    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
+      log.warn("Un authorized client:" + clientDTO.getName());
+      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+    }
+
+    try {
+      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(username), null, false);
+      ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
+      Email email = company.findEmailOf(credentials);
+      ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordKey, email);
+      return ResponseEntity.ok(changePasswordKeyForLostPassword);
+    } catch (UsernameException | CollaboratorException e) {
+      log.warn("Error: " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());

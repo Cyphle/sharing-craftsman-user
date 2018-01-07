@@ -78,6 +78,11 @@ public class OrganisationTest {
 
   @Test
   public void should_delete_change_request_key_and_create_change_request_key() throws Exception {
+    Collaborator collaborator = (new CollaboratorBuilder())
+            .withUsername(usernameBuilder.from("john@doe.fr"))
+            .withPassword(passwordBuilder.from("password"))
+            .build();
+    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(collaborator);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false);
 
@@ -85,6 +90,20 @@ public class OrganisationTest {
 
     verify(humanResourceAdministrator).deleteChangePasswordKeyOf(credentials);
     verify(humanResourceAdministrator).createChangePasswordKeyFor(any(ChangePasswordKey.class));
+  }
+
+  @Test
+  public void should_throw_exception_if_collaborator_does_not_exists_when_creating_change_password_key() throws Exception {
+    given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
+    given(humanResourceAdministrator.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"))).willReturn(new UnknownCollaborator());
+
+    try {
+      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false);
+      organisation.createChangePasswordKeyFor(credentials);
+      fail("Should have throw unknown collaborator exception");
+    } catch (CollaboratorException e) {
+      assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
+    }
   }
 
   @Test
@@ -190,5 +209,33 @@ public class OrganisationTest {
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
     }
+  }
+
+  @Test
+  public void should_find_email_of_collaborator_if_email_is_present() throws Exception {
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("john@doe.fr"), null, null, Email.from("johndoe@myapp.fr"), null, null, null));
+
+    Email email = organisation.findEmailOf(credentials);
+
+    assertThat(email).isEqualTo(Email.from("johndoe@myapp.fr"));
+  }
+
+  @Test
+  public void should_find_email_if_email_is_not_present_but_username_if_an_email() throws Exception {
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+
+    Email email = organisation.findEmailOf(credentials);
+
+    assertThat(email).isEqualTo(Email.from("john@doe.fr"));
+  }
+
+  @Test
+  public void should_return_empty_email_if_no_email_is_found() throws Exception {
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("johndoe"), null, null, null, null, null, null));
+    Credentials badCredentials = Credentials.buildCredentials(usernameBuilder.from("johndoe"), null, false);
+
+    Email email = organisation.findEmailOf(badCredentials);
+
+    assertThat(email.isValid()).isFalse();
   }
 }

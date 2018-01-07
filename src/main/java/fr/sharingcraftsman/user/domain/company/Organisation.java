@@ -4,6 +4,7 @@ import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
+import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.ValidationError;
 import fr.sharingcraftsman.user.domain.ports.company.Company;
@@ -33,7 +34,10 @@ public class Organisation implements Company {
   }
 
   @Override
-  public ChangePasswordKey createChangePasswordKeyFor(Credentials credentials) {
+  public ChangePasswordKey createChangePasswordKeyFor(Credentials credentials) throws UnknownCollaboratorException {
+    if (!collaboratorExists(credentials.getUsername()))
+      throw new UnknownCollaboratorException("Unknown collaborator");
+
     humanResourceAdministrator.deleteChangePasswordKeyOf(credentials);
     ChangePasswordKey changePasswordKey = ChangePasswordKey.from(
             (new CollaboratorBuilder())
@@ -73,6 +77,21 @@ public class Organisation implements Company {
 
     ((KnownProfile) profileToUpdate).updateFrom((KnownProfile) profile);
     return (KnownProfile) humanResourceAdministrator.updateProfileOf((KnownProfile) profileToUpdate);
+  }
+
+  @Override
+  public Email findEmailOf(Credentials credentials) {
+    Profile profile = humanResourceAdministrator.findProfileOf(credentials.getUsername());
+
+    KnownProfile knownProfile = (KnownProfile) profile;
+    if (knownProfile.getEmail() != null && knownProfile.getEmail().isValid())
+      return knownProfile.getEmail();
+
+    Email emailFromUsername = Email.from(knownProfile.getUsernameContent());
+    if (emailFromUsername.isValid())
+      return emailFromUsername;
+
+    return Email.from("");
   }
 
   private void checkChangePasswordKeyValidity(ChangePassword changePassword, Collaborator person) throws InvalidChangePasswordKeyException {

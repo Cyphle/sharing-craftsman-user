@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.services;
+package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
@@ -140,6 +140,7 @@ public class UserServiceTest {
             .withUsername(usernameBuilder.from("john@doe.fr"))
             .withPassword(passwordBuilder.from("password"))
             .build();
+    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(collaborator);
     ChangePasswordKey key = new ChangePasswordKey(collaborator, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
     given(tokenAdministrator.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(ValidToken.class))).willReturn(validToken);
@@ -194,4 +195,27 @@ public class UserServiceTest {
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isEqualTo(profileDTO);
   }
+
+  @Test
+  public void should_generate_key_when_lost_password() throws Exception {
+    Collaborator collaborator = (new CollaboratorBuilder())
+            .withUsername(usernameBuilder.from("john@doe.fr"))
+            .withPassword(passwordBuilder.from("password"))
+            .build();
+    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(collaborator);
+    ChangePasswordKey key = new ChangePasswordKey(collaborator, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
+    given(humanResourceAdministrator.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
+    given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new KnownProfile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
+
+    ResponseEntity response = userService.generateLostPasswordKey(clientDTO, "john@doe.fr");
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  /*
+  @Test
+  public void should_send_exception_when_no_email_is_set() throws Exception {
+
+  }
+   */
 }

@@ -44,6 +44,10 @@ public class KnownProfile extends Profile {
     return lastname.getName();
   }
 
+  public Email getEmail() {
+    return email;
+  }
+
   public String getEmailContent() {
     return email.getEmail();
   }

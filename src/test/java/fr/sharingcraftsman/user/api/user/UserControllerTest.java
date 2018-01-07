@@ -1,8 +1,7 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.UserApplication;
 import fr.sharingcraftsman.user.api.models.*;
-import fr.sharingcraftsman.user.api.services.UserService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,6 +100,17 @@ public class UserControllerTest {
             .header("access-token", "aaa")
             .contentType(MediaType.APPLICATION_JSON)
             .content(Mapper.fromObjectToJsonString(profile)))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void should_generate_key_when_lost_password() throws Exception {
+    given(userService.requestChangePassword(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
+
+    this.mvc.perform(get("/users/lost-password")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr"))
             .andExpect(status().isOk());
   }
 }

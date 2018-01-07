@@ -1,7 +1,6 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.api.models.*;
-import fr.sharingcraftsman.user.api.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -64,6 +63,19 @@ public class UserController {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
+  }
+
+  @ApiOperation(value = "Endpoint to generate key when lost password", response = ResponseEntity.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.GET, value = "/lost-password")
+  public ResponseEntity requestLostPassword(@RequestHeader("client") String client,
+                                       @RequestHeader("secret") String secret,
+                                       @RequestHeader("username") String username) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    return userService.generateLostPasswordKey(clientDTO, username);
   }
 
   @ApiOperation(value = "Update profile endpoint", response = ProfileDTO.class)
