@@ -6,8 +6,9 @@ import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.user.*;
+import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,14 +30,14 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class UserEntityAdapterTest {
   @Mock
-  private UserRepository userRepository;
+  private UserJpaRepository userJpaRepository;
   @Mock
   private DateService dateService;
   private HumanResourceAdministrator userAdapter;
 
   @Before
   public void setUp() throws Exception {
-    userAdapter = new UserAdapter(userRepository, dateService);
+    userAdapter = new UserAdapter(userJpaRepository, dateService);
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
   }
 
@@ -49,12 +50,12 @@ public class UserEntityAdapterTest {
     UserEntity expectedUserEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     expectedUserEntity.setCreationDate(dateService.nowInDate());
     expectedUserEntity.setLastUpdateDate(dateService.nowInDate());
-    verify(userRepository).save(expectedUserEntity);
+    verify(userJpaRepository).save(expectedUserEntity);
   }
 
   @Test
   public void should_get_user_by_username() throws Exception {
-    given(userRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     BaseUser collaborator = userAdapter.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"));
 
@@ -64,7 +65,7 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_find_user_by_username_and_password() throws Exception {
-    given(userRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userJpaRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     BaseUser collaborator = userAdapter.findCollaboratorFromCredentials(Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false));
 
@@ -73,17 +74,17 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_delete_user_change_password_key() throws Exception {
-    given(userRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     userAdapter.deleteChangePasswordKeyOf(Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false));
 
     UserEntity userEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
-    verify(userRepository).save(userEntity);
+    verify(userJpaRepository).save(userEntity);
   }
 
   @Test
   public void should_update_user_with_change_password_key() throws Exception {
-    given(userRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     ChangePasswordKey changePasswordKey = ChangePasswordKey.from(
             (new CollaboratorBuilder())
@@ -97,12 +98,12 @@ public class UserEntityAdapterTest {
 
     UserEntity userEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     userEntity.setChangePasswordKey("aaa");
-    verify(userRepository).save(userEntity);
+    verify(userJpaRepository).save(userEntity);
   }
 
   @Test
   public void should_update_user_with_new_password() throws Exception {
-    given(userRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     User user = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
@@ -111,31 +112,31 @@ public class UserEntityAdapterTest {
     userAdapter.updateCollaboratorPassword(user);
 
     UserEntity userEntity = new UserEntity("john@doe.fr", "newpassword");
-    verify(userRepository).save(userEntity);
+    verify(userJpaRepository).save(userEntity);
   }
 
   @Test
   public void should_find_profile_from_username() throws Exception {
     UserEntity userEntity = new UserEntity("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
-    given(userRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
 
     BaseProfile foundBaseProfile = userAdapter.findProfileOf(usernameBuilder.from("john@doe.fr"));
 
     Profile expectedProfile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
     assertThat((Profile) foundBaseProfile).isEqualTo(expectedProfile);
-    verify(userRepository).findByUsername("john@doe.fr");
+    verify(userJpaRepository).findByUsername("john@doe.fr");
   }
 
   @Test
   public void should_save_new_profile() throws Exception {
     UserEntity userEntity = new UserEntity("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
-    given(userRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
-    given(userRepository.save(any(UserEntity.class))).willReturn(userEntity);
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
+    given(userJpaRepository.save(any(UserEntity.class))).willReturn(userEntity);
     Profile profile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
 
     BaseProfile foundBaseProfile = userAdapter.updateProfileOf(profile);
 
     assertThat((Profile) foundBaseProfile).isEqualTo(profile);
-    verify(userRepository).findByUsername("john@doe.fr");
+    verify(userJpaRepository).findByUsername("john@doe.fr");
   }
 }

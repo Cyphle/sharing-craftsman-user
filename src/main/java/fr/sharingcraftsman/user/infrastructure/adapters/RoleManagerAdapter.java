@@ -7,7 +7,7 @@ import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
 import fr.sharingcraftsman.user.infrastructure.models.AuthorizationEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.GroupPivot;
 import fr.sharingcraftsman.user.infrastructure.pivots.RolePivot;
-import fr.sharingcraftsman.user.infrastructure.repositories.AuthorizationRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.AuthorizationJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,32 +16,32 @@ import java.util.Set;
 
 @Service
 public class RoleManagerAdapter implements RoleAdministrator {
-  private AuthorizationRepository authorizationRepository;
+  private AuthorizationJpaRepository authorizationJpaRepository;
 
   @Autowired
-  public RoleManagerAdapter(AuthorizationRepository authorizationRepository) {
-    this.authorizationRepository = authorizationRepository;
+  public RoleManagerAdapter(AuthorizationJpaRepository authorizationJpaRepository) {
+    this.authorizationJpaRepository = authorizationJpaRepository;
   }
 
   @Override
   public List<Role> getRolesOf(String group) {
-    return RolePivot.fromInfraToDomain(authorizationRepository.findByGroup(group));
+    return RolePivot.fromInfraToDomain(authorizationJpaRepository.findByGroup(group));
   }
 
   @Override
   public Set<Group> getAllRolesWithTheirGroups() {
-    return RolePivot.fromInfraToDomainRolesGroupedByGroup(authorizationRepository.findAll());
+    return RolePivot.fromInfraToDomainRolesGroupedByGroup(authorizationJpaRepository.findAll());
   }
 
   @Override
   public void createNewGroupsWithRole(List<Group> groups) {
-    groups.forEach(group -> authorizationRepository.save(GroupPivot.fromDomainToInfra(group)));
+    groups.forEach(group -> authorizationJpaRepository.save(GroupPivot.fromDomainToInfra(group)));
   }
 
   @Override
   public void removeRoleFromGroup(Group group) {
-    AuthorizationEntity authorizationEntity = authorizationRepository.findFromGroupNameAndRole(group.getName(), Lists.newArrayList(group.getRoles()).get(0).getRole());
+    AuthorizationEntity authorizationEntity = authorizationJpaRepository.findFromGroupNameAndRole(group.getName(), Lists.newArrayList(group.getRoles()).get(0).getRole());
     if (authorizationEntity != null)
-      authorizationRepository.delete(authorizationEntity);
+      authorizationJpaRepository.delete(authorizationEntity);
   }
 }

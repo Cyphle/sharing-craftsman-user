@@ -6,9 +6,10 @@ import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.*;
+import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +18,12 @@ import java.util.Date;
 
 @Service
 public class UserAdapter implements HumanResourceAdministrator {
-  private UserRepository userRepository;
+  private UserJpaRepository userJpaRepository;
   private DateService dateService;
 
   @Autowired
-  public UserAdapter(UserRepository userRepository, DateService dateService) {
-    this.userRepository = userRepository;
+  public UserAdapter(UserJpaRepository userJpaRepository, DateService dateService) {
+    this.userJpaRepository = userJpaRepository;
     this.dateService = dateService;
   }
 
@@ -31,12 +32,12 @@ public class UserAdapter implements HumanResourceAdministrator {
     UserEntity userEntity = UserPivot.fromDomainToInfra(user);
     userEntity.setCreationDate(dateService.nowInDate());
     userEntity.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(userEntity);
+    userJpaRepository.save(userEntity);
   }
 
   @Override
   public BaseUser findCollaboratorFromUsername(Username username) {
-    UserEntity foundUserEntity = userRepository.findByUsername(username.getUsername());
+    UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
     if (foundUserEntity == null)
       return new UnknownUser();
@@ -50,7 +51,7 @@ public class UserAdapter implements HumanResourceAdministrator {
 
   @Override
   public BaseUser findCollaboratorFromCredentials(Credentials credentials) {
-    UserEntity foundUserEntity = userRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
+    UserEntity foundUserEntity = userJpaRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
 
     if (foundUserEntity == null)
       return new UnknownUser();
@@ -64,34 +65,34 @@ public class UserAdapter implements HumanResourceAdministrator {
 
   @Override
   public void deleteChangePasswordKeyOf(Credentials credentials) {
-    UserEntity userEntity = userRepository.findByUsername(credentials.getUsernameContent());
+    UserEntity userEntity = userJpaRepository.findByUsername(credentials.getUsernameContent());
     userEntity.setChangePasswordKey("");
     userEntity.setChangePasswordExpirationDate(null);
     userEntity.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(userEntity);
+    userJpaRepository.save(userEntity);
   }
 
   @Override
   public ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey) {
-    UserEntity userEntity = userRepository.findByUsername(changePasswordKey.getUsername());
+    UserEntity userEntity = userJpaRepository.findByUsername(changePasswordKey.getUsername());
     userEntity.setChangePasswordKey(changePasswordKey.getKey());
     userEntity.setChangePasswordExpirationDate(Date.from(changePasswordKey.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
     userEntity.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(userEntity);
+    userJpaRepository.save(userEntity);
     return changePasswordKey;
   }
 
   @Override
   public void updateCollaboratorPassword(User user) {
-    UserEntity userEntity = userRepository.findByUsername(user.getUsername());
+    UserEntity userEntity = userJpaRepository.findByUsername(user.getUsername());
     userEntity.setPassword(user.getPassword());
     userEntity.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(userEntity);
+    userJpaRepository.save(userEntity);
   }
 
   @Override
   public BaseProfile findProfileOf(Username username) {
-    UserEntity userEntity = userRepository.findByUsername(username.getUsername());
+    UserEntity userEntity = userJpaRepository.findByUsername(username.getUsername());
 
     if (userEntity == null)
       return new UnknownProfile();
@@ -105,10 +106,10 @@ public class UserAdapter implements HumanResourceAdministrator {
 
   @Override
   public BaseProfile updateProfileOf(Profile profileToUpdate) {
-    UserEntity userEntity = userRepository.findByUsername(profileToUpdate.getUsernameContent());
+    UserEntity userEntity = userJpaRepository.findByUsername(profileToUpdate.getUsernameContent());
     userEntity.updateFromProfile(UserPivot.fromDomainToInfraProfile(profileToUpdate));
     userEntity.setLastUpdateDate(dateService.nowInDate());
-    UserEntity updatedUserEntity = userRepository.save(userEntity);
+    UserEntity updatedUserEntity = userJpaRepository.save(userEntity);
     try {
       return UserPivot.fromInfraToDomainProfile(updatedUserEntity);
     } catch (UsernameException e) {

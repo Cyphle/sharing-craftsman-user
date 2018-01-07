@@ -12,7 +12,7 @@ import fr.sharingcraftsman.user.domain.user.BaseUser;
 import fr.sharingcraftsman.user.domain.user.UnknownUser;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,30 +20,30 @@ import java.util.List;
 
 @Service
 public class HRAdminAdapter implements HRAdminManager {
-  private UserRepository userRepository;
+  private UserJpaRepository userJpaRepository;
   private DateService dateService;
 
   @Autowired
-  public HRAdminAdapter(UserRepository userRepository, DateService dateService) {
-    this.userRepository = userRepository;
+  public HRAdminAdapter(UserJpaRepository userJpaRepository, DateService dateService) {
+    this.userJpaRepository = userJpaRepository;
     this.dateService = dateService;
   }
 
   @Override
   public List<AdminCollaborator> getAllCollaborators() {
-    List<UserEntity> userEntities = Lists.newArrayList(userRepository.findAll());
+    List<UserEntity> userEntities = Lists.newArrayList(userJpaRepository.findAll());
     return UserPivot.fromInfraToAdminDomain(userEntities);
   }
 
   @Override
   public void deleteCollaborator(Username username) {
-    UserEntity foundUserEntity = userRepository.findByUsername(username.getUsername());
-    userRepository.delete(foundUserEntity);
+    UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
+    userJpaRepository.delete(foundUserEntity);
   }
 
   @Override
   public BaseUser findCollaboratorFromUsername(Username username) {
-    UserEntity foundUserEntity = userRepository.findByUsername(username.getUsername());
+    UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
     if (foundUserEntity == null)
       return new UnknownUser();
@@ -57,15 +57,15 @@ public class HRAdminAdapter implements HRAdminManager {
 
   @Override
   public void updateCollaborator(AdminCollaborator collaborator) {
-    UserEntity foundUserEntity = userRepository.findByUsername(collaborator.getUsernameContent());
+    UserEntity foundUserEntity = userJpaRepository.findByUsername(collaborator.getUsernameContent());
     foundUserEntity.updateFromAdminCollaborator(collaborator);
     foundUserEntity.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(foundUserEntity);
+    userJpaRepository.save(foundUserEntity);
   }
 
   @Override
   public AdminPerson findAdminCollaboratorFromUsername(Username username) {
-    UserEntity foundUserEntity = userRepository.findByUsername(username.getUsername());
+    UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
     if (foundUserEntity == null)
       return new UnknownAdminCollaborator();
@@ -78,6 +78,6 @@ public class HRAdminAdapter implements HRAdminManager {
     UserEntity userEntityToCreate = UserPivot.fromDomainToInfra(collaborator);
     userEntityToCreate.setCreationDate(dateService.nowInDate());
     userEntityToCreate.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(userEntityToCreate);
+    userJpaRepository.save(userEntityToCreate);
   }
 }

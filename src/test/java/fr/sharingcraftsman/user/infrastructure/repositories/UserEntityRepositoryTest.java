@@ -26,20 +26,20 @@ public class UserEntityRepositoryTest {
   private TestEntityManager entityManager;
 
   @Autowired
-  private UserRepository userRepository;
+  private UserJpaRepository userJpaRepository;
 
   @After
   public void tearDown() throws Exception {
-    userRepository.deleteAll();
+    userJpaRepository.deleteAll();
   }
 
   @Test
   public void should_save_a_new_user() throws Exception {
-    userRepository.save(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    userJpaRepository.save(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     UserEntity expectedUserEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     expectedUserEntity.setId(1);
-    assertThat(Lists.newArrayList(userRepository.findAll())).containsExactly(
+    assertThat(Lists.newArrayList(userJpaRepository.findAll())).containsExactly(
             expectedUserEntity
     );
   }
@@ -51,7 +51,7 @@ public class UserEntityRepositoryTest {
 
     UserEntity expectedUserEntity = new UserEntity("hello@world.fr", "toto");
     expectedUserEntity.setId(2);
-    assertThat(userRepository.findByUsername("hello@world.fr")).isEqualTo(expectedUserEntity);
+    assertThat(userJpaRepository.findByUsername("hello@world.fr")).isEqualTo(expectedUserEntity);
   }
 
   @Test
@@ -63,8 +63,8 @@ public class UserEntityRepositoryTest {
 
     userEntity.setChangePasswordKey("");
     userEntity.setChangePasswordExpirationDate(null);
-    userRepository.save(userEntity);
-    UserEntity foundUserEntity = userRepository.findByUsername("hello@world.com");
+    userJpaRepository.save(userEntity);
+    UserEntity foundUserEntity = userJpaRepository.findByUsername("hello@world.com");
 
     assertThat(foundUserEntity.getChangePasswordKey()).isEmpty();
     assertThat(foundUserEntity.getChangePasswordExpirationDate()).isNull();

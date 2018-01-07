@@ -6,7 +6,7 @@ import fr.sharingcraftsman.user.domain.admin.AdminPerson;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,14 +29,14 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class HRAdminAdapterTest {
   @Mock
-  private UserRepository userRepository;
+  private UserJpaRepository userJpaRepository;
   @Mock
   private DateService dateService;
   private HRAdminAdapter hrAdminAdapter;
 
   @Before
   public void setUp() throws Exception {
-    hrAdminAdapter = new HRAdminAdapter(userRepository, dateService);
+    hrAdminAdapter = new HRAdminAdapter(userJpaRepository, dateService);
     given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
   }
 
@@ -54,23 +54,23 @@ public class HRAdminAdapterTest {
     userEntityTwo.setLastUpdateDate(new Date());
     userEntityTwo.setChangePasswordKey("");
     userEntityTwo.setChangePasswordExpirationDate(null);
-    given(userRepository.findAll()).willReturn(Arrays.asList(userEntity, userEntityTwo));
+    given(userJpaRepository.findAll()).willReturn(Arrays.asList(userEntity, userEntityTwo));
 
     hrAdminAdapter.getAllCollaborators();
 
-    verify(userRepository).findAll();
+    verify(userJpaRepository).findAll();
   }
 
   @Test
   public void should_delete_user() throws Exception {
     hrAdminAdapter.deleteCollaborator(usernameBuilder.from("hello@world.fr"));
 
-    verify(userRepository).delete(any(UserEntity.class));
+    verify(userJpaRepository).delete(any(UserEntity.class));
   }
 
   @Test
   public void should_get_user_by_username() throws Exception {
-    given(userRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     BaseUser collaborator = hrAdminAdapter.findCollaboratorFromUsername(usernameBuilder.from("john@doe.fr"));
 
@@ -86,7 +86,7 @@ public class HRAdminAdapterTest {
     userEntity.setLastUpdateDate(new Date());
     userEntity.setChangePasswordKey("");
     userEntity.setChangePasswordExpirationDate(null);
-    given(userRepository.findByUsername("admin@toto.fr")).willReturn(userEntity);
+    given(userJpaRepository.findByUsername("admin@toto.fr")).willReturn(userEntity);
 
     AdminPerson collaborator = hrAdminAdapter.findAdminCollaboratorFromUsername(usernameBuilder.from("admin@toto.fr"));
 
@@ -97,7 +97,7 @@ public class HRAdminAdapterTest {
   @Test
   public void should_update_user() throws Exception {
     UserEntity userEntityToUpdate = new UserEntity("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
-    given(userRepository.findByUsername("admin@toto.fr")).willReturn(userEntityToUpdate);
+    given(userJpaRepository.findByUsername("admin@toto.fr")).willReturn(userEntityToUpdate);
 
     AdminCollaborator collaboratorToUpdate = AdminCollaborator.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date());
     hrAdminAdapter.updateCollaborator(collaboratorToUpdate);
@@ -108,7 +108,7 @@ public class HRAdminAdapterTest {
     updatedUserEntity.setLastUpdateDate(new Date());
     updatedUserEntity.setChangePasswordKey("");
     updatedUserEntity.setChangePasswordExpirationDate(null);
-    verify(userRepository).save(updatedUserEntity);
+    verify(userJpaRepository).save(updatedUserEntity);
   }
 
   @Test
@@ -117,6 +117,6 @@ public class HRAdminAdapterTest {
     hrAdminAdapter.createCollaborator(collaborator);
 
     UserEntity newUserEntity = new UserEntity("admin@toto.fr", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
-    verify(userRepository).save(newUserEntity);
+    verify(userJpaRepository).save(newUserEntity);
   }
 }

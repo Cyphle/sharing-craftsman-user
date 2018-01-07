@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
 
-public interface AccessTokenRepository extends CrudRepository<AccessTokenEntity, Long> {
+public interface AccessTokenJpaRepository extends CrudRepository<AccessTokenEntity, Long> {
   @Transactional
   @Modifying
   @Query("Delete from AccessTokenEntity t where t.username = ?1 and t.client = ?2")

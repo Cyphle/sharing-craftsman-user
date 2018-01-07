@@ -15,6 +15,7 @@ import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.*;
+import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

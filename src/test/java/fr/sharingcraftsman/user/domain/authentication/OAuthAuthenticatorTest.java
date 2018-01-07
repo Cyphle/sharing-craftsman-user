@@ -5,7 +5,7 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.CollaboratorBuilder;
-import fr.sharingcraftsman.user.domain.user.HumanResourceAdministrator;
+import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 import org.junit.Before;
 import org.junit.Test;

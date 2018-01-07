@@ -4,22 +4,22 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.infrastructure.models.ClientEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.ClientPivot;
-import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.ClientJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ClientAdapter implements ClientStock {
-  private ClientRepository clientRepository;
+  private ClientJpaRepository clientJpaRepository;
 
   @Autowired
-  public ClientAdapter(ClientRepository clientRepository) {
-    this.clientRepository = clientRepository;
+  public ClientAdapter(ClientJpaRepository clientJpaRepository) {
+    this.clientJpaRepository = clientJpaRepository;
   }
 
   @Override
   public Client findClient(Client client) {
-    ClientEntity foundClient = clientRepository.findByNameAndSecret(client.getName(), client.getSecret());
+    ClientEntity foundClient = clientJpaRepository.findByNameAndSecret(client.getName(), client.getSecret());
 
     if (foundClient == null)
       return Client.unkownClient();
@@ -29,7 +29,7 @@ public class ClientAdapter implements ClientStock {
 
   @Override
   public Client findClientByName(Client client) {
-    ClientEntity foundClient = clientRepository.findByName(client.getName());
+    ClientEntity foundClient = clientJpaRepository.findByName(client.getName());
 
     if (foundClient == null)
       return Client.unkownClient();
@@ -40,6 +40,6 @@ public class ClientAdapter implements ClientStock {
   @Override
   public Client createClient(Client client) {
     ClientEntity ClientEntity = ClientPivot.fromDomainToInfra(client);
-    return ClientPivot.fromInfraToDomain(clientRepository.save(ClientEntity));
+    return ClientPivot.fromInfraToDomain(clientJpaRepository.save(ClientEntity));
   }
 }

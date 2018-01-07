@@ -3,7 +3,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
 import fr.sharingcraftsman.user.infrastructure.models.UserAuthorizationEntity;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserAuthorizationRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserAuthorizationJpaRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,16 +23,16 @@ import static org.mockito.Mockito.verify;
 public class GroupManagerAdapterTest {
   private GroupManagerAdapter groupManagerAdapter;
   @Mock
-  private UserAuthorizationRepository userAuthorizationRepository;
+  private UserAuthorizationJpaRepository userAuthorizationJpaRepository;
 
   @Before
   public void setUp() throws Exception {
-    groupManagerAdapter = new GroupManagerAdapter(userAuthorizationRepository);
+    groupManagerAdapter = new GroupManagerAdapter(userAuthorizationJpaRepository);
   }
 
   @Test
   public void should_get_groups_of_user_by_username() throws Exception {
-    given(userAuthorizationRepository.findByUsername("john@doe.fr")).willReturn(Collections.singletonList(new UserAuthorizationEntity("john@doe.fr", "USERS")));
+    given(userAuthorizationJpaRepository.findByUsername("john@doe.fr")).willReturn(Collections.singletonList(new UserAuthorizationEntity("john@doe.fr", "USERS")));
 
     List<Group> groups = groupManagerAdapter.findGroupsOf(usernameBuilder.from("john@doe.fr"));
 
@@ -41,19 +41,19 @@ public class GroupManagerAdapterTest {
 
   @Test
   public void should_add_group_to_user() throws Exception {
-    given(userAuthorizationRepository.save(any(UserAuthorizationEntity.class))).willReturn(new UserAuthorizationEntity("john@doe.fr", "USERS"));
+    given(userAuthorizationJpaRepository.save(any(UserAuthorizationEntity.class))).willReturn(new UserAuthorizationEntity("john@doe.fr", "USERS"));
 
     groupManagerAdapter.addGroupToCollaborator(usernameBuilder.from("john@doe.fr"), Groups.USERS);
 
-    verify(userAuthorizationRepository).save(new UserAuthorizationEntity("john@doe.fr", "USERS"));
+    verify(userAuthorizationJpaRepository).save(new UserAuthorizationEntity("john@doe.fr", "USERS"));
   }
 
   @Test
   public void should_remove_group_from_user() throws Exception {
-    given(userAuthorizationRepository.findByUsernameAndGroup("hello@world.fr", Groups.USERS.name())).willReturn(new UserAuthorizationEntity("hello@world.fr", Groups.USERS.name()));
+    given(userAuthorizationJpaRepository.findByUsernameAndGroup("hello@world.fr", Groups.USERS.name())).willReturn(new UserAuthorizationEntity("hello@world.fr", Groups.USERS.name()));
 
     groupManagerAdapter.removeGroupFromCollaborator(usernameBuilder.from("hello@world.fr"), Groups.USERS);
 
-    verify(userAuthorizationRepository).delete(new UserAuthorizationEntity("hello@world.fr", "USERS"));
+    verify(userAuthorizationJpaRepository).delete(new UserAuthorizationEntity("hello@world.fr", "USERS"));
   }
 }

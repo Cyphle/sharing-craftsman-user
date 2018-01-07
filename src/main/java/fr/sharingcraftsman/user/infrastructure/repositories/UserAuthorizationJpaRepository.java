@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface UserAuthorizationRepository extends CrudRepository<UserAuthorizationEntity, Long> {
+public interface UserAuthorizationJpaRepository extends CrudRepository<UserAuthorizationEntity, Long> {
   @Query("Select u from UserAuthorizationEntity u where u.username = ?1")
   List<UserAuthorizationEntity> findByUsername(String username);
   @Query("Select u from UserAuthorizationEntity u where u.username = ?1 and u.group = ?2")

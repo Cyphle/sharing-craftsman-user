@@ -10,8 +10,8 @@ import fr.sharingcraftsman.user.acceptance.dsl.*;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.infrastructure.models.AuthorizationEntity;
 import fr.sharingcraftsman.user.infrastructure.models.UserAuthorizationEntity;
-import fr.sharingcraftsman.user.infrastructure.repositories.AuthorizationRepository;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserAuthorizationRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.AuthorizationJpaRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserAuthorizationJpaRepository;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,9 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class AdminStepsDef extends SpringAcceptanceTestConfig {
   @Autowired
-  private AuthorizationRepository authorizationRepository;
+  private AuthorizationJpaRepository authorizationJpaRepository;
   @Autowired
-  private UserAuthorizationRepository userAuthorizationRepository;
+  private UserAuthorizationJpaRepository userAuthorizationJpaRepository;
 
   @Before
   public void setUp() {
@@ -54,7 +54,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
 
   @And("^An admin group is created with admin role$")
   public void createAdminGroup() {
-    authorizationRepository.save(new AuthorizationEntity("ADMINS", "ROLE_ADMIN"));
+    authorizationJpaRepository.save(new AuthorizationEntity("ADMINS", "ROLE_ADMIN"));
   }
 
   @And("^I have registered an admin account with username <(.*)> and password <(.*)>$")
@@ -70,7 +70,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
             .andExpect(status().isOk())
             .andReturn();
 
-    userAuthorizationRepository.save(new UserAuthorizationEntity(username, "ADMINS"));
+    userAuthorizationJpaRepository.save(new UserAuthorizationEntity(username, "ADMINS"));
   }
 
   @And("^I am connected with my account <(.*)> and password <(.*)>$")

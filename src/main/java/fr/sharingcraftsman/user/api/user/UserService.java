@@ -20,7 +20,8 @@ import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 import fr.sharingcraftsman.user.domain.ports.authorization.Authorizer;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
-import fr.sharingcraftsman.user.domain.ports.company.Company;
+import fr.sharingcraftsman.user.domain.user.ports.Organisation;
+import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 public class UserService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
   private final Authenticator authenticator;
-  private Company company;
+  private Organisation organisation;
   private ClientManager clientManager;
   private Authorizer authorizer;
 
@@ -48,7 +49,7 @@ public class UserService {
           GroupAdministrator groupAdministrator,
           RoleAdministrator roleAdministrator,
           DateService dateService) {
-    company = new Organisation(humanResourceAdministrator, dateService);
+    organisation = new UserOrganisation(humanResourceAdministrator, dateService);
     clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
     authenticator = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateService);
     authorizer = new GroupRoleAuthorizer(groupAdministrator, roleAdministrator);
@@ -64,7 +65,7 @@ public class UserService {
       log.info("UserEntity is registering with username:" + loginDTO.getUsername());
       Credentials credentials = LoginPivot.fromApiToDomain(loginDTO);
 
-      company.createNewCollaborator(credentials);
+      organisation.createNewCollaborator(credentials);
       authorizer.addGroup(credentials, Groups.USERS);
       return ResponseEntity.ok().build();
     } catch (CredentialsException | CollaboratorException e) {
@@ -88,7 +89,7 @@ public class UserService {
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
+      ChangePasswordKey changePasswordKey = organisation.createChangePasswordKeyFor(credentials);
       return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordKey));
     } catch (UsernameException | UnknownCollaboratorException e) {
       log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
@@ -116,7 +117,7 @@ public class UserService {
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
       authenticator.logout(credentials, new Client(clientDTO.getName(), "", false), TokenPivot.fromApiToDomain(tokenDTO));
-      company.changePassword(credentials, ChangePasswordPivot.fromApiToDomain(changePasswordDTO));
+      organisation.changePassword(credentials, ChangePasswordPivot.fromApiToDomain(changePasswordDTO));
       return ResponseEntity.ok().build();
     } catch (CredentialsException | CollaboratorException e) {
       log.warn("Error with change password: " + e.getMessage());
@@ -139,7 +140,7 @@ public class UserService {
       if (verifyToken(clientDTO, tokenDTO, credentials))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      BaseProfile updatedBaseProfile = company.updateProfile(ProfilePivot.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
+      BaseProfile updatedBaseProfile = organisation.updateProfile(ProfilePivot.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
       return ResponseEntity.ok(ProfilePivot.fromDomainToApi((Profile) updatedBaseProfile));
      } catch (ProfileException e) {
       log.warn("Validation errors with update profile:" + tokenDTO.getUsername() + ": " + e.getMessage());
@@ -162,8 +163,8 @@ public class UserService {
 
     try {
       Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(username), null, false);
-      ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
-      Email email = company.findEmailOf(credentials);
+      ChangePasswordKey changePasswordKey = organisation.createChangePasswordKeyFor(credentials);
+      Email email = organisation.findEmailOf(credentials);
       ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordKey, email);
       return ResponseEntity.ok(changePasswordKeyForLostPassword);
     } catch (UsernameException | CollaboratorException e) {

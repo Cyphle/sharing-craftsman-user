@@ -4,6 +4,7 @@ import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
+import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
 
 import java.security.SecureRandom;
 import java.util.Base64;

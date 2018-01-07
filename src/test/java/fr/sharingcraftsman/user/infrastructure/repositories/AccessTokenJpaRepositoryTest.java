@@ -23,12 +23,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {UserApplication.class})
 @DataJpaTest
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class AccessTokenRepositoryTest {
+public class AccessTokenJpaRepositoryTest {
   @Autowired
   private TestEntityManager entityManager;
 
   @Autowired
-  private AccessTokenRepository accessTokenRepository;
+  private AccessTokenJpaRepository accessTokenJpaRepository;
 
   @Before
   public void setUp() throws Exception {
@@ -44,35 +44,35 @@ public class AccessTokenRepositoryTest {
 
   @Test
   public void should_delete_tokens_of_user() throws Exception {
-    accessTokenRepository.deleteByUsername("john@doe.fr", "client");
+    accessTokenJpaRepository.deleteByUsername("john@doe.fr", "client");
 
-    assertThat(accessTokenRepository.findAll()).isEmpty();
+    assertThat(accessTokenJpaRepository.findAll()).isEmpty();
   }
 
   @Test
   public void should_find_token_by_username_client_and_access_token() throws Exception {
-    AccessTokenEntity foundToken = accessTokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa");
+    AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa");
 
     assertThat(foundToken.getAccessToken()).isEqualTo("aaa");
   }
 
   @Test
   public void should_not_find_token_by_username_client_and_access_token() throws Exception {
-    AccessTokenEntity foundToken = accessTokenRepository.findByUsernameClientAndAccessToken("hello@world.com", "client", "aaa");
+    AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndAccessToken("hello@world.com", "client", "aaa");
 
     assertThat(foundToken).isNull();
   }
 
   @Test
   public void should_find_token_by_username_client_and_refresh_token() throws Exception {
-    AccessTokenEntity foundToken = accessTokenRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb");
+    AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb");
 
     assertThat(foundToken.getAccessToken()).isEqualTo("aaa");
   }
 
   @Test
   public void should_not_find_token_by_username_client_and_refresh_token() throws Exception {
-    AccessTokenEntity foundToken = accessTokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "ccc");
+    AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "ccc");
 
     assertThat(foundToken).isNull();
   }

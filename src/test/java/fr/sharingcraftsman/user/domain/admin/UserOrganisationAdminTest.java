@@ -21,7 +21,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OrganisationAdminTest {
+public class UserOrganisationAdminTest {
   @Mock
   private HRAdminManager hrAdminManager;
 

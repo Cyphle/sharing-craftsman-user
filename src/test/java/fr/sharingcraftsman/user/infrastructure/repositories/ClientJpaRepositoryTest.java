@@ -18,12 +18,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {UserApplication.class})
 @DataJpaTest
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class ClientRepositoryTest {
+public class ClientJpaRepositoryTest {
   @Autowired
   private TestEntityManager entityManager;
 
   @Autowired
-  private ClientRepository clientRepository;
+  private ClientJpaRepository clientJpaRepository;
 
   @Before
   public void setUp() throws Exception {
@@ -32,7 +32,7 @@ public class ClientRepositoryTest {
 
   @Test
   public void should_get_client_by_name_and_secret() throws Exception {
-    ClientEntity client = clientRepository.findByNameAndSecret("client", "secret");
+    ClientEntity client = clientJpaRepository.findByNameAndSecret("client", "secret");
 
     assertThat(client.getName()).isEqualTo("client");
     assertThat(client.getSecret()).isEqualTo("secret");

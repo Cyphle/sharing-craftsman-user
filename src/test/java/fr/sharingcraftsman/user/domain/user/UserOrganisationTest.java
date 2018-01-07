@@ -6,6 +6,7 @@ import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,14 +25,14 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OrganisationTest {
+public class UserOrganisationTest {
   @Mock
   HumanResourceAdministrator humanResourceAdministrator;
   @Mock
   DateService dateService;
 
   private Credentials credentials;
-  private Organisation organisation;
+  private UserOrganisation userOrganisation;
 
   @Before
   public void setUp() throws Exception {
@@ -43,7 +44,7 @@ public class OrganisationTest {
             false
     );
 
-    organisation = new Organisation(humanResourceAdministrator, dateService);
+    userOrganisation = new UserOrganisation(humanResourceAdministrator, dateService);
   }
 
   @Test
@@ -51,7 +52,7 @@ public class OrganisationTest {
     given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(new UnknownUser());
     Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
 
-    organisation.createNewCollaborator(credentials);
+    userOrganisation.createNewCollaborator(credentials);
 
     User updatedUser = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
@@ -69,7 +70,7 @@ public class OrganisationTest {
       );
       Credentials credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
 
-      organisation.createNewCollaborator(credentials);
+      userOrganisation.createNewCollaborator(credentials);
       fail("Should throw CollaboratorException");
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("User already exists with username: john@doe.fr");
@@ -86,7 +87,7 @@ public class OrganisationTest {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false);
 
-    organisation.createChangePasswordKeyFor(credentials);
+    userOrganisation.createChangePasswordKeyFor(credentials);
 
     verify(humanResourceAdministrator).deleteChangePasswordKeyOf(credentials);
     verify(humanResourceAdministrator).createChangePasswordKeyFor(any(ChangePasswordKey.class));
@@ -99,7 +100,7 @@ public class OrganisationTest {
 
     try {
       Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false);
-      organisation.createChangePasswordKeyFor(credentials);
+      userOrganisation.createChangePasswordKeyFor(credentials);
       fail("Should have throw unknown collaborator exception");
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
@@ -117,7 +118,7 @@ public class OrganisationTest {
     given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(user);
     ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
-    organisation.changePassword(credentials, changePassword);
+    userOrganisation.changePassword(credentials, changePassword);
 
     User updatedUser = (new CollaboratorBuilder())
             .withUsername(usernameBuilder.from("john@doe.fr"))
@@ -134,7 +135,7 @@ public class OrganisationTest {
       given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(new UnknownUser());
       ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
-      organisation.changePassword(credentials, changePassword);
+      userOrganisation.changePassword(credentials, changePassword);
       fail("Should throw unkown collaborator exception");
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
@@ -147,7 +148,7 @@ public class OrganisationTest {
       given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(User.from(credentials));
       ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
-      organisation.changePassword(credentials, changePassword);
+      userOrganisation.changePassword(credentials, changePassword);
       fail("Should throw invalid change password key exception");
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");
@@ -166,7 +167,7 @@ public class OrganisationTest {
       given(humanResourceAdministrator.findCollaboratorFromCredentials(any(Credentials.class))).willReturn(user);
       ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
 
-      organisation.changePassword(credentials, changePassword);
+      userOrganisation.changePassword(credentials, changePassword);
       fail("Should throw invalid change password key exception");
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");
@@ -179,7 +180,7 @@ public class OrganisationTest {
     Profile profileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
     given(humanResourceAdministrator.updateProfileOf(any(Profile.class))).willReturn(profileToUpdate);
 
-    BaseProfile baseProfile = organisation.updateProfile(profileToUpdate);
+    BaseProfile baseProfile = userOrganisation.updateProfile(profileToUpdate);
 
     Profile expectedProfile = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
     assertThat(baseProfile).isEqualTo(expectedProfile);
@@ -191,7 +192,7 @@ public class OrganisationTest {
       given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
       BaseProfile baseProfileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
 
-      BaseProfile baseProfile = organisation.updateProfile(baseProfileToUpdate);
+      BaseProfile baseProfile = userOrganisation.updateProfile(baseProfileToUpdate);
       fail("Should have throw a baseProfile exception when email is invalid");
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid profile");
@@ -204,7 +205,7 @@ public class OrganisationTest {
       given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new UnknownProfile());
       BaseProfile baseProfileToUpdate = new ProfileBuilder().withUsername(usernameBuilder.from("john@doe.fr")).withFirstname(Name.of("John")).withLastname(Name.of("Doe")).withEmail(Email.from("john@doe.fr")).withWebsite(Link.to("www.johndoe.fr")).withGithub(Link.to("github.com/johndoe")).withLinkedin(Link.to("linkedin.com/johndoe")).build();
 
-      BaseProfile baseProfile = organisation.updateProfile(baseProfileToUpdate);
+      BaseProfile baseProfile = userOrganisation.updateProfile(baseProfileToUpdate);
       fail("Should have throw a collaborator exception when email is invalid");
     } catch (CollaboratorException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
@@ -215,7 +216,7 @@ public class OrganisationTest {
   public void should_find_email_of_collaborator_if_email_is_present() throws Exception {
     given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, Email.from("johndoe@myapp.fr"), null, null, null));
 
-    Email email = organisation.findEmailOf(credentials);
+    Email email = userOrganisation.findEmailOf(credentials);
 
     assertThat(email).isEqualTo(Email.from("johndoe@myapp.fr"));
   }
@@ -224,7 +225,7 @@ public class OrganisationTest {
   public void should_find_email_if_email_is_not_present_but_username_if_an_email() throws Exception {
     given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("john@doe.fr"), null, null, null, null, null, null));
 
-    Email email = organisation.findEmailOf(credentials);
+    Email email = userOrganisation.findEmailOf(credentials);
 
     assertThat(email).isEqualTo(Email.from("john@doe.fr"));
   }
@@ -234,7 +235,7 @@ public class OrganisationTest {
     given(humanResourceAdministrator.findProfileOf(any(Username.class))).willReturn(new Profile(usernameBuilder.from("johndoe"), null, null, null, null, null, null));
     Credentials badCredentials = Credentials.buildCredentials(usernameBuilder.from("johndoe"), null, false);
 
-    Email email = organisation.findEmailOf(badCredentials);
+    Email email = userOrganisation.findEmailOf(badCredentials);
 
     assertThat(email.isValid()).isFalse();
   }

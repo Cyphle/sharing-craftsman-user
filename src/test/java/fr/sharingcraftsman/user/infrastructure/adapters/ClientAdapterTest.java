@@ -2,7 +2,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.infrastructure.models.ClientEntity;
-import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.ClientJpaRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,16 +18,16 @@ import static org.mockito.Mockito.verify;
 public class ClientAdapterTest {
   private ClientAdapter clientAdapter;
   @Mock
-  private ClientRepository clientRepository;
+  private ClientJpaRepository clientJpaRepository;
 
   @Before
   public void setUp() throws Exception {
-    clientAdapter = new ClientAdapter(clientRepository);
+    clientAdapter = new ClientAdapter(clientJpaRepository);
   }
 
   @Test
   public void should_get_client() throws Exception {
-    given(clientRepository.findByNameAndSecret("client", "secret")).willReturn(new ClientEntity("client", "secret"));
+    given(clientJpaRepository.findByNameAndSecret("client", "secret")).willReturn(new ClientEntity("client", "secret"));
 
     Client foundClient = clientAdapter.findClient(Client.from("client", "secret"));
 
@@ -43,11 +43,11 @@ public class ClientAdapterTest {
 
   @Test
   public void should_create_new_client() throws Exception {
-    given(clientRepository.save(any(ClientEntity.class))).willReturn(new ClientEntity("sharingcraftsman", "secret"));
+    given(clientJpaRepository.save(any(ClientEntity.class))).willReturn(new ClientEntity("sharingcraftsman", "secret"));
     Client client = Client.from("sharingcraftsman", "secret");
 
     clientAdapter.createClient(client);
 
-    verify(clientRepository).save(new ClientEntity("sharingcraftsman", "secret"));
+    verify(clientJpaRepository).save(new ClientEntity("sharingcraftsman", "secret"));
   }
 }

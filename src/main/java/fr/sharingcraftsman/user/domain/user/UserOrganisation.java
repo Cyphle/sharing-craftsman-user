@@ -6,18 +6,19 @@ import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.ValidationError;
-import fr.sharingcraftsman.user.domain.ports.company.Company;
+import fr.sharingcraftsman.user.domain.user.ports.Organisation;
+import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
 import fr.sharingcraftsman.user.domain.utils.CrypterFactory;
 
 import java.util.List;
 
-public class Organisation implements Company {
+public class UserOrganisation implements Organisation {
   private static Crypter crypter = CrypterFactory.getCrypter();
   private HumanResourceAdministrator humanResourceAdministrator;
   private DateService dateService;
 
-  public Organisation(HumanResourceAdministrator humanResourceAdministrator, DateService dateService) {
+  public UserOrganisation(HumanResourceAdministrator humanResourceAdministrator, DateService dateService) {
     this.humanResourceAdministrator = humanResourceAdministrator;
     this.dateService = dateService;
   }

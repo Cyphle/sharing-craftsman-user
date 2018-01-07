@@ -12,7 +12,7 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
 import fr.sharingcraftsman.user.domain.client.ClientStock;
 import fr.sharingcraftsman.user.domain.user.CollaboratorException;
-import fr.sharingcraftsman.user.domain.user.HumanResourceAdministrator;
+import fr.sharingcraftsman.user.domain.user.ports.HumanResourceAdministrator;
 import fr.sharingcraftsman.user.domain.user.UnknownCollaboratorException;
 import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
 import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
