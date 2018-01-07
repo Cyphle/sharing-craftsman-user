@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.services;
+package fr.sharingcraftsman.user.api.authentication;
 
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.LoginDTO;
@@ -34,7 +34,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TokenServiceTest {
+public class AuthenticationServiceTest {
   @Mock
   private UserRepository userRepository;
   @Mock
@@ -44,7 +44,7 @@ public class TokenServiceTest {
   @Mock
   private DateService dateService;
 
-  private TokenService tokenService;
+  private AuthenticationService authenticationService;
   private ClientDTO clientDTO;
   private AccessToken validToken;
   private TokenDTO token;
@@ -57,7 +57,7 @@ public class TokenServiceTest {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 30, 12, 0));
     given(clientRepository.findClient(any(Client.class))).willReturn(Client.knownClient("client", "secret"));
 
-    tokenService = new TokenService(userRepository, accessTokenRepository, clientRepository, dateService);
+    authenticationService = new AuthenticationService(userRepository, accessTokenRepository, clientRepository, dateService);
     clientDTO = new ClientDTO("client", "secret");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
 
@@ -80,7 +80,7 @@ public class TokenServiceTest {
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(validToken);
 
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password", true);
-    ResponseEntity response = tokenService.login(clientDTO, loginDTO);
+    ResponseEntity response = authenticationService.login(clientDTO, loginDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
@@ -90,7 +90,7 @@ public class TokenServiceTest {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
 
-    ResponseEntity response = tokenService.checkToken(clientDTO, token);
+    ResponseEntity response = authenticationService.checkToken(clientDTO, token);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
@@ -99,7 +99,7 @@ public class TokenServiceTest {
   public void should_get_unauthorized_if_token_is_not_valid() throws Exception {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(new InvalidToken());
 
-    ResponseEntity response = tokenService.checkToken(clientDTO, token);
+    ResponseEntity response = authenticationService.checkToken(clientDTO, token);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
@@ -109,7 +109,7 @@ public class TokenServiceTest {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2018, Month.JANUARY, 12, 12, 0));
 
-    ResponseEntity response = tokenService.checkToken(clientDTO, token);
+    ResponseEntity response = authenticationService.checkToken(clientDTO, token);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
@@ -119,7 +119,7 @@ public class TokenServiceTest {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
 
-    ResponseEntity response = tokenService.logout(clientDTO, token);
+    ResponseEntity response = authenticationService.logout(clientDTO, token);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
@@ -135,7 +135,7 @@ public class TokenServiceTest {
     refreshToken.setUsername("john@doe.fr");
     refreshToken.setRefreshToken("bbb");
 
-    ResponseEntity response = tokenService.refreshToken(clientDTO, refreshToken);
+    ResponseEntity response = authenticationService.refreshToken(clientDTO, refreshToken);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isEqualTo(new TokenDTO("john@doe.fr", "aaa", "bbb", 1514631600000L));

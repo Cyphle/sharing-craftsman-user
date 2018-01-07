@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.services;
+package fr.sharingcraftsman.user.api.client;
 
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.pivots.ClientPivot;

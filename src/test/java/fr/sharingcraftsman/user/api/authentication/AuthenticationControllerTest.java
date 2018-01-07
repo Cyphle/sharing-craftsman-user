@@ -1,10 +1,9 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.authentication;
 
 import fr.sharingcraftsman.user.UserApplication;
 import fr.sharingcraftsman.user.api.models.LoginDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
-import fr.sharingcraftsman.user.api.services.TokenService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,9 +36,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {UserApplication.class})
-@WebMvcTest(TokenController.class)
+@WebMvcTest(AuthenticationController.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class BaseTokenControllerTest {
+public class AuthenticationControllerTest {
   @Autowired
   private MockMvc mvc;
 
@@ -47,7 +46,7 @@ public class BaseTokenControllerTest {
   private WebApplicationContext context;
 
   @MockBean
-  private TokenService tokenService;
+  private AuthenticationService authenticationService;
 
   @Before
   public void setup() {
@@ -60,7 +59,7 @@ public class BaseTokenControllerTest {
   public void should_log_in_and_get_token() throws Exception {
     ZonedDateTime zdt = LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0).atZone(ZoneId.systemDefault());
     TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa", "bbb", zdt.toInstant().toEpochMilli());
-    given(tokenService.login(any(ClientDTO.class), any(LoginDTO.class))).willReturn(ResponseEntity.ok(tokenDTO));
+    given(authenticationService.login(any(ClientDTO.class), any(LoginDTO.class))).willReturn(ResponseEntity.ok(tokenDTO));
 
     LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password", true);
 
@@ -76,7 +75,7 @@ public class BaseTokenControllerTest {
 
   @Test
   public void should_verify_token() throws Exception {
-    given(tokenService.checkToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
+    given(authenticationService.checkToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
 
     TokenDTO token = new TokenDTO();
     token.setUsername("john@doe.fr");
@@ -92,7 +91,7 @@ public class BaseTokenControllerTest {
 
   @Test
   public void should_log_out() throws Exception {
-    given(tokenService.logout(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
+    given(authenticationService.logout(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(get("/tokens/logout")
             .header("client", "client")
@@ -106,7 +105,7 @@ public class BaseTokenControllerTest {
   public void should_request_for_a_new_access_token() throws Exception {
     ZonedDateTime zdt = LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0).atZone(ZoneId.systemDefault());
     TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "ddd", "eee", zdt.toInstant().toEpochMilli());
-    given(tokenService.refreshToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(tokenDTO));
+    given(authenticationService.refreshToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(tokenDTO));
 
     this.mvc.perform(get("/tokens/refresh-token")
             .header("client", "client")

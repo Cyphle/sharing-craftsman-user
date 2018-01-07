@@ -23,7 +23,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserUserOrganisationImplAdminTest {
+public class UserOrganisationImplAdminTest {
   @Mock
   private UserForAdminRepository userForAdminRepository;
 

@@ -1,7 +1,6 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.authorization;
 
 import fr.sharingcraftsman.user.api.models.*;
-import fr.sharingcraftsman.user.api.services.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/roles")
 @Api(description = "Endpoints to manage roles and groups for users")
-public class RoleController {
-  private RoleService roleService;
+public class AuthorizationController {
+  private AuthorizationService authorizationService;
 
   @Autowired
-  public RoleController(RoleService roleService) {
-    this.roleService = roleService;
+  public AuthorizationController(AuthorizationService authorizationService) {
+    this.authorizationService = authorizationService;
   }
 
   @ApiOperation(value = "Endpoint to get groups and roles", response = AuthorizationsDTO.class)
@@ -36,6 +35,6 @@ public class RoleController {
                                @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return roleService.getAuthorizations(clientDTO, tokenDTO);
+    return authorizationService.getAuthorizations(clientDTO, tokenDTO);
   }
 }

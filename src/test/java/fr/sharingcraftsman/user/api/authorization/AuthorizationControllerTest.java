@@ -1,8 +1,9 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.authorization;
 
 import fr.sharingcraftsman.user.UserApplication;
+import fr.sharingcraftsman.user.api.authorization.AuthorizationController;
 import fr.sharingcraftsman.user.api.models.*;
-import fr.sharingcraftsman.user.api.services.RoleService;
+import fr.sharingcraftsman.user.api.authorization.AuthorizationService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,9 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {UserApplication.class})
-@WebMvcTest(RoleController.class)
+@WebMvcTest(AuthorizationController.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class RoleControllerTest {
+public class AuthorizationControllerTest {
   @Autowired
   private MockMvc mvc;
 
@@ -37,7 +38,7 @@ public class RoleControllerTest {
   private WebApplicationContext context;
 
   @MockBean
-  private RoleService roleService;
+  private AuthorizationService authorizationService;
 
   @Before
   public void setup() {
@@ -52,7 +53,7 @@ public class RoleControllerTest {
     group.addRole(new RoleDTO("ROLE_USER"));
     AuthorizationsDTO authorization = new AuthorizationsDTO();
     authorization.addGroup(group);
-    given(roleService.getAuthorizations(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(authorization));
+    given(authorizationService.getAuthorizations(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(authorization));
 
     MvcResult mvcResult = this.mvc.perform(get("/roles")
             .header("client", "client")

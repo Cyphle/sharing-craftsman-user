@@ -14,12 +14,12 @@ import fr.sharingcraftsman.user.domain.utils.CrypterFactory;
 
 import java.util.List;
 
-public class UserUserOrganisationImpl implements UserOrganisation {
+public class UserOrganisationImpl implements UserOrganisation {
   private static Crypter crypter = CrypterFactory.getCrypter();
   private UserRepository userRepository;
   private DateService dateService;
 
-  public UserUserOrganisationImpl(UserRepository userRepository, DateService dateService) {
+  public UserOrganisationImpl(UserRepository userRepository, DateService dateService) {
     this.userRepository = userRepository;
     this.dateService = dateService;
   }
@@ -29,7 +29,7 @@ public class UserUserOrganisationImpl implements UserOrganisation {
     if (collaboratorExists(credentials.getUsername()))
       throw new AlreadyExistingUserException("User already exists with username: " + credentials.getUsernameContent());
 
-    Credentials encryptedCredentials = Credentials.buildWithEncryptionAndPersistentLogging(credentials.getUsernameContent(), credentials.getPasswordContent(), credentials.isPersistentLogging());
+    Credentials encryptedCredentials = Credentials.buildWithEncryption(credentials.getUsernameContent(), credentials.getPasswordContent());
     User newUser = User.from(encryptedCredentials);
     userRepository.createNewUser(newUser);
   }

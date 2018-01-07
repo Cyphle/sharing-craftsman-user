@@ -1,9 +1,8 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.authentication;
 
 import fr.sharingcraftsman.user.api.models.LoginDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
-import fr.sharingcraftsman.user.api.services.TokenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -15,12 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/tokens")
 @Api(description = "Endpoints to manage token")
-public class TokenController {
-  private TokenService tokenService;
+public class AuthenticationController {
+  private AuthenticationService authenticationService;
 
   @Autowired
-  public TokenController(TokenService tokenService) {
-    this.tokenService = tokenService;
+  public AuthenticationController(AuthenticationService authenticationService) {
+    this.authenticationService = authenticationService;
   }
 
   @ApiOperation(value = "Post log in information", response = TokenDTO.class)
@@ -33,7 +32,7 @@ public class TokenController {
                               @RequestHeader("secret") String secret,
                               @RequestBody LoginDTO loginDTO) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
-    return tokenService.login(clientDTO, loginDTO);
+    return authenticationService.login(clientDTO, loginDTO);
   }
 
   @ApiOperation(value = "Verify token validity", response = ResponseEntity.class)
@@ -48,7 +47,7 @@ public class TokenController {
                                @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return tokenService.checkToken(clientDTO, tokenDTO);
+    return authenticationService.checkToken(clientDTO, tokenDTO);
   }
 
   @ApiOperation(value = "Logout - Delete token", response = ResponseEntity.class)
@@ -63,7 +62,7 @@ public class TokenController {
                                @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return tokenService.logout(clientDTO, tokenDTO);
+    return authenticationService.logout(clientDTO, tokenDTO);
   }
 
   @ApiOperation(value = "Refresh access token with refresh token", response = TokenDTO.class)
@@ -78,6 +77,6 @@ public class TokenController {
                                @RequestHeader("refresh-token") String refreshToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, "", refreshToken);
-    return tokenService.refreshToken(clientDTO, tokenDTO);
+    return authenticationService.refreshToken(clientDTO, tokenDTO);
   }
 }

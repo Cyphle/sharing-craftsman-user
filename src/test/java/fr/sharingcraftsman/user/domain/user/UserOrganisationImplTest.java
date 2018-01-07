@@ -26,20 +26,20 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserUserOrganisationImplTest {
+public class UserOrganisationImplTest {
   @Mock
   UserRepository userRepository;
   @Mock
   DateService dateService;
 
   private Credentials credentials;
-  private UserUserOrganisationImpl userOrganisationImpl;
+  private UserOrganisationImpl userOrganisationImpl;
 
   @Before
   public void setUp() throws Exception {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
-    userOrganisationImpl = new UserUserOrganisationImpl(userRepository, dateService);
+    userOrganisationImpl = new UserOrganisationImpl(userRepository, dateService);
   }
 
   @Test

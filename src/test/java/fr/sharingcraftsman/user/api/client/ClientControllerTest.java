@@ -1,8 +1,9 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.client;
 
 import fr.sharingcraftsman.user.UserApplication;
+import fr.sharingcraftsman.user.api.client.ClientController;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.services.ClientService;
+import fr.sharingcraftsman.user.api.client.ClientService;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;

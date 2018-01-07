@@ -34,9 +34,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
-
 @Service
 public class UserService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -53,7 +50,7 @@ public class UserService {
           UserAuthorizationRepository userAuthorizationRepository,
           AuthorizationRepository authorizationRepository,
           DateService dateService) {
-    userOrganisation = new UserUserOrganisationImpl(userRepository, dateService);
+    userOrganisation = new UserOrganisationImpl(userRepository, dateService);
     clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
     authenticationManager = new AuthenticationManagerImpl(userRepository, accessTokenRepository, dateService);
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);

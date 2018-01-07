@@ -1,7 +1,6 @@
-package fr.sharingcraftsman.user.api.controllers;
+package fr.sharingcraftsman.user.api.client;
 
 import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.services.ClientService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

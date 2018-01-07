@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.services;
+package fr.sharingcraftsman.user.api.authentication;
 
 import fr.sharingcraftsman.user.api.models.LoginDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
@@ -29,13 +29,13 @@ import org.springframework.stereotype.Service;
 import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 
 @Service
-public class TokenService {
+public class AuthenticationService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
   private ClientOrganisation clientOrganisation;
   private AuthenticationManager authenticationManager;
 
   @Autowired
-  public TokenService(
+  public AuthenticationService(
           UserRepository userRepository,
           AccessTokenRepository accessTokenRepository,
           ClientRepository clientRepository,

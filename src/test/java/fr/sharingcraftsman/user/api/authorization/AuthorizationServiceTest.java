@@ -1,5 +1,6 @@
-package fr.sharingcraftsman.user.api.services;
+package fr.sharingcraftsman.user.api.authorization;
 
+import fr.sharingcraftsman.user.api.authorization.AuthorizationService;
 import fr.sharingcraftsman.user.api.models.*;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
@@ -31,7 +32,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RoleServiceTest {
+public class AuthorizationServiceTest {
   @Mock
   private UserRepository userRepository;
   @Mock
@@ -48,13 +49,13 @@ public class RoleServiceTest {
   private ClientDTO clientDTO;
   private TokenDTO token;
   private AccessToken validToken;
-  private RoleService roleService;
+  private AuthorizationService authorizationService;
 
   @Before
   public void setUp() throws Exception {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    roleService = new RoleService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService);
+    authorizationService = new AuthorizationService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService);
 
     clientDTO = new ClientDTO("client", "secret");
     given(clientRepository.findClient(any(Client.class))).willReturn(Client.knownClient("client", "secret"));
@@ -74,7 +75,7 @@ public class RoleServiceTest {
     given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(new Role("ROLE_USER")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
 
-    ResponseEntity response = roleService.getAuthorizations(clientDTO, token);
+    ResponseEntity response = authorizationService.getAuthorizations(clientDTO, token);
 
     GroupDTO groupUser = new GroupDTO("USERS");
     groupUser.addRoles(Collections.singletonList(new RoleDTO("ROLE_USER")));
