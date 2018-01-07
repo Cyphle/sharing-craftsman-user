@@ -110,8 +110,7 @@ public class UserControllerTest {
     this.mvc.perform(get("/users/lost-password")
             .header("client", "client")
             .header("secret", "clientsecret")
-            .header("username", "john@doe.fr")
-            .header("front-end-host", "http://www.mysuperapp.fr/lostpassword"))
+            .header("username", "john@doe.fr"))
             .andExpect(status().isOk());
   }
 }

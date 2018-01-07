@@ -78,6 +78,11 @@ public class OrganisationTest {
 
   @Test
   public void should_delete_change_request_key_and_create_change_request_key() throws Exception {
+    Collaborator collaborator = (new CollaboratorBuilder())
+            .withUsername(usernameBuilder.from("john@doe.fr"))
+            .withPassword(passwordBuilder.from("password"))
+            .build();
+    given(humanResourceAdministrator.findCollaboratorFromUsername(any(Username.class))).willReturn(collaborator);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     Credentials credentials = Credentials.buildCredentials(usernameBuilder.from("john@doe.fr"), null, false);
 

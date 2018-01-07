@@ -73,10 +73,9 @@ public class UserController {
   @RequestMapping(method = RequestMethod.GET, value = "/lost-password")
   public ResponseEntity requestLostPassword(@RequestHeader("client") String client,
                                        @RequestHeader("secret") String secret,
-                                       @RequestHeader("username") String username,
-                                       @RequestHeader("front-end-host") String frontEndHost) {
+                                       @RequestHeader("username") String username) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
-    return userService.generateLostPasswordKey(clientDTO, username, frontEndHost);
+    return userService.generateLostPasswordKey(clientDTO, username);
   }
 
   @ApiOperation(value = "Update profile endpoint", response = ProfileDTO.class)

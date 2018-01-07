@@ -1,18 +1,20 @@
 package fr.sharingcraftsman.user.infrastructure.pivots;
 
 import fr.sharingcraftsman.user.domain.admin.AdminCollaborator;
+import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.company.*;
+import fr.sharingcraftsman.user.domain.company.Collaborator;
+import fr.sharingcraftsman.user.domain.company.CollaboratorBuilder;
+import fr.sharingcraftsman.user.domain.company.KnownProfile;
+import fr.sharingcraftsman.user.domain.company.ProfileBuilder;
 import fr.sharingcraftsman.user.infrastructure.models.User;
-import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;

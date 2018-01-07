@@ -154,15 +154,7 @@ public class UserService {
     }
   }
 
-
-  /*
-  1. Lost password will check username and send email to email if set (or username if it is a mail and no email is set)
-  Otherwise, send error no email given
-  2. Generate change password key
-  3. Send by mail ? (will need a host)
-  4. Then use existing rouge change-password
-   */
-  public ResponseEntity generateLostPasswordKey(ClientDTO clientDTO, String username, String frontEndHost) {
+  public ResponseEntity generateLostPasswordKey(ClientDTO clientDTO, String username) {
     if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
       log.warn("Un authorized client:" + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
@@ -171,12 +163,9 @@ public class UserService {
     try {
       Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(username), null, false);
       ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
-
-      // HERE SEND TOKEN TO mail with frontEndHost/changePasswordKey
       Email email = company.findEmailOf(credentials);
-      // THIS SERVICE WILL BE IN CHARGE TO CALL SEND EMAIL SERVICE (NOT DOMAIN)
-
-      return ResponseEntity.ok(changePasswordKey);
+      ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordKey, email);
+      return ResponseEntity.ok(changePasswordKeyForLostPassword);
     } catch (UsernameException | CollaboratorException e) {
       log.warn("Error: " + e.getMessage());
       return ResponseEntity
