@@ -13,6 +13,7 @@ import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepositor
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.exceptions.UnknownUserException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
@@ -73,10 +74,9 @@ public class AuthenticationService {
 
     try {
       log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
-      Credentials credentials = Credentials.build(token.getUsername(), "NOPASSWORD");
-      Client client = Client.from(clientDTO.getName(), "");
+      Client client = Client.from(clientDTO.getName(), clientDTO.getSecret());
 
-      if (authenticationManager.isTokenValid(client, credentials.getUsername(), TokenPivot.fromApiToDomain(token))) {
+      if (authenticationManager.isTokenValid(client, Username.from(token.getUsername()), TokenPivot.fromApiToDomain(token))) {
         return ResponseEntity.ok().build();
       } else {
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
