@@ -42,7 +42,7 @@ public class AuthorizationEntityAuthorizationManagerTest {
     given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(Group.from("USERS")));
     given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
 
-    Authorization authorization = authorizationManager.getAuthorizationsOf(credentials);
+    Authorization authorization = authorizationManager.getAuthorizationsOf(credentials.getUsername());
 
     Role role = Role.from("ROLE_USER");
     Group group = Group.from("USERS");

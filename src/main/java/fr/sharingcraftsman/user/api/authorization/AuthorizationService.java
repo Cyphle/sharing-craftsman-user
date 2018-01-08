@@ -18,6 +18,7 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
@@ -58,12 +59,11 @@ public class AuthorizationService {
 
     try {
       log.info("Request to get authotizations of:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
 
-      if (verifyToken(clientDTO, tokenDTO, credentials.getUsername()))
+      if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      Authorization authorization = authorizationManager.getAuthorizationsOf(credentials);
+      Authorization authorization = authorizationManager.getAuthorizationsOf(Username.from(tokenDTO.getUsername()));
       return ResponseEntity.ok(AuthorizationPivot.fromDomainToApi(authorization));
     } catch (CredentialsException e) {
       log.warn("Error with getting authorizations " + tokenDTO.getUsername() + ": " + e.getMessage());
@@ -73,8 +73,8 @@ public class AuthorizationService {
     }
   }
 
-  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Username username) {
+  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO) throws UsernameException {
     Client client = Client.from(clientDTO.getName(), "");
-    return !authenticationManager.isTokenValid(client, username, TokenPivot.fromApiToDomain(tokenDTO));
+    return !authenticationManager.isTokenValid(client, Username.from(tokenDTO.getUsername()), TokenPivot.fromApiToDomain(tokenDTO));
   }
 }

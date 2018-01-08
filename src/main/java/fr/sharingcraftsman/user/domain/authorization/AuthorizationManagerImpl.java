@@ -5,6 +5,7 @@ import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
+import fr.sharingcraftsman.user.domain.common.Username;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,8 +20,8 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
   }
 
   @Override
-  public Authorization getAuthorizationsOf(Credentials credentials) {
-    List<Group> groups = userAuthorizationRepository.findGroupsOf(credentials.getUsername());
+  public Authorization getAuthorizationsOf(Username username) {
+    List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
     for (Group group : groups) {
       List<Role> roles = authorizationRepository.getRolesOf(group.getName());
       group.addRoles(roles);

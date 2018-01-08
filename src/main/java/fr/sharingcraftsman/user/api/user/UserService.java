@@ -86,12 +86,11 @@ public class UserService {
 
     try {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
-      Username username = Username.from(tokenDTO.getUsername());
 
-      if (verifyToken(clientDTO, tokenDTO, username))
+      if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(username);
+      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(Username.from(tokenDTO.getUsername()));
       return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordKey));
     } catch (UsernameException | UnknownUserException e) {
       log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
@@ -111,7 +110,7 @@ public class UserService {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
       Credentials credentials = Credentials.build(tokenDTO.getUsername(), changePasswordDTO.getOldPassword());
 
-      if (verifyToken(clientDTO, tokenDTO, credentials.getUsername()))
+      if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
       authenticationManager.logout(Client.from(clientDTO.getName(), ""), credentials, TokenPivot.fromApiToDomain(tokenDTO));
@@ -133,9 +132,8 @@ public class UserService {
 
     try {
       log.info("Request for a update profile with token:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
 
-      if (verifyToken(clientDTO, tokenDTO, credentials.getUsername()))
+      if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
       BaseProfile updatedBaseProfile = userOrganisation.updateProfile(ProfilePivot.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
@@ -173,8 +171,8 @@ public class UserService {
     }
   }
 
-  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Username username) {
+  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO) throws UsernameException {
     Client client = Client.from(clientDTO.getName(), "");
-    return !authenticationManager.isTokenValid(client, username, TokenPivot.fromApiToDomain(tokenDTO));
+    return !authenticationManager.isTokenValid(client, Username.from(tokenDTO.getUsername()), TokenPivot.fromApiToDomain(tokenDTO));
   }
 }

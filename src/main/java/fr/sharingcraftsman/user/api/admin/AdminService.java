@@ -84,10 +84,9 @@ public class AdminService {
             .collect(Collectors.toList());
     users.forEach(user -> {
       try {
-        Credentials credentials = Credentials.build(user.getUsername(), "NOPASSWORD");
-        Authorization authorization = authorizationManager.getAuthorizationsOf(credentials);
+        Authorization authorization = authorizationManager.getAuthorizationsOf(Username.from(user.getUsername()));
         user.setAuthorizations(AuthorizationPivot.fromDomainToApi(authorization));
-      } catch (UsernameException | PasswordException e) {
+      } catch (UsernameException e) {
         e.printStackTrace();
       }
     });
@@ -223,8 +222,7 @@ public class AdminService {
 
   private HttpStatus isAdmin(TokenDTO tokenDTO) {
     try {
-      Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
-      Authorization requesterAuthorization = authorizationManager.getAuthorizationsOf(credentials);
+      Authorization requesterAuthorization = authorizationManager.getAuthorizationsOf(Username.from(tokenDTO.getUsername()));
 
       Optional<Group> adminGroup = requesterAuthorization.getGroups()
               .stream()
