@@ -86,7 +86,7 @@ public class BaseTokenAdapterTest {
   public void should_return_a_valid_token_when_access_token_found() throws Exception {
     given(accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(new AccessTokenEntity("john@doe.fr", "client", "aaa", "bbb", Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant())));
 
-    BaseToken foundBaseToken = tokenAdapter.findTokenFromAccessToken(client, credentials, token);
+    BaseToken foundBaseToken = tokenAdapter.findTokenFromAccessToken(client, credentials.getUsername(), token);
 
     assertThat(foundBaseToken.isValid()).isTrue();
   }
@@ -95,7 +95,7 @@ public class BaseTokenAdapterTest {
   public void should_return_an_invalid_token_when_access_token_not_found() throws Exception {
     given(accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(null);
 
-    BaseToken foundBaseToken = tokenAdapter.findTokenFromAccessToken(client, credentials, token);
+    BaseToken foundBaseToken = tokenAdapter.findTokenFromAccessToken(client, credentials.getUsername(), token);
 
     assertThat(foundBaseToken.isValid()).isFalse();
   }

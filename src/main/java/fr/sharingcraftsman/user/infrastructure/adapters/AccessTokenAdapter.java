@@ -3,6 +3,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 import fr.sharingcraftsman.user.domain.authentication.*;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.AccessTokenEntity;
 import fr.sharingcraftsman.user.infrastructure.pivots.TokenPivot;
@@ -31,8 +32,8 @@ public class AccessTokenAdapter implements AccessTokenRepository {
   }
 
   @Override
-  public BaseToken findTokenFromAccessToken(Client client, Credentials credentials, AccessToken token) {
-    AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndAccessToken(credentials.getUsernameContent(), client.getName(), token.getAccessToken());
+  public BaseToken findTokenFromAccessToken(Client client, Username username, AccessToken token) {
+    AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndAccessToken(username.getUsername(), client.getName(), token.getAccessToken());
 
     if (foundToken == null)
       return new InvalidToken();

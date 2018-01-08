@@ -65,7 +65,7 @@ public class AuthorizationServiceTest {
 
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
 
-    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
   }
 
   @Test

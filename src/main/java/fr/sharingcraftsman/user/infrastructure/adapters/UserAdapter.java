@@ -64,8 +64,8 @@ public class UserAdapter implements UserRepository {
   }
 
   @Override
-  public void deleteChangePasswordKeyOf(Credentials credentials) {
-    UserEntity userEntity = userJpaRepository.findByUsername(credentials.getUsernameContent());
+  public void deleteChangePasswordKeyOf(Username username) {
+    UserEntity userEntity = userJpaRepository.findByUsername(username.getUsername());
     userEntity.setChangePasswordKey("");
     userEntity.setChangePasswordExpirationDate(null);
     userEntity.setLastUpdateDate(dateService.nowInDate());

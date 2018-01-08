@@ -75,7 +75,7 @@ public class UserEntityAdapterTest {
   public void should_delete_user_change_password_key() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    userAdapter.deleteChangePasswordKeyOf(Credentials.build("john@doe.fr", "NOPASSWORD"));
+    userAdapter.deleteChangePasswordKeyOf(Username.from("john@doe.fr"));
 
     UserEntity userEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     verify(userJpaRepository).save(userEntity);

@@ -11,7 +11,7 @@ public interface UserRepository {
 
   BaseUser findUserFromCredentials(Credentials credentials);
 
-  void deleteChangePasswordKeyOf(Credentials credentials);
+  void deleteChangePasswordKeyOf(Username username);
 
   ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey);
 

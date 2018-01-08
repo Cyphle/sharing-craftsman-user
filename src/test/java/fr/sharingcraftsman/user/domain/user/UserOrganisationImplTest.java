@@ -66,11 +66,11 @@ public class UserOrganisationImplTest {
     User user = User.from("john@doe.fr",  "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
-    Credentials credentials = Credentials.build("john@doe.fr", "NOPASSWORD");
+    Username username = Username.from("john@doe.fr");
 
-    userOrganisationImpl.createChangePasswordTokenFor(credentials);
+    userOrganisationImpl.createChangePasswordTokenFor(username);
 
-    verify(userRepository).deleteChangePasswordKeyOf(credentials);
+    verify(userRepository).deleteChangePasswordKeyOf(username);
     verify(userRepository).createChangePasswordKeyFor(any(ChangePasswordKey.class));
   }
 
@@ -80,8 +80,8 @@ public class UserOrganisationImplTest {
     given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUser());
 
     try {
-      Credentials credentials = Credentials.build("john@doe.fr", "NOPASSWORD");
-      userOrganisationImpl.createChangePasswordTokenFor(credentials);
+      Username username = Username.from("john@doe.fr");
+      userOrganisationImpl.createChangePasswordTokenFor(username);
       fail("Should have throw unknown collaborator exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");

@@ -130,7 +130,7 @@ public class UserEntityServiceTest {
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     ChangePasswordKey key = ChangePasswordKey.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
     given(userRepository.createChangePasswordKeyFor(any(ChangePasswordKey.class))).willReturn(key);
-    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
 
@@ -140,7 +140,7 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_get_unauthorized_if_access_token_is_invalid_when_requesting_password_change() throws Exception {
-    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(new InvalidToken());
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(new InvalidToken());
     TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa");
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
@@ -150,7 +150,7 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_change_password_when_sending_new_password() throws Exception {
-    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
     User user = User.from(Username.from("john@doe.fr"), Password.from("T49xWf/l7gatvfVwethwDw=="), "aaa", LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
 
@@ -165,7 +165,7 @@ public class UserEntityServiceTest {
 
   @Test
   public void should_update_profile_with_new_information() throws Exception {
-    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
     Profile profile = Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"));
     given(userRepository.findProfileOf(any(Username.class))).willReturn(profile);
     given(userRepository.updateProfileOf(any(Profile.class))).willReturn(profile);

@@ -79,7 +79,7 @@ public class AuthenticationServiceTest {
 
   @Test
   public void should_return_ok_if_token_is_valid() throws Exception {
-    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
 
     ResponseEntity response = authenticationService.checkToken(clientDTO, token);
@@ -89,7 +89,7 @@ public class AuthenticationServiceTest {
 
   @Test
   public void should_get_unauthorized_if_token_is_not_valid() throws Exception {
-    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(new InvalidToken());
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(new InvalidToken());
 
     ResponseEntity response = authenticationService.checkToken(clientDTO, token);
 
@@ -98,7 +98,7 @@ public class AuthenticationServiceTest {
 
   @Test
   public void should_return_unauthorized_if_token_has_expired() throws Exception {
-    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2018, Month.JANUARY, 12, 12, 0));
 
     ResponseEntity response = authenticationService.checkToken(clientDTO, token);
@@ -108,7 +108,7 @@ public class AuthenticationServiceTest {
 
   @Test
   public void should_return_ok_when_logout() throws Exception {
-    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
 
     ResponseEntity response = authenticationService.logout(clientDTO, token);

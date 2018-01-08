@@ -16,6 +16,7 @@ import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.PasswordException;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
@@ -85,14 +86,14 @@ public class UserService {
 
     try {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
+      Username username = Username.from(tokenDTO.getUsername());
 
-      if (verifyToken(clientDTO, tokenDTO, credentials))
+      if (verifyToken(clientDTO, tokenDTO, username))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(credentials);
+      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(username);
       return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordKey));
-    } catch (UsernameException | PasswordException | UnknownUserException e) {
+    } catch (UsernameException | UnknownUserException e) {
       log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -110,10 +111,10 @@ public class UserService {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
       Credentials credentials = Credentials.build(tokenDTO.getUsername(), changePasswordDTO.getOldPassword());
 
-      if (verifyToken(clientDTO, tokenDTO, credentials))
+      if (verifyToken(clientDTO, tokenDTO, credentials.getUsername()))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      authenticationManager.logout(credentials, Client.from(clientDTO.getName(), ""), TokenPivot.fromApiToDomain(tokenDTO));
+      authenticationManager.logout(Client.from(clientDTO.getName(), ""), credentials, TokenPivot.fromApiToDomain(tokenDTO));
       userOrganisation.changePassword(credentials, ChangePasswordPivot.fromApiToDomain(changePasswordDTO));
       return ResponseEntity.ok().build();
     } catch (CredentialsException | UserException e) {
@@ -134,7 +135,7 @@ public class UserService {
       log.info("Request for a update profile with token:" + tokenDTO.getUsername());
       Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
 
-      if (verifyToken(clientDTO, tokenDTO, credentials))
+      if (verifyToken(clientDTO, tokenDTO, credentials.getUsername()))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
       BaseProfile updatedBaseProfile = userOrganisation.updateProfile(ProfilePivot.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
@@ -160,7 +161,7 @@ public class UserService {
 
     try {
       Credentials credentials = Credentials.build(username, "NOPASSWORD");
-      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(credentials);
+      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(credentials.getUsername());
       Email email = userOrganisation.findEmailOf(credentials);
       ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordKey, email);
       return ResponseEntity.ok(changePasswordKeyForLostPassword);
@@ -172,8 +173,8 @@ public class UserService {
     }
   }
 
-  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Credentials credentials) {
+  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Username username) {
     Client client = Client.from(clientDTO.getName(), "");
-    return !authenticationManager.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO));
+    return !authenticationManager.isTokenValid(client, username, TokenPivot.fromApiToDomain(tokenDTO));
   }
 }

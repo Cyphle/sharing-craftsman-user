@@ -3,6 +3,7 @@ package fr.sharingcraftsman.user.domain.authentication;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
 import fr.sharingcraftsman.user.domain.user.exceptions.UnknownUserException;
@@ -27,7 +28,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   }
 
   @Override
-  public BaseToken login(Credentials credentials, Client client) throws UserException {
+  public BaseToken login(Client client, Credentials credentials) throws UserException {
     BaseUser user = userRepository.findUserFromCredentials(credentials.getEncryptedVersion());
     verifyCollaboratorIsKnown(user);
     accessTokenRepository.deleteTokensOf((User) user, client);
@@ -35,31 +36,31 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   }
 
   @Override
-  public boolean isTokenValid(Credentials credentials, Client client, AccessToken token) {
-    BaseToken foundBaseToken = accessTokenRepository.findTokenFromAccessToken(client, credentials, token);
+  public boolean isTokenValid(Client client, Username username, AccessToken token) {
+    BaseToken foundBaseToken = accessTokenRepository.findTokenFromAccessToken(client, username, token);
     return verifyTokenValidity(foundBaseToken);
   }
 
   @Override
-  public void logout(Credentials credentials, Client client, AccessToken token) {
-    if (isTokenValid(credentials, client, token)) {
+  public void logout(Client client, Credentials credentials, AccessToken token) {
+    if (isTokenValid(client, credentials.getUsername(), token)) {
       deleteToken(credentials, client);
     }
   }
 
   @Override
-  public boolean isRefreshTokenValid(Credentials credentials, Client client, AccessToken token) {
+  public boolean isRefreshTokenValid(Client client, Credentials credentials, AccessToken token) {
     BaseToken foundBaseToken = accessTokenRepository.findTokenFromRefreshToken(client, credentials, token);
     return verifyTokenValidity(foundBaseToken);
   }
 
   @Override
-  public void deleteToken(Credentials credentials, Client client, AccessToken token) {
+  public void deleteToken(Client client, Credentials credentials, AccessToken token) {
     deleteToken(credentials, client);
   }
 
   @Override
-  public BaseToken createNewToken(Credentials credentials, Client client) throws UserException {
+  public BaseToken createNewToken(Client client, Credentials credentials) throws UserException {
     BaseUser baseUser = userRepository.findUserFromUsername(credentials.getUsername());
     verifyCollaboratorIsKnown(baseUser);
     User user = (User) baseUser;
