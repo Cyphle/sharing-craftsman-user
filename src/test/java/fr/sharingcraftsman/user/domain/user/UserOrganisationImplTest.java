@@ -211,7 +211,7 @@ public class UserOrganisationImplTest {
               Link.to("github.com/johndoe"),
               Link.to("linkedin.com/johndoe"));
 
-      BaseProfile baseProfile = userOrganisationImpl.updateProfile(baseProfileToUpdate);
+      userOrganisationImpl.updateProfile(baseProfileToUpdate);
       fail("Should have throw a collaborator exception when email is invalid");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
@@ -222,7 +222,7 @@ public class UserOrganisationImplTest {
   public void should_find_email_of_collaborator_if_email_is_present() throws Exception {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, Email.from("johndoe@myapp.fr"), null, null, null));
 
-    Email email = userOrganisationImpl.findEmailOf(credentials);
+    Email email = userOrganisationImpl.findEmailOf(credentials.getUsername());
 
     assertThat(email).isEqualTo(Email.from("johndoe@myapp.fr"));
   }
@@ -231,7 +231,7 @@ public class UserOrganisationImplTest {
   public void should_find_email_if_email_is_not_present_but_username_if_an_email() throws Exception {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
 
-    Email email = userOrganisationImpl.findEmailOf(credentials);
+    Email email = userOrganisationImpl.findEmailOf(credentials.getUsername());
 
     assertThat(email).isEqualTo(Email.from("john@doe.fr"));
   }
@@ -239,7 +239,7 @@ public class UserOrganisationImplTest {
   @Test
   public void should_return_empty_email_if_no_email_is_found() throws Exception {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("johndoe"), null, null, null, null, null, null));
-    Credentials badCredentials = Credentials.build("johndoe", "NOPASSWORD");
+    Username badCredentials = Username.from("johndoe");
 
     Email email = userOrganisationImpl.findEmailOf(badCredentials);
 

@@ -78,8 +78,8 @@ public class UserOrganisationImpl implements UserOrganisation {
   }
 
   @Override
-  public Email findEmailOf(Credentials credentials) {
-    BaseProfile baseProfile = userRepository.findProfileOf(credentials.getUsername());
+  public Email findEmailOf(Username username) {
+    BaseProfile baseProfile = userRepository.findProfileOf(username);
 
     Profile knownProfile = (Profile) baseProfile;
     if (knownProfile.getEmail() != null && knownProfile.getEmail().isValid())

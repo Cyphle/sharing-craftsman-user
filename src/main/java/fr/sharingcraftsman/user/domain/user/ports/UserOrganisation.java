@@ -17,5 +17,5 @@ public interface UserOrganisation {
 
   BaseProfile updateProfile(BaseProfile baseProfile) throws UserException;
 
-  Email findEmailOf(Credentials credentials);
+  Email findEmailOf(Username username);
 }

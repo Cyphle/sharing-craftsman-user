@@ -158,12 +158,11 @@ public class UserService {
     }
 
     try {
-      Credentials credentials = Credentials.build(username, "NOPASSWORD");
-      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(credentials.getUsername());
-      Email email = userOrganisation.findEmailOf(credentials);
+      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(Username.from(username));
+      Email email = userOrganisation.findEmailOf(Username.from(username));
       ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordKey, email);
       return ResponseEntity.ok(changePasswordKeyForLostPassword);
-    } catch (UsernameException | PasswordException | UserException e) {
+    } catch (UsernameException | UserException e) {
       log.warn("Error: " + e.getMessage());
       return ResponseEntity
               .badRequest()
