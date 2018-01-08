@@ -42,8 +42,8 @@ public class AccessTokenAdapter implements AccessTokenRepository {
   }
 
   @Override
-  public BaseToken findTokenFromRefreshToken(Client client, Credentials credentials, AccessToken token) {
-    AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndRefreshToken(credentials.getUsernameContent(), client.getName(), token.getRefreshToken());
+  public BaseToken findTokenFromRefreshToken(Client client, Username username, AccessToken token) {
+    AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndRefreshToken(username.getUsername(), client.getName(), token.getRefreshToken());
 
     if (foundToken == null)
       return new InvalidToken();

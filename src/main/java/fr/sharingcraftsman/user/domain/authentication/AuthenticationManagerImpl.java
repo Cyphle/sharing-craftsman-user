@@ -2,10 +2,11 @@ package fr.sharingcraftsman.user.domain.authentication;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
+import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.*;
-import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
+import fr.sharingcraftsman.user.domain.user.BaseUser;
+import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.exceptions.UnknownUserException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
@@ -32,7 +33,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     BaseUser user = userRepository.findUserFromCredentials(credentials.getEncryptedVersion());
     verifyCollaboratorIsKnown(user);
     accessTokenRepository.deleteTokensOf((User) user, client);
-    return generateToken(credentials, client, (User) user);
+    return generateToken(client, (User) user, credentials.isPersistentLogging());
   }
 
   @Override
@@ -42,29 +43,29 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   }
 
   @Override
-  public void logout(Client client, Credentials credentials, AccessToken token) {
-    if (isTokenValid(client, credentials.getUsername(), token)) {
-      deleteToken(credentials, client);
+  public void logout(Client client, Username username, AccessToken token) {
+    if (isTokenValid(client, username, token)) {
+      deleteToken(username, client);
     }
   }
 
   @Override
-  public boolean isRefreshTokenValid(Client client, Credentials credentials, AccessToken token) {
-    BaseToken foundBaseToken = accessTokenRepository.findTokenFromRefreshToken(client, credentials, token);
+  public boolean isRefreshTokenValid(Client client, Username username, AccessToken token) {
+    BaseToken foundBaseToken = accessTokenRepository.findTokenFromRefreshToken(client, username, token);
     return verifyTokenValidity(foundBaseToken);
   }
 
   @Override
-  public void deleteToken(Client client, Credentials credentials, AccessToken token) {
-    deleteToken(credentials, client);
+  public void deleteToken(Client client, Username username, AccessToken token) {
+    deleteToken(username, client);
   }
 
   @Override
-  public BaseToken createNewToken(Client client, Credentials credentials) throws UserException {
-    BaseUser baseUser = userRepository.findUserFromUsername(credentials.getUsername());
+  public BaseToken createNewToken(Client client, Username username) throws UserException {
+    BaseUser baseUser = userRepository.findUserFromUsername(username);
     verifyCollaboratorIsKnown(baseUser);
     User user = (User) baseUser;
-    return generateToken(credentials, client, user);
+    return generateToken(client, user, false);
   }
 
   private void verifyCollaboratorIsKnown(BaseUser baseUser) throws UnknownUserException {
@@ -72,18 +73,18 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
       throw new UnknownUserException("Unknown collaborator");
   }
 
-  private BaseToken generateToken(Credentials credentials, Client client, User user) {
+  private BaseToken generateToken(Client client, User user, boolean isPersistentLogging) {
     AccessToken token = AccessToken.from(
             generateToken(client.getName() + user.getUsername()),
             generateToken(client.getName() + user.getUsername()),
-            dateService.getDayAt(credentials.isPersistentLogging() ? LONG_VALIDITY_OFFSET : SHORT_VALIDITY_OFFSET)
+            dateService.getDayAt(isPersistentLogging ? LONG_VALIDITY_OFFSET : SHORT_VALIDITY_OFFSET)
     );
 
     return accessTokenRepository.createNewToken(client, user, token);
   }
 
-  private void deleteToken(Credentials credentials, Client client) {
-    User user = (User) userRepository.findUserFromUsername(credentials.getUsername());
+  private void deleteToken(Username username, Client client) {
+    User user = (User) userRepository.findUserFromUsername(username);
     accessTokenRepository.deleteTokensOf(user, client);
   }
 

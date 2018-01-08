@@ -12,11 +12,11 @@ public interface AuthenticationManager {
 
   boolean isTokenValid(Client client, Username username, AccessToken token);
 
-  void logout(Client client, Credentials credentials, AccessToken token);
+  void logout(Client client, Username username, AccessToken token);
 
-  boolean isRefreshTokenValid(Client client, Credentials credentials, AccessToken token);
+  boolean isRefreshTokenValid(Client client, Username username, AccessToken token);
 
-  void deleteToken(Client client, Credentials credentials, AccessToken token);
+  void deleteToken(Client client, Username username, AccessToken token);
 
-  BaseToken createNewToken(Client client, Credentials credentials) throws UserException;
+  BaseToken createNewToken(Client client, Username username) throws UserException;
 }

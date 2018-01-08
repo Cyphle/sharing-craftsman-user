@@ -95,25 +95,25 @@ public class AuthenticationManagerImplTest {
     given(accessTokenRepository.findTokenFromAccessToken(client, credentials.getUsername(), oAuthToken)).willReturn(oAuthToken);
     given(userRepository.findUserFromUsername(credentials.getUsername())).willReturn(user);
 
-    identifier.logout(client, credentials, oAuthToken);
+    identifier.logout(client, credentials.getUsername(), oAuthToken);
 
     verify(accessTokenRepository).deleteTokensOf(user, client);
   }
 
   @Test
   public void should_validate_refresh_token() throws Exception {
-    given(accessTokenRepository.findTokenFromRefreshToken(client, credentials, oAuthToken)).willReturn(oAuthToken);
+    given(accessTokenRepository.findTokenFromRefreshToken(client, credentials.getUsername(), oAuthToken)).willReturn(oAuthToken);
 
-    boolean isValid = identifier.isRefreshTokenValid(client, credentials, oAuthToken);
+    boolean isValid = identifier.isRefreshTokenValid(client, credentials.getUsername(), oAuthToken);
 
     assertThat(isValid).isTrue();
   }
 
   @Test
   public void should_not_validate_refresh_token_if_does_not_exists() throws Exception {
-    given(accessTokenRepository.findTokenFromRefreshToken(client, credentials, oAuthToken)).willReturn(new InvalidToken());
+    given(accessTokenRepository.findTokenFromRefreshToken(client, credentials.getUsername(), oAuthToken)).willReturn(new InvalidToken());
 
-    boolean isValid = identifier.isRefreshTokenValid(client, credentials, oAuthToken);
+    boolean isValid = identifier.isRefreshTokenValid(client, credentials.getUsername(), oAuthToken);
 
     assertThat(isValid).isFalse();
   }
@@ -122,9 +122,9 @@ public class AuthenticationManagerImplTest {
   public void should_not_validate_refresh_token_if_is_expired() throws Exception {
     AccessToken token = AccessToken.fromOnlyRefreshToken("bbb");
     AccessToken fetchedToken = AccessToken.from("aaa", "bbb", LocalDateTime.of(2017, Month.DECEMBER, 10, 12, 0));
-    given(accessTokenRepository.findTokenFromRefreshToken(client, credentials, token)).willReturn(fetchedToken);
+    given(accessTokenRepository.findTokenFromRefreshToken(client, credentials.getUsername(), token)).willReturn(fetchedToken);
 
-    boolean isValid = identifier.isRefreshTokenValid(client, credentials, token);
+    boolean isValid = identifier.isRefreshTokenValid(client, credentials.getUsername(), token);
 
     assertThat(isValid).isFalse();
   }
@@ -136,7 +136,7 @@ public class AuthenticationManagerImplTest {
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(token);
     credentials.setPersistentLogging(true);
 
-    BaseToken expectedBaseToken = identifier.createNewToken(client, credentials);
+    BaseToken expectedBaseToken = identifier.createNewToken(client, credentials.getUsername());
 
     assertThat(expectedBaseToken).isEqualTo(token);
   }

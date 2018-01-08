@@ -113,7 +113,7 @@ public class UserService {
       if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      authenticationManager.logout(Client.from(clientDTO.getName(), ""), credentials, TokenPivot.fromApiToDomain(tokenDTO));
+      authenticationManager.logout(Client.from(clientDTO.getName(), ""), credentials.getUsername(), TokenPivot.fromApiToDomain(tokenDTO));
       userOrganisation.changePassword(credentials, ChangePasswordPivot.fromApiToDomain(changePasswordDTO));
       return ResponseEntity.ok().build();
     } catch (CredentialsException | UserException e) {

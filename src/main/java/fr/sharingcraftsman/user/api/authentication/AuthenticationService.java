@@ -53,7 +53,7 @@ public class AuthenticationService {
       log.info("UserEntity " + loginDTO.getUsername() + " is logging");
       Credentials credentials = LoginPivot.fromApiToDomain(loginDTO);
       Client client = ClientPivot.fromApiToDomain(clientDTO);
-      TokenDTO token = TokenPivot.fromDomainToApi((AccessToken) authenticationManager.login(client, credentials), credentials);
+      TokenDTO token = TokenPivot.fromDomainToApi((AccessToken) authenticationManager.login(client, credentials), credentials.getUsername());
       return ResponseEntity.ok(token);
     } catch (UnknownUserException e) {
       log.warn("Unauthorized user: " + loginDTO.getUsername() + ": " + e.getMessage());
@@ -92,9 +92,8 @@ public class AuthenticationService {
   public ResponseEntity logout(ClientDTO clientDTO, TokenDTO token) {
     try {
       log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
-      Credentials credentials = Credentials.build(token.getUsername(), "NOPASSWORD");
       Client client = Client.from(clientDTO.getName(), "");
-      authenticationManager.logout(client, credentials, TokenPivot.fromApiToDomain(token));
+      authenticationManager.logout(client, Username.from(token.getUsername()), TokenPivot.fromApiToDomain(token));
       return ResponseEntity.ok().build();
     } catch (CredentialsException e) {
       log.warn("Error with log out " + token.getUsername() + ": " + e.getMessage());
@@ -111,11 +110,11 @@ public class AuthenticationService {
     }
 
     try {
-      Credentials credentials = Credentials.build(tokenDTO.getUsername(), "NOPASSWORD");
+      Username username = Username.from(tokenDTO.getUsername());
       Client client = Client.from(clientDTO.getName(), "");
-      if (authenticationManager.isRefreshTokenValid(client, credentials, TokenPivot.fromApiToDomain(tokenDTO))) {
-        authenticationManager.deleteToken(client, credentials, TokenPivot.fromApiToDomain(tokenDTO));
-        TokenDTO token = TokenPivot.fromDomainToApi((AccessToken) authenticationManager.createNewToken(client, credentials), credentials);
+      if (authenticationManager.isRefreshTokenValid(client, username, TokenPivot.fromApiToDomain(tokenDTO))) {
+        authenticationManager.deleteToken(client, username, TokenPivot.fromApiToDomain(tokenDTO));
+        TokenDTO token = TokenPivot.fromDomainToApi((AccessToken) authenticationManager.createNewToken(client, username), username);
         return ResponseEntity.ok(token);
       } else {
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);

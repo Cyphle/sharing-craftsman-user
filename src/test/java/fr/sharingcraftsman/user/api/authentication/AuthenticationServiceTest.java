@@ -121,7 +121,7 @@ public class AuthenticationServiceTest {
     given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(user);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(validToken);
-    given(accessTokenRepository.findTokenFromRefreshToken(any(Client.class), any(Credentials.class), any(AccessToken.class))).willReturn(validToken);
+    given(accessTokenRepository.findTokenFromRefreshToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     TokenDTO refreshToken = new TokenDTO();
     refreshToken.setUsername("john@doe.fr");
