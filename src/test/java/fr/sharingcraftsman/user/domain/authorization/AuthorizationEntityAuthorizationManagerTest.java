@@ -1,6 +1,5 @@
 package fr.sharingcraftsman.user.domain.authorization;
 
-import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
@@ -24,7 +23,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class AuthorizationEntityAuthorizationManagerTest {
   private AuthorizationManager authorizationManager;
-  private Credentials credentials;
+  private Username username;
   @Mock
   private UserAuthorizationRepository userAuthorizationRepository;
   @Mock
@@ -34,15 +33,15 @@ public class AuthorizationEntityAuthorizationManagerTest {
   public void setUp() throws Exception {
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
 
-    credentials = Credentials.build("john@doe.fr", "NOPASSWORD");
+    username = Username.from("john@doe.fr");
   }
 
   @Test
   public void should_get_authorizations_of_collaborator() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(Group.from("USERS")));
+    given(userAuthorizationRepository.findGroupsOf(username)).willReturn(Collections.singletonList(Group.from("USERS")));
     given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
 
-    Authorization authorization = authorizationManager.getAuthorizationsOf(credentials.getUsername());
+    Authorization authorization = authorizationManager.getAuthorizationsOf(username);
 
     Role role = Role.from("ROLE_USER");
     Group group = Group.from("USERS");
@@ -54,16 +53,16 @@ public class AuthorizationEntityAuthorizationManagerTest {
 
   @Test
   public void should_add_given_group_to_collaborator() throws Exception {
-    authorizationManager.addGroup(credentials, Groups.USERS);
+    authorizationManager.addGroup(username, Groups.USERS);
 
-    verify(userAuthorizationRepository).addGroupToCollaborator(credentials.getUsername(), Groups.USERS);
+    verify(userAuthorizationRepository).addGroupToCollaborator(username, Groups.USERS);
   }
 
   @Test
   public void should_not_add_group_if_collaborator_already_has_the_group() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(Group.from("USERS")));
+    given(userAuthorizationRepository.findGroupsOf(username)).willReturn(Collections.singletonList(Group.from("USERS")));
 
-    authorizationManager.addGroup(credentials, Groups.USERS);
+    authorizationManager.addGroup(username, Groups.USERS);
 
     verify(userAuthorizationRepository, never()).addGroupToCollaborator(any(Username.class), any(Groups.class));
   }
@@ -77,18 +76,18 @@ public class AuthorizationEntityAuthorizationManagerTest {
 
   @Test
   public void should_not_remove_group_when_collaborator_does_not_have_it() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(Group.from("ÆDMINS")));
+    given(userAuthorizationRepository.findGroupsOf(username)).willReturn(Collections.singletonList(Group.from("ÆDMINS")));
 
-    authorizationManager.removeGroup(credentials, Groups.USERS);
+    authorizationManager.removeGroup(username, Groups.USERS);
 
     verify(userAuthorizationRepository, never()).removeGroupFromCollaborator(any(Username.class), any(Groups.class));
   }
 
   @Test
   public void should_remove_group_when_collaborator_has_group() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(credentials.getUsername())).willReturn(Collections.singletonList(Group.from("USERS")));
+    given(userAuthorizationRepository.findGroupsOf(username)).willReturn(Collections.singletonList(Group.from("USERS")));
 
-    authorizationManager.removeGroup(credentials, Groups.USERS);
+    authorizationManager.removeGroup(username, Groups.USERS);
 
     verify(userAuthorizationRepository).removeGroupFromCollaborator(any(Username.class), any(Groups.class));
   }

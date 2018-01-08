@@ -138,9 +138,9 @@ public class AdminService {
     try {
       UserForAdmin collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
       company.createCollaborator(collaborator);
-      authorizationManager.addGroup(Credentials.build(user.getUsername(), "NOPASSWORD"), Groups.USERS);
+      authorizationManager.addGroup(Username.from(user.getUsername()), Groups.USERS);
       return ResponseEntity.ok().build();
-    } catch (UserException | UsernameException | PasswordException e) {
+    } catch (UserException | UsernameException e) {
       log.warn("Error:" + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -165,9 +165,9 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      authorizationManager.addGroup(Credentials.build(userGroupDTO.getUsername(), "NOPASSWORD"), Groups.valueOf(userGroupDTO.getGroup()));
+      authorizationManager.addGroup(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
       return ResponseEntity.ok().build();
-    } catch (UsernameException | PasswordException e) {
+    } catch (UsernameException e) {
       log.warn("Error: " + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -182,9 +182,9 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      authorizationManager.removeGroup(Credentials.build(userGroupDTO.getUsername(), "NOPASSWORD"), Groups.valueOf(userGroupDTO.getGroup()));
+      authorizationManager.removeGroup(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
       return ResponseEntity.ok().build();
-    } catch (UsernameException | PasswordException e) {
+    } catch (UsernameException e) {
       log.warn("Error: " + e.getMessage());
       return ResponseEntity
               .badRequest()

@@ -1,7 +1,6 @@
 package fr.sharingcraftsman.user.domain.authorization;
 
 import com.google.common.collect.Lists;
-import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
@@ -30,10 +29,10 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
   }
 
   @Override
-  public void addGroup(Credentials credentials, Groups groupToAdd) {
-    List<Group> groups = userAuthorizationRepository.findGroupsOf(credentials.getUsername());
+  public void addGroup(Username username, Groups groupToAdd) {
+    List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
     if (doesNotAlreadyHaveGroup(groupToAdd, groups)) {
-      userAuthorizationRepository.addGroupToCollaborator(credentials.getUsername(), groupToAdd);
+      userAuthorizationRepository.addGroupToCollaborator(username, groupToAdd);
     }
   }
 
@@ -43,10 +42,10 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
   }
 
   @Override
-  public void removeGroup(Credentials credentials, Groups groupToRemove) {
-    List<Group> groups = userAuthorizationRepository.findGroupsOf(credentials.getUsername());
+  public void removeGroup(Username username, Groups groupToRemove) {
+    List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
     if (hasGivenGroup(groupToRemove, groups)) {
-      userAuthorizationRepository.removeGroupFromCollaborator(credentials.getUsername(), groupToRemove);
+      userAuthorizationRepository.removeGroupFromCollaborator(username, groupToRemove);
     }
   }
 

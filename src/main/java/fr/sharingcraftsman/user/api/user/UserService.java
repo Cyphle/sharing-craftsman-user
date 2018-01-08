@@ -68,7 +68,7 @@ public class UserService {
       Credentials credentials = LoginPivot.fromApiToDomain(loginDTO);
 
       userOrganisation.createNewCollaborator(credentials);
-      authorizationManager.addGroup(credentials, Groups.USERS);
+      authorizationManager.addGroup(credentials.getUsername(), Groups.USERS);
       return ResponseEntity.ok().build();
     } catch (CredentialsException | UserException e) {
       log.warn("Error with registering " + loginDTO.getUsername() + ": " + e.getMessage());
