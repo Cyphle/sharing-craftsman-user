@@ -13,7 +13,7 @@ public interface UserRepository {
 
   void deleteChangePasswordKeyOf(Username username);
 
-  ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey);
+  ChangePasswordToken createChangePasswordKeyFor(ChangePasswordToken changePasswordToken);
 
   void updateUserPassword(User user);
 

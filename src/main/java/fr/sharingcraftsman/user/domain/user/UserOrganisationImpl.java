@@ -35,17 +35,17 @@ public class UserOrganisationImpl implements UserOrganisation {
   }
 
   @Override
-  public ChangePasswordKey createChangePasswordTokenFor(Username username) throws UnknownUserException {
+  public ChangePasswordToken createChangePasswordTokenFor(Username username) throws UnknownUserException {
     if (!collaboratorExists(username))
       throw new UnknownUserException("Unknown collaborator");
 
     userRepository.deleteChangePasswordKeyOf(username);
-    ChangePasswordKey changePasswordKey = ChangePasswordKey.from(
+    ChangePasswordToken changePasswordToken = ChangePasswordToken.from(
             User.from(username),
             crypter.encrypt(username.getUsername()),
             dateService.getDayAt(1)
     );
-    return userRepository.createChangePasswordKeyFor(changePasswordKey);
+    return userRepository.createChangePasswordKeyFor(changePasswordToken);
   }
 
   @Override

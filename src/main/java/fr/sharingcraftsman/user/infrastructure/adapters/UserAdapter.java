@@ -73,13 +73,13 @@ public class UserAdapter implements UserRepository {
   }
 
   @Override
-  public ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey) {
-    UserEntity userEntity = userJpaRepository.findByUsername(changePasswordKey.getUsername());
-    userEntity.setChangePasswordKey(changePasswordKey.getKey());
-    userEntity.setChangePasswordExpirationDate(Date.from(changePasswordKey.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
+  public ChangePasswordToken createChangePasswordKeyFor(ChangePasswordToken changePasswordToken) {
+    UserEntity userEntity = userJpaRepository.findByUsername(changePasswordToken.getUsername());
+    userEntity.setChangePasswordKey(changePasswordToken.getToken());
+    userEntity.setChangePasswordExpirationDate(Date.from(changePasswordToken.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
     userEntity.setLastUpdateDate(dateService.nowInDate());
     userJpaRepository.save(userEntity);
-    return changePasswordKey;
+    return changePasswordToken;
   }
 
   @Override

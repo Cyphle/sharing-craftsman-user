@@ -85,12 +85,12 @@ public class UserEntityAdapterTest {
   public void should_update_user_with_change_password_key() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    ChangePasswordKey changePasswordKey = ChangePasswordKey.from(
+    ChangePasswordToken changePasswordToken = ChangePasswordToken.from(
             User.from("john@doe.fr", "aaa"),
             "aaa",
             LocalDateTime.of(2017, 12, 25, 12, 0)
     );
-    userAdapter.createChangePasswordKeyFor(changePasswordKey);
+    userAdapter.createChangePasswordKeyFor(changePasswordToken);
 
     UserEntity userEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     userEntity.setChangePasswordKey("aaa");

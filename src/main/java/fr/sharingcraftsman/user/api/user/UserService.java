@@ -15,7 +15,6 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Email;
-import fr.sharingcraftsman.user.domain.common.PasswordException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.*;
@@ -90,8 +89,8 @@ public class UserService {
       if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(Username.from(tokenDTO.getUsername()));
-      return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordKey));
+      ChangePasswordToken changePasswordToken = userOrganisation.createChangePasswordTokenFor(Username.from(tokenDTO.getUsername()));
+      return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordToken));
     } catch (UsernameException | UnknownUserException e) {
       log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity
@@ -158,9 +157,9 @@ public class UserService {
     }
 
     try {
-      ChangePasswordKey changePasswordKey = userOrganisation.createChangePasswordTokenFor(Username.from(username));
+      ChangePasswordToken changePasswordToken = userOrganisation.createChangePasswordTokenFor(Username.from(username));
       Email email = userOrganisation.findEmailOf(Username.from(username));
-      ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordKey, email);
+      ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordToken, email);
       return ResponseEntity.ok(changePasswordKeyForLostPassword);
     } catch (UsernameException | UserException e) {
       log.warn("Error: " + e.getMessage());

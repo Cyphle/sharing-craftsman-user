@@ -71,7 +71,7 @@ public class UserOrganisationImplTest {
     userOrganisationImpl.createChangePasswordTokenFor(username);
 
     verify(userRepository).deleteChangePasswordKeyOf(username);
-    verify(userRepository).createChangePasswordKeyFor(any(ChangePasswordKey.class));
+    verify(userRepository).createChangePasswordKeyFor(any(ChangePasswordToken.class));
   }
 
   @Test
