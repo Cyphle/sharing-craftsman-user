@@ -7,6 +7,7 @@ import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.ValidationError;
 import fr.sharingcraftsman.user.domain.user.exceptions.*;
+import fr.sharingcraftsman.user.domain.user.ports.ChangePasswordTokenRepository;
 import fr.sharingcraftsman.user.domain.user.ports.UserOrganisation;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import fr.sharingcraftsman.user.domain.utils.Crypter;
@@ -18,9 +19,11 @@ public class UserOrganisationImpl implements UserOrganisation {
   private static Crypter crypter = CrypterFactory.getCrypter();
   private UserRepository userRepository;
   private DateService dateService;
+  private ChangePasswordTokenRepository changePasswordTokenRepository;
 
-  public UserOrganisationImpl(UserRepository userRepository, DateService dateService) {
+  public UserOrganisationImpl(UserRepository userRepository, ChangePasswordTokenRepository changePasswordTokenRepository, DateService dateService) {
     this.userRepository = userRepository;
+    this.changePasswordTokenRepository = changePasswordTokenRepository;
     this.dateService = dateService;
   }
 
@@ -35,31 +38,33 @@ public class UserOrganisationImpl implements UserOrganisation {
   }
 
   @Override
-  public ChangePasswordToken createChangePasswordTokenFor(Username username) throws UnknownUserException {
+  public ChangePasswordToken createChangePasswordTokenFor(Username username) throws UnknownUserException, CredentialsException {
     if (!collaboratorExists(username))
       throw new UnknownUserException("Unknown collaborator");
 
-    userRepository.deleteChangePasswordKeyOf(username);
+    changePasswordTokenRepository.deleteChangePasswordKeyOf(username);
     ChangePasswordToken changePasswordToken = ChangePasswordToken.from(
             User.from(username),
             crypter.encrypt(username.getUsername()),
             dateService.getDayAt(1)
     );
-    return userRepository.createChangePasswordKeyFor(changePasswordToken);
+    return changePasswordTokenRepository.createChangePasswordKeyFor(changePasswordToken);
   }
 
   @Override
-  public void changePassword(Credentials credentials, ChangePassword changePassword) throws UserException {
-    BaseUser baseUser = userRepository.findUserFromCredentials(credentials.getEncryptedVersion());
+  public void changePassword(Username username, ChangePasswordInfo changePasswordInfo) throws UserException, CredentialsException {
+    Credentials userCredentials = Credentials.buildWithEncryption(username, changePasswordInfo.getOldPassword());
+    BaseUser baseUser = userRepository.findUserFromCredentials(userCredentials);
 
     if (!baseUser.isKnown())
       throw new UnknownUserException("Unknown collaborator");
 
-    checkChangePasswordKeyValidity(changePassword, (User) baseUser);
+    ChangePasswordToken token = changePasswordTokenRepository.findByUsername(username);
+    checkChangePasswordKeyValidity(changePasswordInfo, token);
 
-    ((User) baseUser).setPassword(changePassword.getNewPassword().getEncryptedVersion());
+    ((User) baseUser).setPassword(changePasswordInfo.getNewPassword().getEncryptedVersion());
     userRepository.updateUserPassword((User) baseUser);
-    userRepository.deleteChangePasswordKeyOf(credentials.getUsername());
+    changePasswordTokenRepository.deleteChangePasswordKeyOf(username);
   }
 
   @Override
@@ -92,9 +97,9 @@ public class UserOrganisationImpl implements UserOrganisation {
     return Email.from("");
   }
 
-  private void checkChangePasswordKeyValidity(ChangePassword changePassword, User person) throws InvalidChangePasswordKeyException {
-    if (!changePassword.getChangePasswordKey().equals(person.getChangePasswordKey()) || person.getChangePasswordKeyExpirationDate().isBefore(dateService.now()))
-      throw new InvalidChangePasswordKeyException("Invalid token to change password");
+  private void checkChangePasswordKeyValidity(ChangePasswordInfo changePasswordInfo, ChangePasswordToken token) throws InvalidChangePasswordTokenException {
+    if (!changePasswordInfo.getChangePasswordKey().equals(token.getToken()) || token.getExpirationDate().isBefore(dateService.now()))
+      throw new InvalidChangePasswordTokenException("Invalid token to change password");
   }
 
   private boolean collaboratorExists(Username username) {

@@ -18,8 +18,6 @@ public class AdminCollaboratorPivot {
             user.getWebsite(),
             user.getGithub(),
             user.getLinkedin(),
-            user.getChangePasswordKey(),
-            fromLongToLocalDateTime(user.getChangePasswordKeyExpirationDate()),
             user.isActive(),
             fromLongToLocalDateTime(user.getCreationDate()),
             fromLongToLocalDateTime(user.getLastUpdateDate())

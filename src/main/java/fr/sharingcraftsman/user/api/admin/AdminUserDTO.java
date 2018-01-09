@@ -13,6 +13,7 @@ public class AdminUserDTO {
   private String website;
   private String github;
   private String linkedin;
+  private boolean active;
   private String changePasswordKey = "";
   private long changePasswordKeyExpirationDate;
   private AuthorizationsDTO authorizations;
@@ -23,7 +24,18 @@ public class AdminUserDTO {
   public AdminUserDTO() {
   }
 
-  public AdminUserDTO(String username, String firstname, String lastname, String email, String website, String github, String linkedin, AuthorizationsDTO authorizations, boolean isActive, long creationDate, long lastUpdateDate) {
+  public AdminUserDTO(
+          String username,
+          String firstname,
+          String lastname,
+          String email,
+          String website,
+          String github,
+          String linkedin,
+          AuthorizationsDTO authorizations,
+          boolean isActive,
+          long creationDate,
+          long lastUpdateDate) {
     this.username = username;
     this.firstname = firstname;
     this.lastname = lastname;
@@ -37,7 +49,7 @@ public class AdminUserDTO {
     this.lastUpdateDate = lastUpdateDate;
   }
 
-  public AdminUserDTO(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, long changePasswordKeyExpirationDate, boolean active, long creationDate, long lastUpdateDate) {
+  public AdminUserDTO(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean active, long creationDate, long lastUpdateDate) {
     this.username = username;
     this.password = password;
     this.firstname = firstname;
@@ -46,9 +58,7 @@ public class AdminUserDTO {
     this.website = website;
     this.github = github;
     this.linkedin = linkedin;
-    this.changePasswordKey = changePasswordKey;
-    this.changePasswordKeyExpirationDate = changePasswordKeyExpirationDate;
-    this.isActive = active;
+    this.active = active;
     this.creationDate = creationDate;
     this.lastUpdateDate = lastUpdateDate;
   }

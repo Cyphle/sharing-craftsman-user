@@ -16,24 +16,14 @@ import java.time.LocalDateTime;
 public class User extends BaseUser {
   private Username username;
   private Password password;
-  private String changePasswordKey;
-  private LocalDateTime changePasswordKeyExpirationDate;
 
   private User(Username username) {
     this.username = username;
-    this.changePasswordKey = "";
   }
 
   private User(Username username, Password password) {
     this.username = username;
     this.password = password;
-    changePasswordKey = "";
-  }
-
-  private User(Username username, Password password, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate) {
-    this(username, password);
-    this.changePasswordKey = changePasswordKey;
-    this.changePasswordKeyExpirationDate = changePasswordKeyExpirationDate;
   }
 
   public String getUsername() {
@@ -46,14 +36,6 @@ public class User extends BaseUser {
 
   public void setPassword(Password password) {
     this.password = password;
-  }
-
-  public String getChangePasswordKey() {
-    return changePasswordKey;
-  }
-
-  public LocalDateTime getChangePasswordKeyExpirationDate() {
-    return changePasswordKeyExpirationDate;
   }
 
   @Override
@@ -73,10 +55,5 @@ public class User extends BaseUser {
 
   public static User from(String username, String password) throws UsernameException, PasswordException {
     return new User(Username.from(username), Password.from(password));
-  }
-
-  // TODO To delete changepasswordkey and changepasswordkeyexpierationdate
-  public static User from(Username username, Password password, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate) {
-    return new User(username, password, changePasswordKey, changePasswordKeyExpirationDate);
   }
 }

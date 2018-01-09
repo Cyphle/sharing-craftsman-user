@@ -48,6 +48,10 @@ public class Credentials {
     return new Credentials(Username.from(username), Password.from(password).getEncryptedVersion(), false);
   }
 
+  public static Credentials buildWithEncryption(Username username, Password password) {
+    return new Credentials(username, password.getEncryptedVersion(), false);
+  }
+
   public static Credentials build(String username, String password) throws UsernameException, PasswordException {
     return new Credentials(Username.from(username), Password.from(password), false);
   }

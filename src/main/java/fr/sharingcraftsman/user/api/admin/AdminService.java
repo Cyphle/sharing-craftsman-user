@@ -11,7 +11,6 @@ import fr.sharingcraftsman.user.domain.admin.AdministrationImpl;
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.ports.Administration;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
-import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.authorization.Authorization;
 import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
@@ -23,7 +22,6 @@ import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepo
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.ports.ClientOrganisation;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
-import fr.sharingcraftsman.user.domain.common.PasswordException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
@@ -75,8 +73,6 @@ public class AdminService {
                     collaborator.getWebsite(),
                     collaborator.getGithub(),
                     collaborator.getLinkedin(),
-                    collaborator.getChangePasswordKey(),
-                    collaborator.getChangePasswordKeyExpirationDate(),
                     collaborator.isActive(),
                     collaborator.getCreationDate(),
                     collaborator.getLastUpdateDate()

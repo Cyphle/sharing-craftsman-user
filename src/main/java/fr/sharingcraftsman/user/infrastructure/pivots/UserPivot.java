@@ -7,8 +7,6 @@ import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,14 +16,7 @@ public class UserPivot {
   }
 
   public static User fromInfraToDomain(UserEntity userEntity) throws CredentialsException {
-    String changePasswordKey = userEntity.getChangePasswordKey() != null ? userEntity.getChangePasswordKey() : "";
-    LocalDateTime changePasswordKeyExpirationDate = userEntity.getChangePasswordExpirationDate() != null ? LocalDateTime.ofInstant(userEntity.getChangePasswordExpirationDate().toInstant(), ZoneId.systemDefault()) : null;
-
-    return User.from(
-            Username.from(userEntity.getUsername()),
-            userEntity.getPassword() != null ? Password.from(userEntity.getPassword()) : null,
-            changePasswordKey,
-            changePasswordKeyExpirationDate);
+    return User.from(userEntity.getUsername(), userEntity.getPassword());
   }
 
   public static UserEntity fromDomainToInfra(UserForAdmin collaborator) {
@@ -51,8 +42,6 @@ public class UserPivot {
                     user.getWebsite(),
                     user.getGithub(),
                     user.getLinkedin(),
-                    user.getChangePasswordKey(),
-                    user.getChangePasswordExpirationDate(),
                     user.isActive(),
                     user.getCreationDate(),
                     user.getLastUpdateDate()
@@ -70,8 +59,6 @@ public class UserPivot {
             userEntity.getWebsite(),
             userEntity.getGithub(),
             userEntity.getLinkedin(),
-            userEntity.getChangePasswordKey(),
-            userEntity.getChangePasswordExpirationDate(),
             userEntity.isActive(),
             userEntity.getCreationDate(),
             userEntity.getLastUpdateDate());

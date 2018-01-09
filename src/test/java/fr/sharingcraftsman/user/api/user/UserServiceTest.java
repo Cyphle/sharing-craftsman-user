@@ -16,6 +16,7 @@ import fr.sharingcraftsman.user.domain.user.ChangePasswordToken;
 import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.UnknownUser;
 import fr.sharingcraftsman.user.domain.user.User;
+import fr.sharingcraftsman.user.domain.user.ports.ChangePasswordTokenRepository;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserEntityServiceTest {
+public class UserServiceTest {
   @Mock
   private UserRepository userRepository;
   @Mock
@@ -50,6 +51,8 @@ public class UserEntityServiceTest {
   private UserAuthorizationRepository userAuthorizationRepository;
   @Mock
   private AuthorizationRepository authorizationRepository;
+  @Mock
+  private ChangePasswordTokenRepository changePasswordTokenRepository;
 
   private UserService userService;
   private ClientDTO clientDTO;
@@ -62,7 +65,7 @@ public class UserEntityServiceTest {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 27, 12, 0));
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "clietnsercret"));
-    userService = new UserService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService);
+    userService = new UserService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, changePasswordTokenRepository, dateService);
     clientDTO = new ClientDTO("secret", "clientsecret");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     tokenDTO = new TokenDTO("john@doe.fr", "aaa");
@@ -129,13 +132,13 @@ public class UserEntityServiceTest {
     User user = User.from("john@doe.fr", "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     ChangePasswordToken key = ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
-    given(userRepository.createChangePasswordKeyFor(any(ChangePasswordToken.class))).willReturn(key);
+    given(changePasswordTokenRepository.createChangePasswordKeyFor(any(ChangePasswordToken.class))).willReturn(key);
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(new ChangePasswordKeyDTO("aaa"));
+    assertThat(response.getBody()).isEqualTo(new ChangePasswordTokenDTO("aaa"));
   }
 
   @Test
@@ -151,8 +154,9 @@ public class UserEntityServiceTest {
   @Test
   public void should_change_password_when_sending_new_password() throws Exception {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
-    User user = User.from(Username.from("john@doe.fr"), Password.from("T49xWf/l7gatvfVwethwDw=="), "aaa", LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
+    User user = User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
+    given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2018, Month.MARCH, 10, 0, 0)));
 
     ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
     changePasswordDTO.setOldPassword("password");
@@ -183,7 +187,7 @@ public class UserEntityServiceTest {
     User user = User.from("john@doe.fr", "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     ChangePasswordToken key = ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
-    given(userRepository.createChangePasswordKeyFor(any(ChangePasswordToken.class))).willReturn(key);
+    given(changePasswordTokenRepository.createChangePasswordKeyFor(any(ChangePasswordToken.class))).willReturn(key);
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
 
     ResponseEntity response = userService.generateLostPasswordKey(clientDTO, "john@doe.fr");

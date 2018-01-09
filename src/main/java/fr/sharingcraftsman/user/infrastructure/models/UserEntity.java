@@ -36,10 +36,6 @@ public class UserEntity {
   private Date creationDate;
   @Column(name = "last_update_date")
   private Date lastUpdateDate;
-  @Column(name = "change_password_key")
-  private String changePasswordKey;
-  @Column(name = "change_password_expiration_date")
-  private Date changePasswordExpirationDate;
 
   public UserEntity() { }
 
@@ -157,22 +153,6 @@ public class UserEntity {
 
   public void setLastUpdateDate(Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
-  }
-
-  public String getChangePasswordKey() {
-    return changePasswordKey;
-  }
-
-  public void setChangePasswordKey(String changePasswordKey) {
-    this.changePasswordKey = changePasswordKey;
-  }
-
-  public Date getChangePasswordExpirationDate() {
-    return changePasswordExpirationDate;
-  }
-
-  public void setChangePasswordExpirationDate(Date changePasswordExpirationDate) {
-    this.changePasswordExpirationDate = changePasswordExpirationDate;
   }
 
   public void updateFromProfile(UserEntity userEntity) {

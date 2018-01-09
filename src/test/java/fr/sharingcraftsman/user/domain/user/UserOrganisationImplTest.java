@@ -2,8 +2,12 @@ package fr.sharingcraftsman.user.domain.user;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.common.*;
+import fr.sharingcraftsman.user.domain.common.Email;
+import fr.sharingcraftsman.user.domain.common.Link;
+import fr.sharingcraftsman.user.domain.common.Name;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
+import fr.sharingcraftsman.user.domain.user.ports.ChangePasswordTokenRepository;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,9 +27,11 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class UserOrganisationImplTest {
   @Mock
-  UserRepository userRepository;
+  private UserRepository userRepository;
   @Mock
-  DateService dateService;
+  private DateService dateService;
+  @Mock
+  private ChangePasswordTokenRepository changePasswordTokenRepository;
 
   private Credentials credentials;
   private UserOrganisationImpl userOrganisationImpl;
@@ -34,7 +40,7 @@ public class UserOrganisationImplTest {
   public void setUp() throws Exception {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
-    userOrganisationImpl = new UserOrganisationImpl(userRepository, dateService);
+    userOrganisationImpl = new UserOrganisationImpl(userRepository, changePasswordTokenRepository, dateService);
   }
 
   @Test
@@ -70,8 +76,8 @@ public class UserOrganisationImplTest {
 
     userOrganisationImpl.createChangePasswordTokenFor(username);
 
-    verify(userRepository).deleteChangePasswordKeyOf(username);
-    verify(userRepository).createChangePasswordKeyFor(any(ChangePasswordToken.class));
+    verify(changePasswordTokenRepository).deleteChangePasswordKeyOf(username);
+    verify(changePasswordTokenRepository).createChangePasswordKeyFor(any(ChangePasswordToken.class));
   }
 
   @Test
@@ -90,21 +96,19 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_change_password_with_new_password() throws Exception {
-    User user = User.from(
-            Username.from("john@doe.fr"),
-            Password.from("T49xWf/l7gatvfVwethwDw=="),
-            "aaa",
-            LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
+    User user = User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
+    given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(
+            ChangePasswordToken.from(user,
+                    "aaa",
+                    LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0)
+            )
+    );
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
-    ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
+    ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
-    userOrganisationImpl.changePassword(credentials, changePassword);
+    userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
 
-    User updatedUser = User.from(
-            Username.from("john@doe.fr"),
-            Password.from("hXYHz1OSnuod1SuvLcgD4A=="),
-            "aaa",
-            LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0));
+    User updatedUser = User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A==");
     verify(userRepository).updateUserPassword(updatedUser);
   }
 
@@ -112,9 +116,9 @@ public class UserOrganisationImplTest {
   public void should_throw_unknown_collaborator_exception_if_collaborator_is_not_known() throws Exception {
     try {
       given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(new UnknownUser());
-      ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
+      ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
-      userOrganisationImpl.changePassword(credentials, changePassword);
+      userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
       fail("Should throw unkown collaborator exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
@@ -125,9 +129,11 @@ public class UserOrganisationImplTest {
   public void should_throw_invalid_change_password_key_exception_if_key_is_not_valid() throws Exception {
     try {
       given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(User.from(credentials));
-      ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
+      User user = User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A==");
+      given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(ChangePasswordToken.from(user, "bbb", LocalDateTime.of(2019, Month.MARCH, 10, 0, 0)));
+      ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
-      userOrganisationImpl.changePassword(credentials, changePassword);
+      userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
       fail("Should throw invalid change password key exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");
@@ -137,15 +143,17 @@ public class UserOrganisationImplTest {
   @Test
   public void should_throw_invalid_change_password_key_exception_if_key_is_expired() throws Exception {
     try {
-      User user = User.from(
-              Username.from("john@doe.fr"),
-              Password.from("hXYHz1OSnuod1SuvLcgD4A=="),
-              "aaa",
-              LocalDateTime.of(2017, 12, 10, 12, 0));
+      User user = User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A==");
       given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
-      ChangePassword changePassword = ChangePassword.from("aaa", "password", "newpassword");
+      given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(
+              ChangePasswordToken.from(user,
+                      "aaa",
+                      LocalDateTime.of(2017, 12, 10, 12, 0)
+              )
+      );
+      ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
-      userOrganisationImpl.changePassword(credentials, changePassword);
+      userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
       fail("Should throw invalid change password key exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");

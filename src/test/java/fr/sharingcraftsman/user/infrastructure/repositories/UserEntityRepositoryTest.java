@@ -53,20 +53,4 @@ public class UserEntityRepositoryTest {
     expectedUserEntity.setId(2);
     assertThat(userJpaRepository.findByUsername("hello@world.fr")).isEqualTo(expectedUserEntity);
   }
-
-  @Test
-  public void should_delete_change_password_token_for_user() throws Exception {
-    UserEntity userEntity = new UserEntity("hello@world.com", "password");
-    userEntity.setChangePasswordKey("aaa");
-    userEntity.setChangePasswordExpirationDate(new Date());
-    entityManager.persist(userEntity);
-
-    userEntity.setChangePasswordKey("");
-    userEntity.setChangePasswordExpirationDate(null);
-    userJpaRepository.save(userEntity);
-    UserEntity foundUserEntity = userJpaRepository.findByUsername("hello@world.com");
-
-    assertThat(foundUserEntity.getChangePasswordKey()).isEmpty();
-    assertThat(foundUserEntity.getChangePasswordExpirationDate()).isNull();
-  }
 }

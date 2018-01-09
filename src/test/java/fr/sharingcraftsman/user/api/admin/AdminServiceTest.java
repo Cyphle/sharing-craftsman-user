@@ -5,7 +5,6 @@ import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.exceptions.UnknownBaseUserForAdminCollaborator;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
-import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
@@ -49,7 +48,6 @@ public class AdminServiceTest {
   private AdminService adminService;
 
   private ClientDTO clientDTO;
-  private AccessToken validToken;
   private TokenDTO tokenDTO;
   private AdminUserDTO user;
   private AdminUserDTO adminUser;
@@ -74,7 +72,6 @@ public class AdminServiceTest {
     adminUser.setPassword("password");
 
     clientDTO = new ClientDTO("client", "secret");
-    validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
 
     tokenDTO = new TokenDTO();
     tokenDTO.setUsername("admin@toto.fr");
@@ -86,8 +83,8 @@ public class AdminServiceTest {
   @Test
   public void should_get_list_of_users_with_profile_and_authorizations() throws Exception {
     List<UserForAdmin> collaborators = Arrays.asList(
-            UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date()),
-            UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", "", null, true, new Date(), new Date())
+            UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date()),
+            UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date())
     );
     given(userForAdminRepository.getAllCollaborators()).willReturn(collaborators);
     given(userAuthorizationRepository.findGroupsOf(Username.from("john@doe.fr"))).willReturn(Collections.singletonList(Group.from("USERS")));
@@ -138,7 +135,7 @@ public class AdminServiceTest {
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
     given(userForAdminRepository.findAdminCollaboratorFromUsername(Username.from("john@doe.fr"))).willReturn(
-            UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date())
+            UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date())
     );
 
     GroupDTO group = new GroupDTO("USERS");
@@ -149,7 +146,7 @@ public class AdminServiceTest {
     userToUpdate.setPassword("password");
     adminService.updateUser(clientDTO, tokenDTO, userToUpdate);
 
-    UserForAdmin updatedUser = UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
+    UserForAdmin updatedUser = UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date());
     verify(userForAdminRepository).updateCollaborator(updatedUser);
   }
 
@@ -161,7 +158,7 @@ public class AdminServiceTest {
 
     adminService.addUser(clientDTO, tokenDTO, user);
 
-    UserForAdmin newCollaborator = UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "", null, true, new Date(), new Date());
+    UserForAdmin newCollaborator = UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date());
     verify(userForAdminRepository).createCollaborator(newCollaborator);
   }
 

@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.domain.admin;
 
 import fr.sharingcraftsman.user.domain.common.*;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
@@ -18,13 +19,11 @@ public class UserForAdmin extends BaseUserForAdmin {
   private Link website;
   private Link github;
   private Link linkedin;
-  private String changePasswordKey;
-  private LocalDateTime changePasswordKeyExpirationDate;
   private boolean isActive;
   private LocalDateTime creationDate;
   private LocalDateTime lastUpdateDate;
 
-  private UserForAdmin(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, Date changePasswordExpirationDate, boolean active, Date creationDate, Date lastUpdateDate) {
+  private UserForAdmin(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean active, Date creationDate, Date lastUpdateDate) {
     this.username = new Username(username);
     this.password = new Password(password);
     this.firstname = Name.of(firstname);
@@ -33,14 +32,12 @@ public class UserForAdmin extends BaseUserForAdmin {
     this.website = Link.to(website);
     this.github = Link.to(github);
     this.linkedin = Link.to(linkedin);
-    this.changePasswordKey = changePasswordKey;
-    this.changePasswordKeyExpirationDate = changePasswordExpirationDate != null ? fromDateToLocalDatetime(changePasswordExpirationDate) : null;
     this.isActive = active;
     this.creationDate = fromDateToLocalDatetime(creationDate);
     this.lastUpdateDate = fromDateToLocalDatetime(lastUpdateDate);
   }
 
-  public UserForAdmin(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, LocalDateTime changePasswordKeyExpirationDate, boolean isActive, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
+  public UserForAdmin(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
     this.username = new Username(username);
     this.password = new Password(password);
     this.firstname = Name.of(firstname);
@@ -49,9 +46,6 @@ public class UserForAdmin extends BaseUserForAdmin {
     this.website = Link.to(website);
     this.github = Link.to(github);
     this.linkedin = Link.to(linkedin);
-    this.changePasswordKey = changePasswordKey;
-    this.changePasswordKey = changePasswordKey;
-    this.changePasswordKeyExpirationDate = changePasswordKeyExpirationDate;
     this.isActive = isActive;
     this.creationDate = creationDate;
     this.lastUpdateDate = lastUpdateDate;
@@ -91,14 +85,6 @@ public class UserForAdmin extends BaseUserForAdmin {
     return linkedin.getLink();
   }
 
-  public String getChangePasswordKey() {
-    return changePasswordKey;
-  }
-
-  public long getChangePasswordKeyExpirationDate() {
-    return changePasswordKeyExpirationDate != null ? fromLocalDatetimeToLong(changePasswordKeyExpirationDate) : 0;
-  }
-
   public boolean isActive() {
     return isActive;
   }
@@ -127,12 +113,12 @@ public class UserForAdmin extends BaseUserForAdmin {
     return true;
   }
 
-  public static UserForAdmin from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, Date changePasswordExpirationDate, boolean active, Date creationDate, Date lastUpdateDate) {
-    return new UserForAdmin(username, password, firstname, lastname, email, website, github, linkedin, changePasswordKey, changePasswordExpirationDate, active, creationDate, lastUpdateDate);
+  public static UserForAdmin from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean active, Date creationDate, Date lastUpdateDate) {
+    return new UserForAdmin(username, password, firstname, lastname, email, website, github, linkedin, active, creationDate, lastUpdateDate);
   }
 
-  public static UserForAdmin from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String changePasswordKey, LocalDateTime changePasswordExpirationDate, boolean active, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
-    return new UserForAdmin(username, password, firstname, lastname, email, website, github, linkedin, changePasswordKey, changePasswordExpirationDate, active, creationDate, lastUpdateDate);
+  public static UserForAdmin from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean active, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
+    return new UserForAdmin(username, password, firstname, lastname, email, website, github, linkedin, active, creationDate, lastUpdateDate);
   }
 
   private long fromLocalDatetimeToLong(LocalDateTime localDateTime) {
@@ -159,8 +145,7 @@ public class UserForAdmin extends BaseUserForAdmin {
     if (email != null ? !email.equals(that.email) : that.email != null) return false;
     if (website != null ? !website.equals(that.website) : that.website != null) return false;
     if (github != null ? !github.equals(that.github) : that.github != null) return false;
-    if (linkedin != null ? !linkedin.equals(that.linkedin) : that.linkedin != null) return false;
-    return changePasswordKey != null ? changePasswordKey.equals(that.changePasswordKey) : that.changePasswordKey == null;
+    return linkedin != null ? linkedin.equals(that.linkedin) : that.linkedin == null;
   }
 
   @Override
@@ -173,7 +158,6 @@ public class UserForAdmin extends BaseUserForAdmin {
     result = 31 * result + (website != null ? website.hashCode() : 0);
     result = 31 * result + (github != null ? github.hashCode() : 0);
     result = 31 * result + (linkedin != null ? linkedin.hashCode() : 0);
-    result = 31 * result + (changePasswordKey != null ? changePasswordKey.hashCode() : 0);
     result = 31 * result + (isActive ? 1 : 0);
     return result;
   }

@@ -24,6 +24,7 @@ import fr.sharingcraftsman.user.domain.client.ports.ClientOrganisation;
 import fr.sharingcraftsman.user.domain.user.exceptions.ProfileValidationException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UnknownUserException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
+import fr.sharingcraftsman.user.domain.user.ports.ChangePasswordTokenRepository;
 import fr.sharingcraftsman.user.domain.user.ports.UserOrganisation;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
@@ -49,8 +50,9 @@ public class UserService {
           AccessTokenRepository accessTokenRepository,
           UserAuthorizationRepository userAuthorizationRepository,
           AuthorizationRepository authorizationRepository,
+          ChangePasswordTokenRepository changePasswordTokenRepository,
           DateService dateService) {
-    userOrganisation = new UserOrganisationImpl(userRepository, dateService);
+    userOrganisation = new UserOrganisationImpl(userRepository, changePasswordTokenRepository, dateService);
     clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
     authenticationManager = new AuthenticationManagerImpl(userRepository, accessTokenRepository, dateService);
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
@@ -91,7 +93,7 @@ public class UserService {
 
       ChangePasswordToken changePasswordToken = userOrganisation.createChangePasswordTokenFor(Username.from(tokenDTO.getUsername()));
       return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordToken));
-    } catch (UsernameException | UnknownUserException e) {
+    } catch (UnknownUserException | CredentialsException e) {
       log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -107,13 +109,12 @@ public class UserService {
 
     try {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.build(tokenDTO.getUsername(), changePasswordDTO.getOldPassword());
 
       if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      authenticationManager.logout(Client.from(clientDTO.getName(), ""), credentials.getUsername(), TokenPivot.fromApiToDomain(tokenDTO));
-      userOrganisation.changePassword(credentials, ChangePasswordPivot.fromApiToDomain(changePasswordDTO));
+      authenticationManager.logout(Client.from(clientDTO.getName(), ""), Username.from(tokenDTO.getUsername()), TokenPivot.fromApiToDomain(tokenDTO));
+      userOrganisation.changePassword(Username.from(tokenDTO.getUsername()), ChangePasswordPivot.fromApiToDomain(changePasswordDTO));
       return ResponseEntity.ok().build();
     } catch (CredentialsException | UserException e) {
       log.warn("Error with change password: " + e.getMessage());
@@ -159,9 +160,9 @@ public class UserService {
     try {
       ChangePasswordToken changePasswordToken = userOrganisation.createChangePasswordTokenFor(Username.from(username));
       Email email = userOrganisation.findEmailOf(Username.from(username));
-      ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordToken, email);
+      ChangePasswordTokenForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordTokenForLostPasswordDTO(changePasswordToken, email);
       return ResponseEntity.ok(changePasswordKeyForLostPassword);
-    } catch (UsernameException | UserException e) {
+    } catch (UserException | CredentialsException e) {
       log.warn("Error: " + e.getMessage());
       return ResponseEntity
               .badRequest()

@@ -72,32 +72,6 @@ public class UserEntityAdapterTest {
   }
 
   @Test
-  public void should_delete_user_change_password_key() throws Exception {
-    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
-
-    userAdapter.deleteChangePasswordKeyOf(Username.from("john@doe.fr"));
-
-    UserEntity userEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
-    verify(userJpaRepository).save(userEntity);
-  }
-
-  @Test
-  public void should_update_user_with_change_password_key() throws Exception {
-    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
-
-    ChangePasswordToken changePasswordToken = ChangePasswordToken.from(
-            User.from("john@doe.fr", "aaa"),
-            "aaa",
-            LocalDateTime.of(2017, 12, 25, 12, 0)
-    );
-    userAdapter.createChangePasswordKeyFor(changePasswordToken);
-
-    UserEntity userEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
-    userEntity.setChangePasswordKey("aaa");
-    verify(userJpaRepository).save(userEntity);
-  }
-
-  @Test
   public void should_update_user_with_new_password() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
