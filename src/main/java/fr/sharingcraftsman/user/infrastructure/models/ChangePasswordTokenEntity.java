@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "change_password_token")
+@Table(name = "change_password_tokens")
 @ToString
 public class ChangePasswordTokenEntity {
   @Id

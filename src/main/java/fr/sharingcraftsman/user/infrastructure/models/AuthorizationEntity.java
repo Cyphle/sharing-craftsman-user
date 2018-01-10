@@ -6,7 +6,7 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "group_roles_mapping")
+@Table(name = "authorizations")
 @ToString
 @EqualsAndHashCode
 public class AuthorizationEntity {

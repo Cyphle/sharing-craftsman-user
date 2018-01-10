@@ -1,11 +1,11 @@
 databaseChangeLog:
   - changeSet:
-      id: 08-create-user-group-table.yaml
+      id: 08-create-user-authorization-table.yaml
       author: cphamle
       changes:
       - sqlFile:
           encoding: utf8
-          path: ../sql/08-create-user-group-table.sql
+          path: ../sql/08-create-user-authorization-table.sql
           relativeToChangelogFile: true
           splitStatements: true
           stripComments: true
