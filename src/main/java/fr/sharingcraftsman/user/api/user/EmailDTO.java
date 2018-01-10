@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.models;
+package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.domain.common.Email;
 

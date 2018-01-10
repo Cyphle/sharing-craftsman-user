@@ -1,6 +1,5 @@
 package fr.sharingcraftsman.user.api.client;
 
-import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.exceptions.ClientException;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;

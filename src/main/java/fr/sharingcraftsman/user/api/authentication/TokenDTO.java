@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.models;
+package fr.sharingcraftsman.user.api.authentication;
 
 import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;

@@ -1,6 +1,8 @@
 package fr.sharingcraftsman.user.api.user;
 
-import fr.sharingcraftsman.user.api.models.*;
+import fr.sharingcraftsman.user.api.authentication.LoginDTO;
+import fr.sharingcraftsman.user.api.authentication.TokenDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

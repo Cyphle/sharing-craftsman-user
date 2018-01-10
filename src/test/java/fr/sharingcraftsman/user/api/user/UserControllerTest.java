@@ -1,7 +1,9 @@
 package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.models.*;
+import fr.sharingcraftsman.user.api.authentication.LoginDTO;
+import fr.sharingcraftsman.user.api.authentication.TokenDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;

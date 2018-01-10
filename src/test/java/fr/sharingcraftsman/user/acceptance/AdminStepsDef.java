@@ -7,7 +7,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.user.acceptance.config.SpringAcceptanceTestConfig;
 import fr.sharingcraftsman.user.acceptance.dsl.*;
-import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.infrastructure.models.AuthorizationEntity;
 import fr.sharingcraftsman.user.infrastructure.models.UserAuthorizationEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.AuthorizationJpaRepository;

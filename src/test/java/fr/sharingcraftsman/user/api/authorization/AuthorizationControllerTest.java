@@ -1,9 +1,8 @@
 package fr.sharingcraftsman.user.api.authorization;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.authorization.AuthorizationController;
-import fr.sharingcraftsman.user.api.models.*;
-import fr.sharingcraftsman.user.api.authorization.AuthorizationService;
+import fr.sharingcraftsman.user.api.authentication.TokenDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;

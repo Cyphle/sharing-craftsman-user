@@ -1,9 +1,9 @@
 package fr.sharingcraftsman.user.api.authorization;
 
-import fr.sharingcraftsman.user.api.models.*;
+import fr.sharingcraftsman.user.api.authentication.TokenDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
-import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;

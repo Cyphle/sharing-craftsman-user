@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.api.admin;
 
-import fr.sharingcraftsman.user.api.models.AuthorizationsDTO;
+import fr.sharingcraftsman.user.api.authorization.AuthorizationsDTO;
 import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import lombok.ToString;

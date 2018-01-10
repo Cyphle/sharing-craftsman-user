@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.models;
+package fr.sharingcraftsman.user.api.authorization;
 
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;

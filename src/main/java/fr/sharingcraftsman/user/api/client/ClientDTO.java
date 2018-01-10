@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.models;
+package fr.sharingcraftsman.user.api.client;
 
 import fr.sharingcraftsman.user.domain.client.Client;
 

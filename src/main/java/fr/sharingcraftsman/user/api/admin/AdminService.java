@@ -1,9 +1,9 @@
 package fr.sharingcraftsman.user.api.admin;
 
-import fr.sharingcraftsman.user.api.models.AuthorizationsDTO;
-import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.models.GroupDTO;
-import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.api.authorization.AuthorizationsDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.api.authorization.GroupDTO;
+import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.domain.admin.AdministrationImpl;
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.ports.Administration;

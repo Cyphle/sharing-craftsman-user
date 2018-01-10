@@ -1,4 +1,4 @@
-package fr.sharingcraftsman.user.api.models;
+package fr.sharingcraftsman.user.api.authentication;
 
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;

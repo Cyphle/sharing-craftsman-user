@@ -1,6 +1,8 @@
 package fr.sharingcraftsman.user.api.user;
 
-import fr.sharingcraftsman.user.api.models.*;
+import fr.sharingcraftsman.user.api.authentication.LoginDTO;
+import fr.sharingcraftsman.user.api.authentication.TokenDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
@@ -29,8 +31,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZoneId;
-import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

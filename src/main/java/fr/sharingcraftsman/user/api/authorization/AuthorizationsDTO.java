@@ -1,13 +1,11 @@
-package fr.sharingcraftsman.user.api.models;
+package fr.sharingcraftsman.user.api.authorization;
 
 import fr.sharingcraftsman.user.domain.authorization.Authorization;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
