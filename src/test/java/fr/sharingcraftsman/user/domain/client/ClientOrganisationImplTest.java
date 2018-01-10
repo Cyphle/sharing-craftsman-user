@@ -34,7 +34,7 @@ public class ClientOrganisationImplTest {
 
     Client client = Client.from("client", "clientsecret");
 
-    assertThat(clientOrganisationImpl.clientExists(client)).isTrue();
+    assertThat(clientOrganisationImpl.doesClientExist(client)).isTrue();
   }
 
   @Test
@@ -43,7 +43,7 @@ public class ClientOrganisationImplTest {
 
     Client client = Client.from("client", "clientsecret");
 
-    assertThat(clientOrganisationImpl.clientExists(client)).isFalse();
+    assertThat(clientOrganisationImpl.doesClientExist(client)).isFalse();
   }
 
   @Test

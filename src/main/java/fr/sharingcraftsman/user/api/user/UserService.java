@@ -62,29 +62,8 @@ public class UserService {
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
   }
 
-  public ResponseEntity registerUser(ClientDTO clientDTO, LoginDTO loginDTO) {
-    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
-      log.warn("UserEntity " + loginDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
-      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-    }
-
-    try {
-      log.info("UserEntity is registering with username:" + loginDTO.getUsername());
-      Credentials credentials = LoginDTO.fromApiToDomain(loginDTO);
-
-      userOrganisation.createNewCollaborator(credentials);
-      authorizationManager.addGroup(credentials.getUsername(), Groups.USERS);
-      return ResponseEntity.ok().build();
-    } catch (CredentialsException | UserException e) {
-      log.warn("Error with registering " + loginDTO.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
-    }
-  }
-
   public ResponseEntity requestChangePassword(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
+    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to request for change password with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
@@ -106,7 +85,7 @@ public class UserService {
   }
 
   public ResponseEntity changePassword(ClientDTO clientDTO, TokenDTO tokenDTO, ChangePasswordDTO changePasswordDTO) {
-    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
+    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to change password with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
@@ -128,8 +107,48 @@ public class UserService {
     }
   }
 
+  public ResponseEntity registerUser(ClientDTO clientDTO, LoginDTO loginDTO) {
+    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
+      log.warn("UserEntity " + loginDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
+      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+    }
+
+    try {
+      log.info("UserEntity is registering with username:" + loginDTO.getUsername());
+      Credentials credentials = LoginDTO.fromApiToDomain(loginDTO);
+
+      userOrganisation.createNewCollaborator(credentials);
+      authorizationManager.addGroup(credentials.getUsername(), Groups.USERS);
+      return ResponseEntity.ok().build();
+    } catch (CredentialsException | UserException e) {
+      log.warn("Error with registering " + loginDTO.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
+  public ResponseEntity generateLostPasswordToken(ClientDTO clientDTO, String username) {
+    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
+      log.warn("Un authorized client:" + clientDTO.getName());
+      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+    }
+
+    try {
+      ChangePasswordToken changePasswordToken = userOrganisation.createChangePasswordTokenFor(Username.from(username));
+      Email email = userOrganisation.findEmailOf(Username.from(username));
+      ChangePasswordTokenForLostPasswordDTO changePasswordTokenForLostPassword = new ChangePasswordTokenForLostPasswordDTO(changePasswordToken, email);
+      return ResponseEntity.ok(changePasswordTokenForLostPassword);
+    } catch (UserException | CredentialsException e) {
+      log.warn("Error: " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
   public ResponseEntity updateProfile(ClientDTO clientDTO, TokenDTO tokenDTO, ProfileDTO profileDTO) {
-    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
+    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to change profile with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
@@ -149,25 +168,6 @@ public class UserService {
               .body(e.getErrors());
     } catch (CredentialsException | UserException e) {
       log.warn("Error with update profile " + tokenDTO.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
-    }
-  }
-
-  public ResponseEntity generateLostPasswordToken(ClientDTO clientDTO, String username) {
-    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
-      log.warn("Un authorized client:" + clientDTO.getName());
-      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-    }
-
-    try {
-      ChangePasswordToken changePasswordToken = userOrganisation.createChangePasswordTokenFor(Username.from(username));
-      Email email = userOrganisation.findEmailOf(Username.from(username));
-      ChangePasswordTokenForLostPasswordDTO changePasswordTokenForLostPassword = new ChangePasswordTokenForLostPasswordDTO(changePasswordToken, email);
-      return ResponseEntity.ok(changePasswordTokenForLostPassword);
-    } catch (UserException | CredentialsException e) {
-      log.warn("Error: " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());

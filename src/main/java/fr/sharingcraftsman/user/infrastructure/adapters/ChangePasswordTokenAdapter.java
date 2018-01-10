@@ -30,16 +30,16 @@ public class ChangePasswordTokenAdapter implements ChangePasswordTokenRepository
   }
 
   @Override
-  public void deleteChangePasswordTokenOf(Username username) {
-    ChangePasswordTokenEntity token = changePasswordTokenRepository.findByUsername(username.getUsername());
-    if (token != null)
-      changePasswordTokenRepository.delete(token);
-  }
-
-  @Override
   public ChangePasswordToken createChangePasswordTokenFor(ChangePasswordToken changePasswordToken) throws CredentialsException {
     ChangePasswordTokenEntity token = ChangePasswordTokenEntity.fromDomainToInfra(changePasswordToken);
     User user = UserEntity.fromInfraToDomain(userRepository.findByUsername(changePasswordToken.getUsername()));
     return ChangePasswordTokenEntity.fromInfraToDomain(user, changePasswordTokenRepository.save(token));
+  }
+
+  @Override
+  public void deleteChangePasswordTokenOf(Username username) {
+    ChangePasswordTokenEntity token = changePasswordTokenRepository.findByUsername(username.getUsername());
+    if (token != null)
+      changePasswordTokenRepository.delete(token);
   }
 }

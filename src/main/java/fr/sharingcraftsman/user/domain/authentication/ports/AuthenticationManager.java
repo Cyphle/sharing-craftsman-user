@@ -10,13 +10,13 @@ import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
 public interface AuthenticationManager {
   AbstractToken login(Client client, Credentials credentials) throws UserException;
 
-  boolean isTokenValid(Client client, Username username, AccessToken token);
-
   void logout(Client client, Username username, AccessToken token);
+
+  boolean isTokenValid(Client client, Username username, AccessToken token);
 
   boolean isRefreshTokenValid(Client client, Username username, AccessToken token);
 
-  void deleteToken(Client client, Username username, AccessToken token);
-
   AbstractToken createNewToken(Client client, Username username) throws UserException;
+
+  void deleteToken(Client client, Username username, AccessToken token);
 }

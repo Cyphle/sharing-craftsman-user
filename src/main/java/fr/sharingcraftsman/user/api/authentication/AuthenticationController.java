@@ -20,19 +20,6 @@ public class AuthenticationController {
     this.authenticationService = authenticationService;
   }
 
-  @ApiOperation(value = "Post log in information", response = TokenDTO.class)
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Response with token containing username, client, access token, refresh token and expiration date"),
-          @ApiResponse(code = 401, message = "Unauthorized")
-  })
-  @RequestMapping(method = RequestMethod.POST, value = "/login")
-  public ResponseEntity logIn(@RequestHeader("client") String client,
-                              @RequestHeader("secret") String secret,
-                              @RequestBody LoginDTO loginDTO) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
-    return authenticationService.login(clientDTO, loginDTO);
-  }
-
   @ApiOperation(value = "Verify token validity", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
@@ -70,11 +57,24 @@ public class AuthenticationController {
   })
   @RequestMapping(method = RequestMethod.GET, value = "/refresh-token")
   public ResponseEntity refreshToken(@RequestHeader("client") String client,
-                               @RequestHeader("secret") String secret,
-                               @RequestHeader("username") String username,
-                               @RequestHeader("refresh-token") String refreshToken) {
+                                     @RequestHeader("secret") String secret,
+                                     @RequestHeader("username") String username,
+                                     @RequestHeader("refresh-token") String refreshToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, "", refreshToken);
     return authenticationService.refreshToken(clientDTO, tokenDTO);
+  }
+
+  @ApiOperation(value = "Post log in information", response = TokenDTO.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Response with token containing username, client, access token, refresh token and expiration date"),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.POST, value = "/login")
+  public ResponseEntity logIn(@RequestHeader("client") String client,
+                              @RequestHeader("secret") String secret,
+                              @RequestBody LoginDTO loginDTO) {
+    ClientDTO clientDTO = new ClientDTO(client, secret);
+    return authenticationService.login(clientDTO, loginDTO);
   }
 }

@@ -10,13 +10,13 @@ import java.util.Set;
 public interface AuthorizationManager {
   Authorization getAuthorizationsOf(Username username);
 
-  void addGroup(Username username, Groups groupToAdd);
-
   Set<Group> getAllRolesWithTheirGroups();
 
-  void removeGroup(Username username, Groups groupToRemove);
-
   void createNewGroupWithRoles(Group group);
+
+  void addGroup(Username username, Groups groupToAdd);
+
+  void removeGroup(Username username, Groups groupToRemove);
 
   void removeRoleFromGroup(Group group);
 }

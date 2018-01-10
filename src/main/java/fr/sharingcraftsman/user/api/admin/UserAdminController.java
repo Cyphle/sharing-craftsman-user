@@ -36,20 +36,20 @@ public class UserAdminController {
     return adminService.getUsers(clientDTO, tokenDTO);
   }
 
-  @ApiOperation(value = "Endpoint to delete a user", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to add user", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.DELETE, value = "/{usernameToDelete}")
-  public ResponseEntity verify(@RequestHeader("client") String client,
-                               @RequestHeader("secret") String secret,
-                               @RequestHeader("username") String username,
-                               @RequestHeader("access-token") String accessToken,
-                               @PathVariable String usernameToDelete) {
+  @RequestMapping(method = RequestMethod.POST)
+  public ResponseEntity addUser(@RequestHeader("client") String client,
+                                @RequestHeader("secret") String secret,
+                                @RequestHeader("username") String username,
+                                @RequestHeader("access-token") String accessToken,
+                                @RequestBody AdminUserDTO user) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.deleteUser(clientDTO, tokenDTO, usernameToDelete);
+    return adminService.addUser(clientDTO, tokenDTO, user);
   }
 
   @ApiOperation(value = "Endpoint to update informations of user", response = ResponseEntity.class)
@@ -68,19 +68,19 @@ public class UserAdminController {
     return adminService.updateUser(clientDTO, tokenDTO, user);
   }
 
-  @ApiOperation(value = "Endpoint to add user", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to delete a user", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.POST)
-  public ResponseEntity addUser(@RequestHeader("client") String client,
-                                @RequestHeader("secret") String secret,
-                                @RequestHeader("username") String username,
-                                @RequestHeader("access-token") String accessToken,
-                                @RequestBody AdminUserDTO user) {
+  @RequestMapping(method = RequestMethod.DELETE, value = "/{usernameToDelete}")
+  public ResponseEntity verify(@RequestHeader("client") String client,
+                               @RequestHeader("secret") String secret,
+                               @RequestHeader("username") String username,
+                               @RequestHeader("access-token") String accessToken,
+                               @PathVariable String usernameToDelete) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.addUser(clientDTO, tokenDTO, user);
+    return adminService.deleteUser(clientDTO, tokenDTO, usernameToDelete);
   }
 }

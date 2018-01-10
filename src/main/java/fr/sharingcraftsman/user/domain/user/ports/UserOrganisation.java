@@ -9,6 +9,8 @@ import fr.sharingcraftsman.user.domain.user.exceptions.UnknownUserException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
 
 public interface UserOrganisation {
+  Email findEmailOf(Username username);
+
   void createNewCollaborator(Credentials credentials) throws UserException, CredentialsException;
 
   ChangePasswordToken createChangePasswordTokenFor(Username username) throws UnknownUserException, CredentialsException;
@@ -16,6 +18,4 @@ public interface UserOrganisation {
   void changePassword(Username username, ChangePasswordInfo changePasswordInfo) throws UserException, CredentialsException;
 
   AbstractProfile updateProfile(AbstractProfile abstractProfile) throws UserException;
-
-  Email findEmailOf(Username username);
 }

@@ -35,12 +35,6 @@ public class UserForAdminAdapter implements UserForAdminRepository {
   }
 
   @Override
-  public void deleteCollaborator(Username username) {
-    UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
-    userJpaRepository.delete(foundUserEntity);
-  }
-
-  @Override
   public AbstractUser findCollaboratorFromUsername(Username username) {
     UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
@@ -52,14 +46,6 @@ public class UserForAdminAdapter implements UserForAdminRepository {
     } catch (CredentialsException e) {
       return new UnknownUser();
     }
-  }
-
-  @Override
-  public void updateCollaborator(UserForAdmin collaborator) {
-    UserEntity foundUserEntity = userJpaRepository.findByUsername(collaborator.getUsernameContent());
-    foundUserEntity.updateFromAdminCollaborator(collaborator);
-    foundUserEntity.setLastUpdateDate(dateService.nowInDate());
-    userJpaRepository.save(foundUserEntity);
   }
 
   @Override
@@ -78,5 +64,19 @@ public class UserForAdminAdapter implements UserForAdminRepository {
     userEntityToCreate.setCreationDate(dateService.nowInDate());
     userEntityToCreate.setLastUpdateDate(dateService.nowInDate());
     userJpaRepository.save(userEntityToCreate);
+  }
+
+  @Override
+  public void updateCollaborator(UserForAdmin collaborator) {
+    UserEntity foundUserEntity = userJpaRepository.findByUsername(collaborator.getUsernameContent());
+    foundUserEntity.updateFromAdminCollaborator(collaborator);
+    foundUserEntity.setLastUpdateDate(dateService.nowInDate());
+    userJpaRepository.save(foundUserEntity);
+  }
+
+  @Override
+  public void deleteCollaborator(Username username) {
+    UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
+    userJpaRepository.delete(foundUserEntity);
   }
 }

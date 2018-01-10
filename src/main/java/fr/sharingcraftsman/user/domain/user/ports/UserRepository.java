@@ -5,15 +5,15 @@ import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.*;
 
 public interface UserRepository {
-  void createNewUser(User user);
-
   AbstractUser findUserFromUsername(Username username);
 
   AbstractUser findUserFromCredentials(Credentials credentials);
 
-  void updateUserPassword(User user);
-
   AbstractProfile findProfileOf(Username username);
+
+  void createNewUser(User user);
+
+  void updateUserPassword(User user);
 
   AbstractProfile updateProfileOf(Profile profileToUpdate);
 }

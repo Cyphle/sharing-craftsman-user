@@ -23,13 +23,13 @@ public class AdministrationImpl implements Administration {
   }
 
   @Override
-  public void deleteCollaborator(Username username) throws UserException {
-    AbstractUser user = userForAdminRepository.findCollaboratorFromUsername(username);
+  public void createCollaborator(UserForAdmin collaborator) throws AlreadyExistingUserException {
+    BaseUserForAdmin foundCollaborator = userForAdminRepository.findAdminCollaboratorFromUsername(collaborator.getUsername());
 
-    if (!user.isKnown())
-      throw new UnknownUserException("Unknown user");
+    if (foundCollaborator.isKnown())
+      throw new AlreadyExistingUserException("User already exists with username: " + collaborator.getUsernameContent());
 
-    userForAdminRepository.deleteCollaborator(username);
+    userForAdminRepository.createCollaborator(collaborator);
   }
 
   @Override
@@ -44,12 +44,12 @@ public class AdministrationImpl implements Administration {
   }
 
   @Override
-  public void createCollaborator(UserForAdmin collaborator) throws AlreadyExistingUserException {
-    BaseUserForAdmin foundCollaborator = userForAdminRepository.findAdminCollaboratorFromUsername(collaborator.getUsername());
+  public void deleteCollaborator(Username username) throws UserException {
+    AbstractUser user = userForAdminRepository.findCollaboratorFromUsername(username);
 
-    if (foundCollaborator.isKnown())
-      throw new AlreadyExistingUserException("User already exists with username: " + collaborator.getUsernameContent());
+    if (!user.isKnown())
+      throw new UnknownUserException("Unknown user");
 
-    userForAdminRepository.createCollaborator(collaborator);
+    userForAdminRepository.deleteCollaborator(username);
   }
 }

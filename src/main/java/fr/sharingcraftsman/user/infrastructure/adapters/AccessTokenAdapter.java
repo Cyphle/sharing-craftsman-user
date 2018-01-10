@@ -20,17 +20,6 @@ public class AccessTokenAdapter implements AccessTokenRepository {
   }
 
   @Override
-  public void deleteTokensOf(User user, Client client) {
-    accessTokenJpaRepository.deleteByUsername(user.getUsername(), client.getName());
-  }
-
-  @Override
-  public AccessToken createNewToken(Client client, User user, AccessToken token) {
-    AccessTokenEntity accessTokenEntity = accessTokenJpaRepository.save(AccessTokenEntity.fromDomainToInfra(user, client, token));
-    return AccessTokenEntity.fromInfraToDomain(accessTokenEntity);
-  }
-
-  @Override
   public AbstractToken findTokenFromAccessToken(Client client, Username username, AccessToken token) {
     AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndAccessToken(username.getUsername(), client.getName(), token.getAccessToken());
 
@@ -48,5 +37,16 @@ public class AccessTokenAdapter implements AccessTokenRepository {
       return new InvalidToken();
 
     return AccessTokenEntity.fromInfraToDomain(foundToken);
+  }
+
+  @Override
+  public AccessToken createNewToken(Client client, User user, AccessToken token) {
+    AccessTokenEntity accessTokenEntity = accessTokenJpaRepository.save(AccessTokenEntity.fromDomainToInfra(user, client, token));
+    return AccessTokenEntity.fromInfraToDomain(accessTokenEntity);
+  }
+
+  @Override
+  public void deleteTokensOf(User user, Client client) {
+    accessTokenJpaRepository.deleteByUsername(user.getUsername(), client.getName());
   }
 }

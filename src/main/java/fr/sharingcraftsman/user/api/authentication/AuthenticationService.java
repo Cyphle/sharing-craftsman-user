@@ -41,7 +41,7 @@ public class AuthenticationService {
   }
 
   public ResponseEntity login(ClientDTO clientDTO, LoginDTO loginDTO) {
-    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
+    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + loginDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
@@ -64,7 +64,7 @@ public class AuthenticationService {
   }
 
   public ResponseEntity checkToken(ClientDTO clientDTO, TokenDTO token) {
-    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
+    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + token.getUsername() + " is trying to check token in with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }
@@ -101,7 +101,7 @@ public class AuthenticationService {
   }
 
   public ResponseEntity refreshToken(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
+    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to refresh token with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }

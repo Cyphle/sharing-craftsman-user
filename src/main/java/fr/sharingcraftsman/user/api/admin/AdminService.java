@@ -87,39 +87,14 @@ public class AdminService {
     return ResponseEntity.ok(users);
   }
 
-  ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
+  public ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    try {
-      company.deleteCollaborator(Username.from(usernameToDelete));
-      return ResponseEntity.ok().build();
-    } catch (UsernameException | UserException e) {
-      log.warn("Error while deleting user " + usernameToDelete + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
-    }
-  }
-
-  ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
-
-    try {
-      UserForAdmin collaborator = AdminUserDTO.fromApiToDomain(user);
-      company.updateCollaborator(collaborator);
-      return ResponseEntity.ok().build();
-    } catch (UserException e) {
-      log.warn("Error while updating user " + user.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
-    }
+    Set<GroupDTO> groups = GroupDTO.groupFromDomainToApi(authorizationManager.getAllRolesWithTheirGroups());
+    return ResponseEntity.ok(groups);
   }
 
   ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
@@ -141,16 +116,6 @@ public class AdminService {
     }
   }
 
-  public ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
-
-    Set<GroupDTO> groups = GroupDTO.groupFromDomainToApi(authorizationManager.getAllRolesWithTheirGroups());
-    return ResponseEntity.ok(groups);
-  }
-
   public ResponseEntity addGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
@@ -162,6 +127,51 @@ public class AdminService {
       return ResponseEntity.ok().build();
     } catch (UsernameException e) {
       log.warn("Error: " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
+  ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    authorizationManager.createNewGroupWithRoles(GroupDTO.fromApiToDomain(groupDTO));
+    return ResponseEntity.ok().build();
+  }
+
+  ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    try {
+      UserForAdmin collaborator = AdminUserDTO.fromApiToDomain(user);
+      company.updateCollaborator(collaborator);
+      return ResponseEntity.ok().build();
+    } catch (UserException e) {
+      log.warn("Error while updating user " + user.getUsername() + ": " + e.getMessage());
+      return ResponseEntity
+              .badRequest()
+              .body(e.getMessage());
+    }
+  }
+
+  ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+
+    try {
+      company.deleteCollaborator(Username.from(usernameToDelete));
+      return ResponseEntity.ok().build();
+    } catch (UsernameException | UserException e) {
+      log.warn("Error while deleting user " + usernameToDelete + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());
@@ -185,16 +195,6 @@ public class AdminService {
     }
   }
 
-  ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
-
-    authorizationManager.createNewGroupWithRoles(GroupDTO.fromApiToDomain(groupDTO));
-    return ResponseEntity.ok().build();
-  }
-
   ResponseEntity removeRoleFromGroup(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
@@ -206,7 +206,7 @@ public class AdminService {
   }
 
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
+    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
       return true;
     }

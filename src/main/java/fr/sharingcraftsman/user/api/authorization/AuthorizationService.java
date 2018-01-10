@@ -48,7 +48,7 @@ public class AuthorizationService {
   }
 
   public ResponseEntity getAuthorizations(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
+    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to see authorizations with unauthorized client: " + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
     }

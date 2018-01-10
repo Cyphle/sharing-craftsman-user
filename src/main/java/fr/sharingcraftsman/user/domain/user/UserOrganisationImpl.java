@@ -28,6 +28,21 @@ public class UserOrganisationImpl implements UserOrganisation {
   }
 
   @Override
+  public Email findEmailOf(Username username) {
+    AbstractProfile abstractProfile = userRepository.findProfileOf(username);
+
+    Profile knownProfile = (Profile) abstractProfile;
+    if (knownProfile.getEmail() != null && knownProfile.getEmail().isValid())
+      return knownProfile.getEmail();
+
+    Email emailFromUsername = Email.from(knownProfile.getUsernameContent());
+    if (emailFromUsername.isValid())
+      return emailFromUsername;
+
+    return Email.from("");
+  }
+
+  @Override
   public void createNewCollaborator(Credentials credentials) throws UserException, CredentialsException {
     if (collaboratorExists(credentials.getUsername()))
       throw new AlreadyExistingUserException("User already exists with username: " + credentials.getUsernameContent());
@@ -80,21 +95,6 @@ public class UserOrganisationImpl implements UserOrganisation {
 
     ((Profile) abstractProfileToUpdate).updateFrom((Profile) abstractProfile);
     return (Profile) userRepository.updateProfileOf((Profile) abstractProfileToUpdate);
-  }
-
-  @Override
-  public Email findEmailOf(Username username) {
-    AbstractProfile abstractProfile = userRepository.findProfileOf(username);
-
-    Profile knownProfile = (Profile) abstractProfile;
-    if (knownProfile.getEmail() != null && knownProfile.getEmail().isValid())
-      return knownProfile.getEmail();
-
-    Email emailFromUsername = Email.from(knownProfile.getUsernameContent());
-    if (emailFromUsername.isValid())
-      return emailFromUsername;
-
-    return Email.from("");
   }
 
   private void checkChangePasswordTokenValidity(ChangePasswordInfo changePasswordInfo, ChangePasswordToken token) throws InvalidChangePasswordTokenException {

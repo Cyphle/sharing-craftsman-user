@@ -24,14 +24,6 @@ public class UserAdapter implements UserRepository {
   }
 
   @Override
-  public void createNewUser(User user) {
-    UserEntity userEntity = UserEntity.fromDomainToInfra(user);
-    userEntity.setCreationDate(dateService.nowInDate());
-    userEntity.setLastUpdateDate(dateService.nowInDate());
-    userJpaRepository.save(userEntity);
-  }
-
-  @Override
   public AbstractUser findUserFromUsername(Username username) {
     UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
@@ -60,14 +52,6 @@ public class UserAdapter implements UserRepository {
   }
 
   @Override
-  public void updateUserPassword(User user) {
-    UserEntity userEntity = userJpaRepository.findByUsername(user.getUsername());
-    userEntity.setPassword(user.getPassword());
-    userEntity.setLastUpdateDate(dateService.nowInDate());
-    userJpaRepository.save(userEntity);
-  }
-
-  @Override
   public AbstractProfile findProfileOf(Username username) {
     UserEntity userEntity = userJpaRepository.findByUsername(username.getUsername());
 
@@ -79,6 +63,22 @@ public class UserAdapter implements UserRepository {
     } catch (UsernameException e) {
       return new UnknownProfile();
     }
+  }
+
+  @Override
+  public void createNewUser(User user) {
+    UserEntity userEntity = UserEntity.fromDomainToInfra(user);
+    userEntity.setCreationDate(dateService.nowInDate());
+    userEntity.setLastUpdateDate(dateService.nowInDate());
+    userJpaRepository.save(userEntity);
+  }
+
+  @Override
+  public void updateUserPassword(User user) {
+    UserEntity userEntity = userJpaRepository.findByUsername(user.getUsername());
+    userEntity.setPassword(user.getPassword());
+    userEntity.setLastUpdateDate(dateService.nowInDate());
+    userJpaRepository.save(userEntity);
   }
 
   @Override

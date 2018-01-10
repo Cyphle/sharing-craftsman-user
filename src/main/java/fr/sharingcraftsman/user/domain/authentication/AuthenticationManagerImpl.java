@@ -37,16 +37,16 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   }
 
   @Override
-  public boolean isTokenValid(Client client, Username username, AccessToken token) {
-    AbstractToken foundAbstractToken = accessTokenRepository.findTokenFromAccessToken(client, username, token);
-    return verifyTokenValidity(foundAbstractToken);
-  }
-
-  @Override
   public void logout(Client client, Username username, AccessToken token) {
     if (isTokenValid(client, username, token)) {
       deleteToken(username, client);
     }
+  }
+
+  @Override
+  public boolean isTokenValid(Client client, Username username, AccessToken token) {
+    AbstractToken foundAbstractToken = accessTokenRepository.findTokenFromAccessToken(client, username, token);
+    return verifyTokenValidity(foundAbstractToken);
   }
 
   @Override
@@ -56,16 +56,16 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   }
 
   @Override
-  public void deleteToken(Client client, Username username, AccessToken token) {
-    deleteToken(username, client);
-  }
-
-  @Override
   public AbstractToken createNewToken(Client client, Username username) throws UserException {
     AbstractUser abstractUser = userRepository.findUserFromUsername(username);
     verifyCollaboratorIsKnown(abstractUser);
     User user = (User) abstractUser;
     return generateToken(client, user, false);
+  }
+
+  @Override
+  public void deleteToken(Client client, Username username, AccessToken token) {
+    deleteToken(username, client);
   }
 
   private void verifyCollaboratorIsKnown(AbstractUser abstractUser) throws UnknownUserException {

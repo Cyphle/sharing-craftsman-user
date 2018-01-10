@@ -11,9 +11,9 @@ import java.util.List;
 public interface Administration {
   List<UserForAdmin> getAllCollaborators();
 
-  void deleteCollaborator(Username username) throws UserException;
+  void createCollaborator(UserForAdmin collaborator) throws AlreadyExistingUserException;
 
   void updateCollaborator(UserForAdmin collaborator) throws UnknownUserException;
 
-  void createCollaborator(UserForAdmin collaborator) throws AlreadyExistingUserException;
+  void deleteCollaborator(Username username) throws UserException;
 }

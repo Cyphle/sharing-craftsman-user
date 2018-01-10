@@ -29,24 +29,8 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
   }
 
   @Override
-  public void addGroup(Username username, Groups groupToAdd) {
-    List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
-    if (doesNotAlreadyHaveGroup(groupToAdd, groups)) {
-      userAuthorizationRepository.addGroupToCollaborator(username, groupToAdd);
-    }
-  }
-
-  @Override
   public Set<Group> getAllRolesWithTheirGroups() {
     return authorizationRepository.getAllRolesWithTheirGroups();
-  }
-
-  @Override
-  public void removeGroup(Username username, Groups groupToRemove) {
-    List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
-    if (hasGivenGroup(groupToRemove, groups)) {
-      userAuthorizationRepository.removeGroupFromCollaborator(username, groupToRemove);
-    }
   }
 
   @Override
@@ -63,6 +47,22 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
             .collect(Collectors.toList());
 
     authorizationRepository.createNewGroupsWithRole(rolesToAdd);
+  }
+
+  @Override
+  public void addGroup(Username username, Groups groupToAdd) {
+    List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
+    if (doesNotAlreadyHaveGroup(groupToAdd, groups)) {
+      userAuthorizationRepository.addGroupToCollaborator(username, groupToAdd);
+    }
+  }
+
+  @Override
+  public void removeGroup(Username username, Groups groupToRemove) {
+    List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
+    if (hasGivenGroup(groupToRemove, groups)) {
+      userAuthorizationRepository.removeGroupFromCollaborator(username, groupToRemove);
+    }
   }
 
   @Override

@@ -16,7 +16,7 @@ public class ClientOrganisationImpl implements ClientOrganisation {
   }
 
   @Override
-  public boolean clientExists(Client client) {
+  public boolean doesClientExist(Client client) {
     return clientRepository.findClient(client).isKnown();
   }
 

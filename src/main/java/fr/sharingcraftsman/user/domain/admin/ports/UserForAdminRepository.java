@@ -10,13 +10,13 @@ import java.util.List;
 public interface UserForAdminRepository {
   List<UserForAdmin> getAllCollaborators();
 
-  void deleteCollaborator(Username username);
-
   AbstractUser findCollaboratorFromUsername(Username username);
-
-  void updateCollaborator(UserForAdmin collaborator);
 
   BaseUserForAdmin findAdminCollaboratorFromUsername(Username username);
 
   void createCollaborator(UserForAdmin collaborator);
+
+  void updateCollaborator(UserForAdmin collaborator);
+
+  void deleteCollaborator(Username username);
 }
