@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
-import fr.sharingcraftsman.user.domain.client.BaseClient;
+import fr.sharingcraftsman.user.domain.client.AbstractClient;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.UnknownClient;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
@@ -19,7 +19,7 @@ public class ClientAdapter implements ClientRepository {
   }
 
   @Override
-  public BaseClient findClient(Client client) {
+  public AbstractClient findClient(Client client) {
     ClientEntity foundClient = clientJpaRepository.findByNameAndSecret(client.getName(), client.getSecret());
 
     if (foundClient == null)
@@ -29,7 +29,7 @@ public class ClientAdapter implements ClientRepository {
   }
 
   @Override
-  public BaseClient findClientByName(Client client) {
+  public AbstractClient findClientByName(Client client) {
     ClientEntity foundClient = clientJpaRepository.findByName(client.getName());
 
     if (foundClient == null)

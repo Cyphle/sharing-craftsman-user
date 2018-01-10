@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @EqualsAndHashCode
 @ToString
-public class Client extends BaseClient {
+public class Client extends AbstractClient {
   private String name;
   private String secret;
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 @EqualsAndHashCode
 @ToString
-public class Profile extends BaseProfile {
+public class Profile extends AbstractProfile {
   private Username username;
   private Name firstname;
   private Name lastname;

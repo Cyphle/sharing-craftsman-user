@@ -21,7 +21,7 @@ import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.user.BaseProfile;
+import fr.sharingcraftsman.user.domain.user.AbstractProfile;
 import fr.sharingcraftsman.user.domain.user.ChangePasswordToken;
 import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.UserOrganisationImpl;
@@ -140,8 +140,8 @@ public class UserService {
       if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      BaseProfile updatedBaseProfile = userOrganisation.updateProfile(ProfileDTO.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
-      return ResponseEntity.ok(ProfileDTO.fromDomainToApi((Profile) updatedBaseProfile));
+      AbstractProfile updatedAbstractProfile = userOrganisation.updateProfile(ProfileDTO.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
+      return ResponseEntity.ok(ProfileDTO.fromDomainToApi((Profile) updatedAbstractProfile));
      } catch (ProfileValidationException e) {
       log.warn("Validation errors with update profile:" + tokenDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity

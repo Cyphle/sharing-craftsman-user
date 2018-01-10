@@ -19,8 +19,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZoneId;
-import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -43,7 +41,7 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_save_user_in_repository() throws Exception {
-    BaseUser collaborator = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
+    AbstractUser collaborator = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
 
     userAdapter.createNewUser((User) collaborator);
 
@@ -57,7 +55,7 @@ public class UserEntityAdapterTest {
   public void should_get_user_by_username() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    BaseUser collaborator = userAdapter.findUserFromUsername(Username.from("john@doe.fr"));
+    AbstractUser collaborator = userAdapter.findUserFromUsername(Username.from("john@doe.fr"));
 
     User expected = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
     assertThat((User) collaborator).isEqualTo(expected);
@@ -67,7 +65,7 @@ public class UserEntityAdapterTest {
   public void should_find_user_by_username_and_password() throws Exception {
     given(userJpaRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    BaseUser collaborator = userAdapter.findUserFromCredentials(Credentials.buildWithEncryption("john@doe.fr", "password"));
+    AbstractUser collaborator = userAdapter.findUserFromCredentials(Credentials.buildWithEncryption("john@doe.fr", "password"));
 
     assertThat((User) collaborator).isEqualTo(User.from(Credentials.buildWithEncryption("john@doe.fr", "password")));
   }
@@ -88,7 +86,7 @@ public class UserEntityAdapterTest {
     UserEntity userEntity = new UserEntity("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
 
-    BaseProfile foundBaseProfile = userAdapter.findProfileOf(Username.from("john@doe.fr"));
+    AbstractProfile foundAbstractProfile = userAdapter.findProfileOf(Username.from("john@doe.fr"));
 
     Profile expectedProfile = Profile.from(
             Username.from("john@doe.fr"),
@@ -98,7 +96,7 @@ public class UserEntityAdapterTest {
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
             Link.to("linkedin.com/johndoe"));
-    assertThat((Profile) foundBaseProfile).isEqualTo(expectedProfile);
+    assertThat((Profile) foundAbstractProfile).isEqualTo(expectedProfile);
     verify(userJpaRepository).findByUsername("john@doe.fr");
   }
 
@@ -116,9 +114,9 @@ public class UserEntityAdapterTest {
             Link.to("github.com/johndoe"),
             Link.to("linkedin.com/johndoe"));
 
-    BaseProfile foundBaseProfile = userAdapter.updateProfileOf(profile);
+    AbstractProfile foundAbstractProfile = userAdapter.updateProfileOf(profile);
 
-    assertThat((Profile) foundBaseProfile).isEqualTo(profile);
+    assertThat((Profile) foundAbstractProfile).isEqualTo(profile);
     verify(userJpaRepository).findByUsername("john@doe.fr");
   }
 }

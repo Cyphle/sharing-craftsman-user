@@ -32,7 +32,7 @@ public class UserAdapter implements UserRepository {
   }
 
   @Override
-  public BaseUser findUserFromUsername(Username username) {
+  public AbstractUser findUserFromUsername(Username username) {
     UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
     if (foundUserEntity == null)
@@ -46,7 +46,7 @@ public class UserAdapter implements UserRepository {
   }
 
   @Override
-  public BaseUser findUserFromCredentials(Credentials credentials) {
+  public AbstractUser findUserFromCredentials(Credentials credentials) {
     UserEntity foundUserEntity = userJpaRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
 
     if (foundUserEntity == null)
@@ -68,7 +68,7 @@ public class UserAdapter implements UserRepository {
   }
 
   @Override
-  public BaseProfile findProfileOf(Username username) {
+  public AbstractProfile findProfileOf(Username username) {
     UserEntity userEntity = userJpaRepository.findByUsername(username.getUsername());
 
     if (userEntity == null)
@@ -82,7 +82,7 @@ public class UserAdapter implements UserRepository {
   }
 
   @Override
-  public BaseProfile updateProfileOf(Profile profileToUpdate) {
+  public AbstractProfile updateProfileOf(Profile profileToUpdate) {
     UserEntity userEntity = userJpaRepository.findByUsername(profileToUpdate.getUsernameContent());
     userEntity.updateFromProfile(UserEntity.fromDomainToInfraProfile(profileToUpdate));
     userEntity.setLastUpdateDate(dateService.nowInDate());

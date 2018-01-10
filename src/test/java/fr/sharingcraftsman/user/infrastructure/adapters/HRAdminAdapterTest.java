@@ -6,7 +6,7 @@ import fr.sharingcraftsman.user.domain.admin.BaseUserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.BaseUser;
+import fr.sharingcraftsman.user.domain.user.AbstractUser;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
@@ -18,7 +18,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -69,7 +68,7 @@ public class HRAdminAdapterTest {
   public void should_get_user_by_username() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    BaseUser collaborator = hrAdminAdapter.findCollaboratorFromUsername(Username.from("john@doe.fr"));
+    AbstractUser collaborator = hrAdminAdapter.findCollaboratorFromUsername(Username.from("john@doe.fr"));
 
     User expected = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
     assertThat((User) collaborator).isEqualTo(expected);

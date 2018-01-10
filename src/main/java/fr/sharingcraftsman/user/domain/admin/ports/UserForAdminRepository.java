@@ -3,7 +3,7 @@ package fr.sharingcraftsman.user.domain.admin.ports;
 import fr.sharingcraftsman.user.domain.admin.BaseUserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.BaseUser;
+import fr.sharingcraftsman.user.domain.user.AbstractUser;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public interface UserForAdminRepository {
 
   void deleteCollaborator(Username username);
 
-  BaseUser findCollaboratorFromUsername(Username username);
+  AbstractUser findCollaboratorFromUsername(Username username);
 
   void updateCollaborator(UserForAdmin collaborator);
 

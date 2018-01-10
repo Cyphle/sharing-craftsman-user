@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {UserApplication.class})
 @DataJpaTest
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class AccessBaseTokenJpaRepositoryTest {
+public class AccessAbstractTokenJpaRepositoryTest {
   @Autowired
   private TestEntityManager entityManager;
 

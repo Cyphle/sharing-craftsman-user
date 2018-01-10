@@ -15,7 +15,7 @@ public interface UserOrganisation {
 
   void changePassword(Username username, ChangePasswordInfo changePasswordInfo) throws UserException, CredentialsException;
 
-  BaseProfile updateProfile(BaseProfile baseProfile) throws UserException;
+  AbstractProfile updateProfile(AbstractProfile abstractProfile) throws UserException;
 
   Email findEmailOf(Username username);
 }

@@ -54,39 +54,39 @@ public class UserOrganisationImpl implements UserOrganisation {
   @Override
   public void changePassword(Username username, ChangePasswordInfo changePasswordInfo) throws UserException, CredentialsException {
     Credentials userCredentials = Credentials.buildWithEncryption(username, changePasswordInfo.getOldPassword());
-    BaseUser baseUser = userRepository.findUserFromCredentials(userCredentials);
+    AbstractUser abstractUser = userRepository.findUserFromCredentials(userCredentials);
 
-    if (!baseUser.isKnown())
+    if (!abstractUser.isKnown())
       throw new UnknownUserException("Unknown collaborator");
 
     ChangePasswordToken token = changePasswordTokenRepository.findByUsername(username);
     checkChangePasswordTokenValidity(changePasswordInfo, token);
 
-    ((User) baseUser).setPassword(changePasswordInfo.getNewPassword().getEncryptedVersion());
-    userRepository.updateUserPassword((User) baseUser);
+    ((User) abstractUser).setPassword(changePasswordInfo.getNewPassword().getEncryptedVersion());
+    userRepository.updateUserPassword((User) abstractUser);
     changePasswordTokenRepository.deleteChangePasswordTokenOf(username);
   }
 
   @Override
-  public Profile updateProfile(BaseProfile baseProfile) throws UserException {
-    BaseProfile baseProfileToUpdate = userRepository.findProfileOf(((Profile) baseProfile).getUsername());
+  public Profile updateProfile(AbstractProfile abstractProfile) throws UserException {
+    AbstractProfile abstractProfileToUpdate = userRepository.findProfileOf(((Profile) abstractProfile).getUsername());
 
-    if (!baseProfileToUpdate.isKnown())
+    if (!abstractProfileToUpdate.isKnown())
       throw new UnknownUserException("Unknown collaborator");
 
-    List<ValidationError> errors = ((Profile) baseProfile).validate();
+    List<ValidationError> errors = ((Profile) abstractProfile).validate();
     if (!errors.isEmpty())
       throw new ProfileValidationException("Invalid profile", errors);
 
-    ((Profile) baseProfileToUpdate).updateFrom((Profile) baseProfile);
-    return (Profile) userRepository.updateProfileOf((Profile) baseProfileToUpdate);
+    ((Profile) abstractProfileToUpdate).updateFrom((Profile) abstractProfile);
+    return (Profile) userRepository.updateProfileOf((Profile) abstractProfileToUpdate);
   }
 
   @Override
   public Email findEmailOf(Username username) {
-    BaseProfile baseProfile = userRepository.findProfileOf(username);
+    AbstractProfile abstractProfile = userRepository.findProfileOf(username);
 
-    Profile knownProfile = (Profile) baseProfile;
+    Profile knownProfile = (Profile) abstractProfile;
     if (knownProfile.getEmail() != null && knownProfile.getEmail().isValid())
       return knownProfile.getEmail();
 

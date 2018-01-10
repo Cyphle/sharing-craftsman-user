@@ -5,7 +5,7 @@ import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepositor
 import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.BaseUser;
+import fr.sharingcraftsman.user.domain.user.AbstractUser;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.exceptions.UnknownUserException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
@@ -29,8 +29,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   }
 
   @Override
-  public BaseToken login(Client client, Credentials credentials) throws UserException {
-    BaseUser user = userRepository.findUserFromCredentials(credentials.getEncryptedVersion());
+  public AbstractToken login(Client client, Credentials credentials) throws UserException {
+    AbstractUser user = userRepository.findUserFromCredentials(credentials.getEncryptedVersion());
     verifyCollaboratorIsKnown(user);
     accessTokenRepository.deleteTokensOf((User) user, client);
     return generateToken(client, (User) user, credentials.isPersistentLogging());
@@ -38,8 +38,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
   @Override
   public boolean isTokenValid(Client client, Username username, AccessToken token) {
-    BaseToken foundBaseToken = accessTokenRepository.findTokenFromAccessToken(client, username, token);
-    return verifyTokenValidity(foundBaseToken);
+    AbstractToken foundAbstractToken = accessTokenRepository.findTokenFromAccessToken(client, username, token);
+    return verifyTokenValidity(foundAbstractToken);
   }
 
   @Override
@@ -51,8 +51,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
   @Override
   public boolean isRefreshTokenValid(Client client, Username username, AccessToken token) {
-    BaseToken foundBaseToken = accessTokenRepository.findTokenFromRefreshToken(client, username, token);
-    return verifyTokenValidity(foundBaseToken);
+    AbstractToken foundAbstractToken = accessTokenRepository.findTokenFromRefreshToken(client, username, token);
+    return verifyTokenValidity(foundAbstractToken);
   }
 
   @Override
@@ -61,19 +61,19 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   }
 
   @Override
-  public BaseToken createNewToken(Client client, Username username) throws UserException {
-    BaseUser baseUser = userRepository.findUserFromUsername(username);
-    verifyCollaboratorIsKnown(baseUser);
-    User user = (User) baseUser;
+  public AbstractToken createNewToken(Client client, Username username) throws UserException {
+    AbstractUser abstractUser = userRepository.findUserFromUsername(username);
+    verifyCollaboratorIsKnown(abstractUser);
+    User user = (User) abstractUser;
     return generateToken(client, user, false);
   }
 
-  private void verifyCollaboratorIsKnown(BaseUser baseUser) throws UnknownUserException {
-    if (!baseUser.isKnown())
+  private void verifyCollaboratorIsKnown(AbstractUser abstractUser) throws UnknownUserException {
+    if (!abstractUser.isKnown())
       throw new UnknownUserException("Unknown collaborator");
   }
 
-  private BaseToken generateToken(Client client, User user, boolean isPersistentLogging) {
+  private AbstractToken generateToken(Client client, User user, boolean isPersistentLogging) {
     AccessToken token = AccessToken.from(
             generateToken(client.getName() + user.getUsername()),
             generateToken(client.getName() + user.getUsername()),
@@ -88,14 +88,14 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     accessTokenRepository.deleteTokensOf(user, client);
   }
 
-  private boolean verifyTokenValidity(BaseToken foundBaseToken) {
-    if (foundBaseToken.isValid()) {
-      AccessToken validToken = (AccessToken) foundBaseToken;
+  private boolean verifyTokenValidity(AbstractToken foundAbstractToken) {
+    if (foundAbstractToken.isValid()) {
+      AccessToken validToken = (AccessToken) foundAbstractToken;
       if (validToken.getExpirationDate().isBefore(dateService.now()))
         return false;
     }
 
-    return foundBaseToken.isValid();
+    return foundAbstractToken.isValid();
   }
 
   private String generateToken(String seed) {

@@ -56,9 +56,9 @@ public class AuthenticationManagerImplTest {
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(token);
     credentials.setPersistentLogging(true);
 
-    BaseToken expectedBaseToken = identifier.login(client, credentials);
+    AbstractToken expectedAbstractToken = identifier.login(client, credentials);
 
-    assertThat(expectedBaseToken).isEqualTo(token);
+    assertThat(expectedAbstractToken).isEqualTo(token);
   }
 
   @Test
@@ -136,8 +136,8 @@ public class AuthenticationManagerImplTest {
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(token);
     credentials.setPersistentLogging(true);
 
-    BaseToken expectedBaseToken = identifier.createNewToken(client, credentials.getUsername());
+    AbstractToken expectedAbstractToken = identifier.createNewToken(client, credentials.getUsername());
 
-    assertThat(expectedBaseToken).isEqualTo(token);
+    assertThat(expectedAbstractToken).isEqualTo(token);
   }
 }

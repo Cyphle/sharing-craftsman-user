@@ -5,7 +5,7 @@ import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.exceptions.UnknownUserException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
 import fr.sharingcraftsman.user.domain.user.exceptions.AlreadyExistingUserException;
-import fr.sharingcraftsman.user.domain.user.BaseUser;
+import fr.sharingcraftsman.user.domain.user.AbstractUser;
 import fr.sharingcraftsman.user.domain.admin.ports.Administration;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class AdministrationImpl implements Administration {
 
   @Override
   public void deleteCollaborator(Username username) throws UserException {
-    BaseUser user = userForAdminRepository.findCollaboratorFromUsername(username);
+    AbstractUser user = userForAdminRepository.findCollaboratorFromUsername(username);
 
     if (!user.isKnown())
       throw new UnknownUserException("Unknown user");

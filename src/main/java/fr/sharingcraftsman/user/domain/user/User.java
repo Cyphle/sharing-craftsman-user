@@ -8,12 +8,9 @@ import fr.sharingcraftsman.user.domain.common.UsernameException;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 @EqualsAndHashCode
 @ToString
-public class User extends BaseUser {
+public class User extends AbstractUser {
   private Username username;
   private Password password;
 

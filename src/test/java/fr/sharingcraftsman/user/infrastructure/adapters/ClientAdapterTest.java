@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
-import fr.sharingcraftsman.user.domain.client.BaseClient;
+import fr.sharingcraftsman.user.domain.client.AbstractClient;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.infrastructure.models.ClientEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientJpaRepository;
@@ -30,14 +30,14 @@ public class ClientAdapterTest {
   public void should_get_client() throws Exception {
     given(clientJpaRepository.findByNameAndSecret("client", "secret")).willReturn(new ClientEntity("client", "secret"));
 
-    BaseClient foundClient = clientAdapter.findClient(Client.from("client", "secret"));
+    AbstractClient foundClient = clientAdapter.findClient(Client.from("client", "secret"));
 
     assertThat(foundClient).isEqualTo(Client.from("client", "secret"));
   }
 
   @Test
   public void should_return_unknown_client_if_client_is_not_known() throws Exception {
-    BaseClient foundClient = clientAdapter.findClient(Client.from("client", "secret"));
+    AbstractClient foundClient = clientAdapter.findClient(Client.from("client", "secret"));
 
     assertThat(foundClient.isKnown()).isFalse();
   }

@@ -3,7 +3,7 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
-import fr.sharingcraftsman.user.domain.authentication.BaseToken;
+import fr.sharingcraftsman.user.domain.authentication.AbstractToken;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
@@ -20,9 +20,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZoneId;
 import java.util.Base64;
-import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -30,7 +28,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BaseTokenAdapterTest {
+public class AbstractTokenAdapterTest {
   @Mock
   private AccessTokenJpaRepository accessTokenJpaRepository;
   @Mock
@@ -87,18 +85,18 @@ public class BaseTokenAdapterTest {
   public void should_return_a_valid_token_when_access_token_found() throws Exception {
     given(accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(new AccessTokenEntity("john@doe.fr", "client", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
 
-    BaseToken foundBaseToken = tokenAdapter.findTokenFromAccessToken(client, credentials.getUsername(), token);
+    AbstractToken foundAbstractToken = tokenAdapter.findTokenFromAccessToken(client, credentials.getUsername(), token);
 
-    assertThat(foundBaseToken.isValid()).isTrue();
+    assertThat(foundAbstractToken.isValid()).isTrue();
   }
 
   @Test
   public void should_return_an_invalid_token_when_access_token_not_found() throws Exception {
     given(accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(null);
 
-    BaseToken foundBaseToken = tokenAdapter.findTokenFromAccessToken(client, credentials.getUsername(), token);
+    AbstractToken foundAbstractToken = tokenAdapter.findTokenFromAccessToken(client, credentials.getUsername(), token);
 
-    assertThat(foundBaseToken.isValid()).isFalse();
+    assertThat(foundAbstractToken.isValid()).isFalse();
   }
 
   @Test
@@ -106,18 +104,18 @@ public class BaseTokenAdapterTest {
     given(accessTokenJpaRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(new AccessTokenEntity("john@doe.fr", "client", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
     AccessToken refreshToken = AccessToken.fromOnlyRefreshToken("bbb");
 
-    BaseToken foundBaseToken = tokenAdapter.findTokenFromRefreshToken(client, credentials.getUsername(), refreshToken);
+    AbstractToken foundAbstractToken = tokenAdapter.findTokenFromRefreshToken(client, credentials.getUsername(), refreshToken);
 
-    assertThat(foundBaseToken.isValid()).isTrue();
+    assertThat(foundAbstractToken.isValid()).isTrue();
   }
 
   @Test
   public void should_return_an_invalid_token_when_refresh_token_not_found() throws Exception {
     given(accessTokenJpaRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(null);
 
-    BaseToken foundBaseToken = tokenAdapter.findTokenFromRefreshToken(client, credentials.getUsername(), token);
+    AbstractToken foundAbstractToken = tokenAdapter.findTokenFromRefreshToken(client, credentials.getUsername(), token);
 
-    assertThat(foundBaseToken.isValid()).isFalse();
+    assertThat(foundAbstractToken.isValid()).isFalse();
   }
 
   private String generateToken(String seed) {

@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.domain.common.*;
-import fr.sharingcraftsman.user.domain.user.BaseProfile;
+import fr.sharingcraftsman.user.domain.user.AbstractProfile;
 import fr.sharingcraftsman.user.domain.user.Profile;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -76,7 +76,7 @@ public class ProfileDTO {
     this.linkedin = linkedin;
   }
 
-  public static BaseProfile fromApiToDomain(String username, ProfileDTO profileDTO) throws UsernameException {
+  public static AbstractProfile fromApiToDomain(String username, ProfileDTO profileDTO) throws UsernameException {
     return Profile.from(
             Username.from(username),
             Name.of(profileDTO.getFirstname()),

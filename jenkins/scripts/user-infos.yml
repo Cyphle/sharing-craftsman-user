@@ -1,5 +1,5 @@
-userEntity:
-  baseProfile: prod
+user:
+  profile: prod
   database:
     host: 192.168.1.18
     userEntity: root

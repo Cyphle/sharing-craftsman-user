@@ -31,7 +31,7 @@ public class AccessTokenAdapter implements AccessTokenRepository {
   }
 
   @Override
-  public BaseToken findTokenFromAccessToken(Client client, Username username, AccessToken token) {
+  public AbstractToken findTokenFromAccessToken(Client client, Username username, AccessToken token) {
     AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndAccessToken(username.getUsername(), client.getName(), token.getAccessToken());
 
     if (foundToken == null)
@@ -41,7 +41,7 @@ public class AccessTokenAdapter implements AccessTokenRepository {
   }
 
   @Override
-  public BaseToken findTokenFromRefreshToken(Client client, Username username, AccessToken token) {
+  public AbstractToken findTokenFromRefreshToken(Client client, Username username, AccessToken token) {
     AccessTokenEntity foundToken = accessTokenJpaRepository.findByUsernameClientAndRefreshToken(username.getUsername(), client.getName(), token.getRefreshToken());
 
     if (foundToken == null)

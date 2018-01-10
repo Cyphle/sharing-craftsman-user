@@ -8,7 +8,7 @@ import fr.sharingcraftsman.user.domain.admin.exceptions.UnknownBaseUserForAdminC
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.BaseUser;
+import fr.sharingcraftsman.user.domain.user.AbstractUser;
 import fr.sharingcraftsman.user.domain.user.UnknownUser;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
@@ -41,7 +41,7 @@ public class UserForAdminAdapter implements UserForAdminRepository {
   }
 
   @Override
-  public BaseUser findCollaboratorFromUsername(Username username) {
+  public AbstractUser findCollaboratorFromUsername(Username username) {
     UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
     if (foundUserEntity == null)

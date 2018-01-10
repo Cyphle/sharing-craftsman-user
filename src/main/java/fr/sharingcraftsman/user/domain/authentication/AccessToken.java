@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode
-public class AccessToken extends BaseToken {
+public class AccessToken extends AbstractToken {
   private String accessToken;
   private String refreshToken;
   private LocalDateTime expirationDate;

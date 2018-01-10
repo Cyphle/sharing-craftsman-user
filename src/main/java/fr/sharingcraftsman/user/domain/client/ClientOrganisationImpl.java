@@ -22,7 +22,7 @@ public class ClientOrganisationImpl implements ClientOrganisation {
 
   @Override
   public void createNewClient(Client client) throws ClientException {
-    BaseClient foundClient = clientRepository.findClientByName(client);
+    AbstractClient foundClient = clientRepository.findClientByName(client);
 
     if (foundClient.isKnown())
       throw new AlreadyExistingClientException("Already existing client");

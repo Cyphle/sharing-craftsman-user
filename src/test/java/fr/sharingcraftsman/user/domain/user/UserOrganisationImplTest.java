@@ -173,7 +173,7 @@ public class UserOrganisationImplTest {
             Link.to("linkedin.com/johndoe"));
     given(userRepository.updateProfileOf(any(Profile.class))).willReturn(profileToUpdate);
 
-    BaseProfile baseProfile = userOrganisationImpl.updateProfile(profileToUpdate);
+    AbstractProfile abstractProfile = userOrganisationImpl.updateProfile(profileToUpdate);
 
     Profile expectedProfile = Profile.from(
             Username.from("john@doe.fr"),
@@ -183,14 +183,14 @@ public class UserOrganisationImplTest {
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
             Link.to("linkedin.com/johndoe"));
-    assertThat(baseProfile).isEqualTo(expectedProfile);
+    assertThat(abstractProfile).isEqualTo(expectedProfile);
   }
 
   @Test
   public void should_throw_profile_exception_if_email_is_invalid_when_updating_profile() throws Exception {
     try {
       given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
-      BaseProfile baseProfileToUpdate = Profile.from(
+      AbstractProfile abstractProfileToUpdate = Profile.from(
               Username.from("john@doe.fr"),
               Name.of("John"),
               Name.of("Doe"),
@@ -199,7 +199,7 @@ public class UserOrganisationImplTest {
               Link.to("github.com/johndoe"),
               Link.to("linkedin.com/johndoe"));
 
-      userOrganisationImpl.updateProfile(baseProfileToUpdate);
+      userOrganisationImpl.updateProfile(abstractProfileToUpdate);
       fail("Should have throw a baseProfile exception when email is invalid");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid profile");
@@ -210,7 +210,7 @@ public class UserOrganisationImplTest {
   public void should_throw_collaborator_exception_if_profile_is_not_known() throws Exception {
     try {
       given(userRepository.findProfileOf(any(Username.class))).willReturn(new UnknownProfile());
-      BaseProfile baseProfileToUpdate = Profile.from(
+      AbstractProfile abstractProfileToUpdate = Profile.from(
               Username.from("john@doe.fr"),
               Name.of("John"),
               Name.of("Doe"),
@@ -219,7 +219,7 @@ public class UserOrganisationImplTest {
               Link.to("github.com/johndoe"),
               Link.to("linkedin.com/johndoe"));
 
-      userOrganisationImpl.updateProfile(baseProfileToUpdate);
+      userOrganisationImpl.updateProfile(abstractProfileToUpdate);
       fail("Should have throw a collaborator exception when email is invalid");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown collaborator");

@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.domain.authentication.ports;
 
-import fr.sharingcraftsman.user.domain.authentication.BaseToken;
+import fr.sharingcraftsman.user.domain.authentication.AbstractToken;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.common.Username;
@@ -11,7 +11,7 @@ public interface AccessTokenRepository {
 
   AccessToken createNewToken(Client client, User user, AccessToken token);
 
-  BaseToken findTokenFromAccessToken(Client client, Username username, AccessToken token);
+  AbstractToken findTokenFromAccessToken(Client client, Username username, AccessToken token);
 
-  BaseToken findTokenFromRefreshToken(Client client, Username username, AccessToken token);
+  AbstractToken findTokenFromRefreshToken(Client client, Username username, AccessToken token);
 }
