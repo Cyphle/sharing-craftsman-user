@@ -26,12 +26,12 @@ public class GroupManagerAdapter implements UserAuthorizationRepository {
   }
 
   @Override
-  public void addGroupToCollaborator(Username username, Groups group) {
+  public void addGroupToUser(Username username, Groups group) {
     userAuthorizationJpaRepository.save(new UserAuthorizationEntity(username.getUsername(), group.name()));
   }
 
   @Override
-  public void removeGroupFromCollaborator(Username username, Groups group) {
+  public void removeGroupFromUser(Username username, Groups group) {
     UserAuthorizationEntity userAuthorizationEntity = userAuthorizationJpaRepository.findByUsernameAndGroup(username.getUsername(), group.name());
     userAuthorizationJpaRepository.delete(userAuthorizationEntity);
   }

@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserAuthorizationRepository {
   List<Group> findGroupsOf(Username username);
 
-  void addGroupToCollaborator(Username username, Groups group);
+  void addGroupToUser(Username username, Groups group);
 
-  void removeGroupFromCollaborator(Username username, Groups group);
+  void removeGroupFromUser(Username username, Groups group);
 }

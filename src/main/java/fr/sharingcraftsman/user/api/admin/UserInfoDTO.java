@@ -2,11 +2,11 @@ package fr.sharingcraftsman.user.api.admin;
 
 import fr.sharingcraftsman.user.api.authorization.AuthorizationsDTO;
 import fr.sharingcraftsman.user.common.DateConverter;
-import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
 import lombok.ToString;
 
 @ToString
-public class AdminUserDTO {
+public class UserInfoDTO {
   private String username;
   private String password;
   private String firstname;
@@ -20,10 +20,10 @@ public class AdminUserDTO {
   private long creationDate;
   private long lastUpdateDate;
 
-  public AdminUserDTO() {
+  public UserInfoDTO() {
   }
 
-  public AdminUserDTO(
+  public UserInfoDTO(
           String username,
           String firstname,
           String lastname,
@@ -48,7 +48,7 @@ public class AdminUserDTO {
     this.lastUpdateDate = lastUpdateDate;
   }
 
-  public AdminUserDTO(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, long creationDate, long lastUpdateDate) {
+  public UserInfoDTO(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, long creationDate, long lastUpdateDate) {
     this.username = username;
     this.password = password;
     this.firstname = firstname;
@@ -158,8 +158,8 @@ public class AdminUserDTO {
     this.lastUpdateDate = lastUpdateDate;
   }
 
-  public static UserForAdmin fromApiToDomain(AdminUserDTO user) {
-    return UserForAdmin.from(
+  public static UserInfoOld fromApiToDomain(UserInfoDTO user) {
+    return UserInfoOld.from(
             user.getUsername(),
             user.getPassword(),
             user.getFirstname(),
@@ -179,7 +179,7 @@ public class AdminUserDTO {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    AdminUserDTO that = (AdminUserDTO) o;
+    UserInfoDTO that = (UserInfoDTO) o;
 
     if (isActive != that.isActive) return false;
     if (username != null ? !username.equals(that.username) : that.username != null) return false;

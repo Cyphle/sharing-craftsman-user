@@ -43,7 +43,7 @@ public class GroupManagerAdapterTest {
   public void should_add_group_to_user() throws Exception {
     given(userAuthorizationJpaRepository.save(any(UserAuthorizationEntity.class))).willReturn(new UserAuthorizationEntity("john@doe.fr", "USERS"));
 
-    groupManagerAdapter.addGroupToCollaborator(Username.from("john@doe.fr"), Groups.USERS);
+    groupManagerAdapter.addGroupToUser(Username.from("john@doe.fr"), Groups.USERS);
 
     verify(userAuthorizationJpaRepository).save(new UserAuthorizationEntity("john@doe.fr", "USERS"));
   }
@@ -52,7 +52,7 @@ public class GroupManagerAdapterTest {
   public void should_remove_group_from_user() throws Exception {
     given(userAuthorizationJpaRepository.findByUsernameAndGroup("hello@world.fr", Groups.USERS.name())).willReturn(new UserAuthorizationEntity("hello@world.fr", Groups.USERS.name()));
 
-    groupManagerAdapter.removeGroupFromCollaborator(Username.from("hello@world.fr"), Groups.USERS);
+    groupManagerAdapter.removeGroupFromUser(Username.from("hello@world.fr"), Groups.USERS);
 
     verify(userAuthorizationJpaRepository).delete(new UserAuthorizationEntity("hello@world.fr", "USERS"));
   }

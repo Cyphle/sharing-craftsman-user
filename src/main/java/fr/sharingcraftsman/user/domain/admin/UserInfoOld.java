@@ -2,7 +2,6 @@ package fr.sharingcraftsman.user.domain.admin;
 
 import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.domain.common.*;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
@@ -11,7 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 @ToString
-public class UserForAdmin extends BaseUserForAdmin {
+public class UserInfoOld extends AbstractUserInfo {
   private Username username;
   private Password password;
   private Name firstname;
@@ -24,7 +23,7 @@ public class UserForAdmin extends BaseUserForAdmin {
   private LocalDateTime creationDate;
   private LocalDateTime lastUpdateDate;
 
-  private UserForAdmin(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, Date creationDate, Date lastUpdateDate) {
+  private UserInfoOld(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, Date creationDate, Date lastUpdateDate) {
     this.username = new Username(username);
     this.password = new Password(password);
     this.firstname = Name.of(firstname);
@@ -38,7 +37,7 @@ public class UserForAdmin extends BaseUserForAdmin {
     this.lastUpdateDate = fromDateToLocalDatetime(lastUpdateDate);
   }
 
-  public UserForAdmin(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
+  public UserInfoOld(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
     this.username = new Username(username);
     this.password = new Password(password);
     this.firstname = Name.of(firstname);
@@ -98,15 +97,15 @@ public class UserForAdmin extends BaseUserForAdmin {
     return fromLocalDatetimeToLong(lastUpdateDate);
   }
 
-  public void updateFields(UserForAdmin collaborator) {
-    username = collaborator.username;
-    firstname = collaborator.firstname;
-    lastname = collaborator.lastname;
-    email = collaborator.email;
-    website = collaborator.website;
-    github = collaborator.github;
-    linkedin = collaborator.linkedin;
-    isActive = collaborator.isActive;
+  public void updateFields(UserInfoOld user) {
+    username = user.username;
+    firstname = user.firstname;
+    lastname = user.lastname;
+    email = user.email;
+    website = user.website;
+    github = user.github;
+    linkedin = user.linkedin;
+    isActive = user.isActive;
   }
 
   @Override
@@ -114,12 +113,12 @@ public class UserForAdmin extends BaseUserForAdmin {
     return true;
   }
 
-  public static UserForAdmin from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean active, Date creationDate, Date lastUpdateDate) {
-    return new UserForAdmin(username, password, firstname, lastname, email, website, github, linkedin, active, creationDate, lastUpdateDate);
+  public static UserInfoOld from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean active, Date creationDate, Date lastUpdateDate) {
+    return new UserInfoOld(username, password, firstname, lastname, email, website, github, linkedin, active, creationDate, lastUpdateDate);
   }
 
-  public static UserForAdmin from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean active, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
-    return new UserForAdmin(username, password, firstname, lastname, email, website, github, linkedin, active, creationDate, lastUpdateDate);
+  public static UserInfoOld from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean active, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
+    return new UserInfoOld(username, password, firstname, lastname, email, website, github, linkedin, active, creationDate, lastUpdateDate);
   }
 
   private long fromLocalDatetimeToLong(LocalDateTime localDateTime) {
@@ -136,7 +135,7 @@ public class UserForAdmin extends BaseUserForAdmin {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    UserForAdmin that = (UserForAdmin) o;
+    UserInfoOld that = (UserInfoOld) o;
 
     if (isActive != that.isActive) return false;
     if (username != null ? !username.equals(that.username) : that.username != null) return false;

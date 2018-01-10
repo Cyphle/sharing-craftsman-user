@@ -2,9 +2,9 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import com.google.common.collect.Lists;
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.admin.BaseUserForAdmin;
-import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
-import fr.sharingcraftsman.user.domain.admin.exceptions.UnknownBaseUserForAdminCollaborator;
+import fr.sharingcraftsman.user.domain.admin.AbstractUserInfo;
+import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
+import fr.sharingcraftsman.user.domain.admin.UnknownUserInfo;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
@@ -29,13 +29,13 @@ public class UserForAdminAdapter implements UserForAdminRepository {
   }
 
   @Override
-  public List<UserForAdmin> getAllCollaborators() {
+  public List<UserInfoOld> getAllUsers() {
     List<UserEntity> userEntities = Lists.newArrayList(userJpaRepository.findAll());
     return UserEntity.fromInfraToAdminDomain(userEntities);
   }
 
   @Override
-  public AbstractUser findCollaboratorFromUsername(Username username) {
+  public AbstractUser findUserFromUsername(Username username) {
     UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
     if (foundUserEntity == null)
@@ -49,33 +49,33 @@ public class UserForAdminAdapter implements UserForAdminRepository {
   }
 
   @Override
-  public BaseUserForAdmin findAdminCollaboratorFromUsername(Username username) {
+  public AbstractUserInfo findAdminUserFromUsername(Username username) {
     UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
     if (foundUserEntity == null)
-      return new UnknownBaseUserForAdminCollaborator();
+      return new UnknownUserInfo();
 
     return UserEntity.fromInfraToAdminDomain(foundUserEntity);
   }
 
   @Override
-  public void createCollaborator(UserForAdmin collaborator) {
-    UserEntity userEntityToCreate = UserEntity.fromDomainToInfra(collaborator);
+  public void createUser(UserInfoOld user) {
+    UserEntity userEntityToCreate = UserEntity.fromDomainToInfra(user);
     userEntityToCreate.setCreationDate(dateService.nowInDate());
     userEntityToCreate.setLastUpdateDate(dateService.nowInDate());
     userJpaRepository.save(userEntityToCreate);
   }
 
   @Override
-  public void updateCollaborator(UserForAdmin collaborator) {
-    UserEntity foundUserEntity = userJpaRepository.findByUsername(collaborator.getUsernameContent());
-    foundUserEntity.updateFromAdminCollaborator(collaborator);
+  public void updateUser(UserInfoOld user) {
+    UserEntity foundUserEntity = userJpaRepository.findByUsername(user.getUsernameContent());
+    foundUserEntity.updateFromAdminUser(user);
     foundUserEntity.setLastUpdateDate(dateService.nowInDate());
     userJpaRepository.save(foundUserEntity);
   }
 
   @Override
-  public void deleteCollaborator(Username username) {
+  public void deleteUser(Username username) {
     UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
     userJpaRepository.delete(foundUserEntity);
   }

@@ -43,8 +43,8 @@ public class UserOrganisationImpl implements UserOrganisation {
   }
 
   @Override
-  public void createNewCollaborator(Credentials credentials) throws UserException, CredentialsException {
-    if (collaboratorExists(credentials.getUsername()))
+  public void createNewUser(Credentials credentials) throws UserException, CredentialsException {
+    if (userExists(credentials.getUsername()))
       throw new AlreadyExistingUserException("User already exists with username: " + credentials.getUsernameContent());
 
     Credentials encryptedCredentials = Credentials.buildWithEncryption(credentials.getUsernameContent(), credentials.getPasswordContent());
@@ -54,8 +54,8 @@ public class UserOrganisationImpl implements UserOrganisation {
 
   @Override
   public ChangePasswordToken createChangePasswordTokenFor(Username username) throws UnknownUserException, CredentialsException {
-    if (!collaboratorExists(username))
-      throw new UnknownUserException("Unknown collaborator");
+    if (!userExists(username))
+      throw new UnknownUserException("Unknown user");
 
     changePasswordTokenRepository.deleteChangePasswordTokenOf(username);
     ChangePasswordToken changePasswordToken = ChangePasswordToken.from(
@@ -72,7 +72,7 @@ public class UserOrganisationImpl implements UserOrganisation {
     AbstractUser abstractUser = userRepository.findUserFromCredentials(userCredentials);
 
     if (!abstractUser.isKnown())
-      throw new UnknownUserException("Unknown collaborator");
+      throw new UnknownUserException("Unknown user");
 
     ChangePasswordToken token = changePasswordTokenRepository.findByUsername(username);
     checkChangePasswordTokenValidity(changePasswordInfo, token);
@@ -87,7 +87,7 @@ public class UserOrganisationImpl implements UserOrganisation {
     AbstractProfile abstractProfileToUpdate = userRepository.findProfileOf(((Profile) abstractProfile).getUsername());
 
     if (!abstractProfileToUpdate.isKnown())
-      throw new UnknownUserException("Unknown collaborator");
+      throw new UnknownUserException("Unknown user");
 
     List<ValidationError> errors = ((Profile) abstractProfile).validate();
     if (!errors.isEmpty())
@@ -102,7 +102,7 @@ public class UserOrganisationImpl implements UserOrganisation {
       throw new InvalidChangePasswordTokenException("Invalid token to change password");
   }
 
-  private boolean collaboratorExists(Username username) {
+  private boolean userExists(Username username) {
     return userRepository.findUserFromUsername(username).isKnown();
   }
 }

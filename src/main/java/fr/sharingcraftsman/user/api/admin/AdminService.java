@@ -5,7 +5,7 @@ import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.api.authorization.GroupDTO;
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.domain.admin.AdministrationImpl;
-import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
 import fr.sharingcraftsman.user.domain.admin.ports.Administration;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public class AdminService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
   private ClientOrganisation clientOrganisation;
-  private Administration company;
+  private Administration userOrganisation;
   private AuthorizationManager authorizationManager;
 
   @Autowired
@@ -49,30 +49,30 @@ public class AdminService {
           UserAuthorizationRepository userAuthorizationRepository,
           AuthorizationRepository authorizationRepository) {
     clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
-    company = new AdministrationImpl(userForAdminRepository);
+    userOrganisation = new AdministrationImpl(userForAdminRepository);
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
   }
 
-  ResponseEntity getUsers(ClientDTO clientDTO, TokenDTO tokenDTO) {
+  ResponseEntity getAllUsers(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    List<UserForAdmin> collaborators = company.getAllCollaborators();
-    List<AdminUserDTO> users = collaborators.stream()
-            .map(collaborator -> new AdminUserDTO(
-                    collaborator.getUsernameContent(),
-                    collaborator.getPassword(),
-                    collaborator.getFirstname(),
-                    collaborator.getLastname(),
-                    collaborator.getEmail(),
-                    collaborator.getWebsite(),
-                    collaborator.getGithub(),
-                    collaborator.getLinkedin(),
-                    collaborator.isActive(),
-                    collaborator.getCreationDate(),
-                    collaborator.getLastUpdateDate()
+    List<UserInfoOld> fetchedUsers = userOrganisation.getAllUsers();
+    List<UserInfoDTO> users = fetchedUsers.stream()
+            .map(user -> new UserInfoDTO(
+                    user.getUsernameContent(),
+                    user.getPassword(),
+                    user.getFirstname(),
+                    user.getLastname(),
+                    user.getEmail(),
+                    user.getWebsite(),
+                    user.getGithub(),
+                    user.getLinkedin(),
+                    user.isActive(),
+                    user.getCreationDate(),
+                    user.getLastUpdateDate()
             ))
             .collect(Collectors.toList());
     users.forEach(user -> {
@@ -87,7 +87,7 @@ public class AdminService {
     return ResponseEntity.ok(users);
   }
 
-  public ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
+  ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
@@ -97,15 +97,15 @@ public class AdminService {
     return ResponseEntity.ok(groups);
   }
 
-  ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
+  ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      UserForAdmin collaborator = AdminUserDTO.fromApiToDomain(user);
-      company.createCollaborator(collaborator);
+      UserInfoOld userInfo = UserInfoDTO.fromApiToDomain(user);
+      userOrganisation.createUser(userInfo);
       authorizationManager.addGroup(Username.from(user.getUsername()), Groups.USERS);
       return ResponseEntity.ok().build();
     } catch (UserException | UsernameException e) {
@@ -116,7 +116,7 @@ public class AdminService {
     }
   }
 
-  public ResponseEntity addGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
+  ResponseEntity addGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
@@ -143,15 +143,15 @@ public class AdminService {
     return ResponseEntity.ok().build();
   }
 
-  ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
+  ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      UserForAdmin collaborator = AdminUserDTO.fromApiToDomain(user);
-      company.updateCollaborator(collaborator);
+      UserInfoOld userInfo = UserInfoDTO.fromApiToDomain(user);
+      userOrganisation.updateUser(userInfo);
       return ResponseEntity.ok().build();
     } catch (UserException e) {
       log.warn("Error while updating user " + user.getUsername() + ": " + e.getMessage());
@@ -168,7 +168,7 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      company.deleteCollaborator(Username.from(usernameToDelete));
+      userOrganisation.deleteUser(Username.from(usernameToDelete));
       return ResponseEntity.ok().build();
     } catch (UsernameException | UserException e) {
       log.warn("Error while deleting user " + usernameToDelete + ": " + e.getMessage());

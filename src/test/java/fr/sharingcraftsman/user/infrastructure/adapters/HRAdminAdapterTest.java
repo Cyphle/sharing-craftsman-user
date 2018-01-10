@@ -2,8 +2,8 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.admin.BaseUserForAdmin;
-import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.AbstractUserInfo;
+import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.AbstractUser;
@@ -41,7 +41,7 @@ public class HRAdminAdapterTest {
   }
 
   @Test
-  public void should_get_all_collaborators() throws Exception {
+  public void should_get_all_users() throws Exception {
     UserEntity userEntity = new UserEntity("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
     userEntity.setActive(true);
     userEntity.setCreationDate(new Date());
@@ -52,14 +52,14 @@ public class HRAdminAdapterTest {
     userEntityTwo.setLastUpdateDate(new Date());
     given(userJpaRepository.findAll()).willReturn(Arrays.asList(userEntity, userEntityTwo));
 
-    hrAdminAdapter.getAllCollaborators();
+    hrAdminAdapter.getAllUsers();
 
     verify(userJpaRepository).findAll();
   }
 
   @Test
   public void should_delete_user() throws Exception {
-    hrAdminAdapter.deleteCollaborator(Username.from("hello@world.fr"));
+    hrAdminAdapter.deleteUser(Username.from("hello@world.fr"));
 
     verify(userJpaRepository).delete(any(UserEntity.class));
   }
@@ -68,24 +68,24 @@ public class HRAdminAdapterTest {
   public void should_get_user_by_username() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    AbstractUser collaborator = hrAdminAdapter.findCollaboratorFromUsername(Username.from("john@doe.fr"));
+    AbstractUser user = hrAdminAdapter.findUserFromUsername(Username.from("john@doe.fr"));
 
     User expected = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
-    assertThat((User) collaborator).isEqualTo(expected);
+    assertThat((User) user).isEqualTo(expected);
   }
 
   @Test
-  public void should_get_user_by_username_in_admin_collaborator_object() throws Exception {
+  public void should_get_user_by_username_in_admin_user_object() throws Exception {
     UserEntity userEntity = new UserEntity("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
     userEntity.setActive(true);
     userEntity.setCreationDate(new Date());
     userEntity.setLastUpdateDate(new Date());
     given(userJpaRepository.findByUsername("admin@toto.fr")).willReturn(userEntity);
 
-    BaseUserForAdmin collaborator = hrAdminAdapter.findAdminCollaboratorFromUsername(Username.from("admin@toto.fr"));
+    AbstractUserInfo user = hrAdminAdapter.findAdminUserFromUsername(Username.from("admin@toto.fr"));
 
-    UserForAdmin expectedCollaborator = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    assertThat(collaborator).isEqualTo(expectedCollaborator);
+    UserInfoOld expectedUser = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
+    assertThat(user).isEqualTo(expectedUser);
   }
 
   @Test
@@ -93,8 +93,8 @@ public class HRAdminAdapterTest {
     UserEntity userEntityToUpdate = new UserEntity("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
     given(userJpaRepository.findByUsername("admin@toto.fr")).willReturn(userEntityToUpdate);
 
-    UserForAdmin collaboratorToUpdate = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    hrAdminAdapter.updateCollaborator(collaboratorToUpdate);
+    UserInfoOld userToUpdate = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
+    hrAdminAdapter.updateUser(userToUpdate);
 
     UserEntity updatedUserEntity = new UserEntity("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
     updatedUserEntity.setActive(true);
@@ -105,8 +105,8 @@ public class HRAdminAdapterTest {
 
   @Test
   public void should_create_user() throws Exception {
-    UserForAdmin collaborator = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    hrAdminAdapter.createCollaborator(collaborator);
+    UserInfoOld user = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
+    hrAdminAdapter.createUser(user);
 
     UserEntity newUserEntity = new UserEntity("admin@toto.fr", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
     verify(userJpaRepository).save(newUserEntity);

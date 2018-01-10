@@ -117,7 +117,7 @@ public class UserService {
       log.info("UserEntity is registering with username:" + loginDTO.getUsername());
       Credentials credentials = LoginDTO.fromApiToDomain(loginDTO);
 
-      userOrganisation.createNewCollaborator(credentials);
+      userOrganisation.createNewUser(credentials);
       authorizationManager.addGroup(credentials.getUsername(), Groups.USERS);
       return ResponseEntity.ok().build();
     } catch (CredentialsException | UserException e) {

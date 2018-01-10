@@ -1,22 +1,22 @@
 package fr.sharingcraftsman.user.domain.admin.ports;
 
-import fr.sharingcraftsman.user.domain.admin.BaseUserForAdmin;
-import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.AbstractUserInfo;
+import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.AbstractUser;
 
 import java.util.List;
 
 public interface UserForAdminRepository {
-  List<UserForAdmin> getAllCollaborators();
+  List<UserInfoOld> getAllUsers();
 
-  AbstractUser findCollaboratorFromUsername(Username username);
+  AbstractUser findUserFromUsername(Username username);
 
-  BaseUserForAdmin findAdminCollaboratorFromUsername(Username username);
+  AbstractUserInfo findAdminUserFromUsername(Username username);
 
-  void createCollaborator(UserForAdmin collaborator);
+  void createUser(UserInfoOld user);
 
-  void updateCollaborator(UserForAdmin collaborator);
+  void updateUser(UserInfoOld user);
 
-  void deleteCollaborator(Username username);
+  void deleteUser(Username username);
 }

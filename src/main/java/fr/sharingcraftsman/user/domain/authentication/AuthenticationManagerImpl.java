@@ -31,7 +31,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   @Override
   public AbstractToken login(Client client, Credentials credentials) throws UserException {
     AbstractUser user = userRepository.findUserFromCredentials(credentials.getEncryptedVersion());
-    verifyCollaboratorIsKnown(user);
+    verifyUserIsKnown(user);
     accessTokenRepository.deleteTokensOf((User) user, client);
     return generateToken(client, (User) user, credentials.isPersistentLogging());
   }
@@ -58,7 +58,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   @Override
   public AbstractToken createNewToken(Client client, Username username) throws UserException {
     AbstractUser abstractUser = userRepository.findUserFromUsername(username);
-    verifyCollaboratorIsKnown(abstractUser);
+    verifyUserIsKnown(abstractUser);
     User user = (User) abstractUser;
     return generateToken(client, user, false);
   }
@@ -68,9 +68,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     deleteToken(username, client);
   }
 
-  private void verifyCollaboratorIsKnown(AbstractUser abstractUser) throws UnknownUserException {
+  private void verifyUserIsKnown(AbstractUser abstractUser) throws UnknownUserException {
     if (!abstractUser.isKnown())
-      throw new UnknownUserException("Unknown collaborator");
+      throw new UnknownUserException("Unknown user");
   }
 
   private AbstractToken generateToken(Client client, User user, boolean isPersistentLogging) {

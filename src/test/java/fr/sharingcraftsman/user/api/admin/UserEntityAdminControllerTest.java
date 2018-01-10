@@ -43,7 +43,7 @@ public class UserEntityAdminControllerTest {
   @MockBean
   private AdminService adminService;
 
-  private AdminUserDTO userDTO;
+  private UserInfoDTO userDTO;
 
   @Before
   public void setup() {
@@ -55,12 +55,12 @@ public class UserEntityAdminControllerTest {
     group.addRole(new RoleDTO("ROLE_USER"));
     AuthorizationsDTO authorization = new AuthorizationsDTO();
     authorization.addGroup(group);
-    userDTO = new AdminUserDTO("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
+    userDTO = new UserInfoDTO("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
   }
 
   @Test
   public void should_get_list_of_users_with_their_profile() throws Exception {
-    given(adminService.getUsers(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(Collections.singletonList(userDTO)));
+    given(adminService.getAllUsers(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(Collections.singletonList(userDTO)));
 
     this.mvc.perform(get("/admin/users")
             .header("client", "client")
@@ -85,7 +85,7 @@ public class UserEntityAdminControllerTest {
 
   @Test
   public void should_update_a_user() throws Exception {
-    given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(AdminUserDTO.class))).willReturn(ResponseEntity.ok(userDTO));
+    given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(UserInfoDTO.class))).willReturn(ResponseEntity.ok(userDTO));
 
     this.mvc.perform(put("/admin/users")
             .header("client", "client")
@@ -99,7 +99,7 @@ public class UserEntityAdminControllerTest {
 
   @Test
   public void should_add_user() throws Exception {
-    given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(AdminUserDTO.class))).willReturn(ResponseEntity.ok(userDTO));
+    given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(UserInfoDTO.class))).willReturn(ResponseEntity.ok(userDTO));
 
     this.mvc.perform(post("/admin/users")
             .header("client", "client")

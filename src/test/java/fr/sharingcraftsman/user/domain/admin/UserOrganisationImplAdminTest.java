@@ -1,6 +1,5 @@
 package fr.sharingcraftsman.user.domain.admin;
 
-import fr.sharingcraftsman.user.domain.admin.exceptions.UnknownBaseUserForAdminCollaborator;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.UnknownUser;
@@ -33,55 +32,55 @@ public class UserOrganisationImplAdminTest {
   }
 
   @Test
-  public void should_get_all_collaborators() throws Exception {
-    organisation.getAllCollaborators();
+  public void should_get_all_users() throws Exception {
+    organisation.getAllUsers();
 
-    verify(userForAdminRepository).getAllCollaborators();
+    verify(userForAdminRepository).getAllUsers();
   }
 
   @Test
-  public void should_delete_collaborator_if_exists() throws Exception {
-    given(userForAdminRepository.findCollaboratorFromUsername(Username.from("hello@world.fr"))).willReturn(User.from("hello@world.fr", "password"));
+  public void should_delete_user_if_exists() throws Exception {
+    given(userForAdminRepository.findUserFromUsername(Username.from("hello@world.fr"))).willReturn(User.from("hello@world.fr", "password"));
 
-    organisation.deleteCollaborator(Username.from("hello@world.fr"));
+    organisation.deleteUser(Username.from("hello@world.fr"));
 
-    verify(userForAdminRepository).findCollaboratorFromUsername(Username.from("hello@world.fr"));
-    verify(userForAdminRepository).deleteCollaborator(Username.from("hello@world.fr"));
+    verify(userForAdminRepository).findUserFromUsername(Username.from("hello@world.fr"));
+    verify(userForAdminRepository).deleteUser(Username.from("hello@world.fr"));
   }
 
   @Test
-  public void should_throw_unknown_collaborator_exception_if_collaborator_not_found() throws Exception {
+  public void should_throw_unknown_user_exception_if_user_not_found() throws Exception {
     try {
-      given(userForAdminRepository.findCollaboratorFromUsername(any(Username.class))).willReturn(new UnknownUser());
-      organisation.deleteCollaborator(Username.from("hello@world.fr"));
-      fail("Should have throw collaborator exception when not found");
+      given(userForAdminRepository.findUserFromUsername(any(Username.class))).willReturn(new UnknownUser());
+      organisation.deleteUser(Username.from("hello@world.fr"));
+      fail("Should have throw user exception when not found");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown user");
     }
   }
 
   @Test
-  public void should_update_collaborator() throws Exception {
-    UserForAdmin foundCollaborator = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    given(userForAdminRepository.findAdminCollaboratorFromUsername(foundCollaborator.getUsername())).willReturn(foundCollaborator);
+  public void should_update_user() throws Exception {
+    UserInfoOld foundUser = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
+    given(userForAdminRepository.findAdminUserFromUsername(foundUser.getUsername())).willReturn(foundUser);
 
-    UserForAdmin collaboratorToUpdate = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    organisation.updateCollaborator(collaboratorToUpdate);
+    UserInfoOld userToUpdate = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
+    organisation.updateUser(userToUpdate);
 
-    UserForAdmin expectedCollaborator = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    verify(userForAdminRepository).findAdminCollaboratorFromUsername(expectedCollaborator.getUsername());
-    verify(userForAdminRepository).updateCollaborator(expectedCollaborator);
+    UserInfoOld expectedUser = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
+    verify(userForAdminRepository).findAdminUserFromUsername(expectedUser.getUsername());
+    verify(userForAdminRepository).updateUser(expectedUser);
   }
 
   @Test
-  public void should_create_collaborator() throws Exception {
-    given(userForAdminRepository.findAdminCollaboratorFromUsername(any(Username.class))).willReturn(new UnknownBaseUserForAdminCollaborator());
+  public void should_create_user() throws Exception {
+    given(userForAdminRepository.findAdminUserFromUsername(any(Username.class))).willReturn(new UnknownUserInfo());
 
-    UserForAdmin collaboratorToCreate = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    organisation.createCollaborator(collaboratorToCreate);
+    UserInfoOld userToCreate = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
+    organisation.createUser(userToCreate);
 
-    UserForAdmin expectedCollaborator = UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    verify(userForAdminRepository).findAdminCollaboratorFromUsername(expectedCollaborator.getUsername());
-    verify(userForAdminRepository).createCollaborator(expectedCollaborator);
+    UserInfoOld expectedUser = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
+    verify(userForAdminRepository).findAdminUserFromUsername(expectedUser.getUsername());
+    verify(userForAdminRepository).createUser(expectedUser);
   }
 }

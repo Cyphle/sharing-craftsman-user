@@ -54,7 +54,7 @@ public class AuthenticationService {
       return ResponseEntity.ok(token);
     } catch (UnknownUserException e) {
       log.warn("Unauthorized user: " + loginDTO.getUsername() + ": " + e.getMessage());
-      return new ResponseEntity<>("Unauthorized collaborator", HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>("Unauthorized user", HttpStatus.UNAUTHORIZED);
     } catch (CredentialsException | UserException e) {
       log.warn("Error with loginDTO " + loginDTO.getUsername() + ": " + e.getMessage());
       return ResponseEntity

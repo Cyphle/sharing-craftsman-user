@@ -37,7 +37,7 @@ public class AuthorizationEntityAuthorizationManagerTest {
   }
 
   @Test
-  public void should_get_authorizations_of_collaborator() throws Exception {
+  public void should_get_authorizations_of_user() throws Exception {
     given(userAuthorizationRepository.findGroupsOf(username)).willReturn(Collections.singletonList(Group.from("USERS")));
     given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
 
@@ -52,19 +52,19 @@ public class AuthorizationEntityAuthorizationManagerTest {
   }
 
   @Test
-  public void should_add_given_group_to_collaborator() throws Exception {
+  public void should_add_given_group_to_user() throws Exception {
     authorizationManager.addGroup(username, Groups.USERS);
 
-    verify(userAuthorizationRepository).addGroupToCollaborator(username, Groups.USERS);
+    verify(userAuthorizationRepository).addGroupToUser(username, Groups.USERS);
   }
 
   @Test
-  public void should_not_add_group_if_collaborator_already_has_the_group() throws Exception {
+  public void should_not_add_group_if_user_already_has_the_group() throws Exception {
     given(userAuthorizationRepository.findGroupsOf(username)).willReturn(Collections.singletonList(Group.from("USERS")));
 
     authorizationManager.addGroup(username, Groups.USERS);
 
-    verify(userAuthorizationRepository, never()).addGroupToCollaborator(any(Username.class), any(Groups.class));
+    verify(userAuthorizationRepository, never()).addGroupToUser(any(Username.class), any(Groups.class));
   }
 
   @Test
@@ -75,21 +75,21 @@ public class AuthorizationEntityAuthorizationManagerTest {
   }
 
   @Test
-  public void should_not_remove_group_when_collaborator_does_not_have_it() throws Exception {
+  public void should_not_remove_group_when_user_does_not_have_it() throws Exception {
     given(userAuthorizationRepository.findGroupsOf(username)).willReturn(Collections.singletonList(Group.from("ÆDMINS")));
 
     authorizationManager.removeGroup(username, Groups.USERS);
 
-    verify(userAuthorizationRepository, never()).removeGroupFromCollaborator(any(Username.class), any(Groups.class));
+    verify(userAuthorizationRepository, never()).removeGroupFromUser(any(Username.class), any(Groups.class));
   }
 
   @Test
-  public void should_remove_group_when_collaborator_has_group() throws Exception {
+  public void should_remove_group_when_user_has_group() throws Exception {
     given(userAuthorizationRepository.findGroupsOf(username)).willReturn(Collections.singletonList(Group.from("USERS")));
 
     authorizationManager.removeGroup(username, Groups.USERS);
 
-    verify(userAuthorizationRepository).removeGroupFromCollaborator(any(Username.class), any(Groups.class));
+    verify(userAuthorizationRepository).removeGroupFromUser(any(Username.class), any(Groups.class));
   }
 
   @Test

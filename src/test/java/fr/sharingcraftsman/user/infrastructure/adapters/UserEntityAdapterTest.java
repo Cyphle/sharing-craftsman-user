@@ -41,9 +41,9 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_save_user_in_repository() throws Exception {
-    AbstractUser collaborator = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
+    AbstractUser user = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
 
-    userAdapter.createNewUser((User) collaborator);
+    userAdapter.createNewUser((User) user);
 
     UserEntity expectedUserEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     expectedUserEntity.setCreationDate(dateService.nowInDate());
@@ -55,19 +55,19 @@ public class UserEntityAdapterTest {
   public void should_get_user_by_username() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    AbstractUser collaborator = userAdapter.findUserFromUsername(Username.from("john@doe.fr"));
+    AbstractUser user = userAdapter.findUserFromUsername(Username.from("john@doe.fr"));
 
     User expected = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
-    assertThat((User) collaborator).isEqualTo(expected);
+    assertThat((User) user).isEqualTo(expected);
   }
 
   @Test
   public void should_find_user_by_username_and_password() throws Exception {
     given(userJpaRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    AbstractUser collaborator = userAdapter.findUserFromCredentials(Credentials.buildWithEncryption("john@doe.fr", "password"));
+    AbstractUser user = userAdapter.findUserFromCredentials(Credentials.buildWithEncryption("john@doe.fr", "password"));
 
-    assertThat((User) collaborator).isEqualTo(User.from(Credentials.buildWithEncryption("john@doe.fr", "password")));
+    assertThat((User) user).isEqualTo(User.from(Credentials.buildWithEncryption("john@doe.fr", "password")));
   }
 
   @Test

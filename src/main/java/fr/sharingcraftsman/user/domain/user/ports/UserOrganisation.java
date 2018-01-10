@@ -11,7 +11,7 @@ import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
 public interface UserOrganisation {
   Email findEmailOf(Username username);
 
-  void createNewCollaborator(Credentials credentials) throws UserException, CredentialsException;
+  void createNewUser(Credentials credentials) throws UserException, CredentialsException;
 
   ChangePasswordToken createChangePasswordTokenFor(Username username) throws UnknownUserException, CredentialsException;
 

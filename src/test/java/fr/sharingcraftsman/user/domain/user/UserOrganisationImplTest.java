@@ -48,19 +48,19 @@ public class UserOrganisationImplTest {
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(new UnknownUser());
     Credentials credentials = Credentials.build("john@doe.fr", "password");
 
-    userOrganisationImpl.createNewCollaborator(credentials);
+    userOrganisationImpl.createNewUser(credentials);
 
     User updatedUser = User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     verify(userRepository).createNewUser(updatedUser);
   }
 
   @Test
-  public void should_throw_collaborator_exception_if_user_already_exists() throws Exception {
+  public void should_throw_user_exception_if_user_already_exists() throws Exception {
     try {
       given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from(Username.from("john@doe.fr")));
       Credentials credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
 
-      userOrganisationImpl.createNewCollaborator(credentials);
+      userOrganisationImpl.createNewUser(credentials);
       fail("Should throw UserException");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("User already exists with username: john@doe.fr");
@@ -81,16 +81,16 @@ public class UserOrganisationImplTest {
   }
 
   @Test
-  public void should_throw_exception_if_collaborator_does_not_exists_when_creating_change_password_token() throws Exception {
+  public void should_throw_exception_if_user_does_not_exists_when_creating_change_password_token() throws Exception {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUser());
 
     try {
       Username username = Username.from("john@doe.fr");
       userOrganisationImpl.createChangePasswordTokenFor(username);
-      fail("Should have throw unknown collaborator exception");
+      fail("Should have throw unknown user exception");
     } catch (UserException e) {
-      assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
+      assertThat(e.getMessage()).isEqualTo("Unknown user");
     }
   }
 
@@ -113,15 +113,15 @@ public class UserOrganisationImplTest {
   }
 
   @Test
-  public void should_throw_unknown_collaborator_exception_if_collaborator_is_not_known() throws Exception {
+  public void should_throw_unknown_user_exception_if_user_is_not_known() throws Exception {
     try {
       given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(new UnknownUser());
       ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
       userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
-      fail("Should throw unkown collaborator exception");
+      fail("Should throw unkown user exception");
     } catch (UserException e) {
-      assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
+      assertThat(e.getMessage()).isEqualTo("Unknown user");
     }
   }
 
@@ -161,7 +161,7 @@ public class UserOrganisationImplTest {
   }
 
   @Test
-  public void should_update_profile_of_collaborator() throws Exception {
+  public void should_update_profile_of_user() throws Exception {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
     Profile profileToUpdate = Profile.from(
             Username.from("john@doe.fr"),
@@ -207,7 +207,7 @@ public class UserOrganisationImplTest {
   }
 
   @Test
-  public void should_throw_collaborator_exception_if_profile_is_not_known() throws Exception {
+  public void should_throw_user_exception_if_profile_is_not_known() throws Exception {
     try {
       given(userRepository.findProfileOf(any(Username.class))).willReturn(new UnknownProfile());
       AbstractProfile abstractProfileToUpdate = Profile.from(
@@ -220,14 +220,14 @@ public class UserOrganisationImplTest {
               Link.to("linkedin.com/johndoe"));
 
       userOrganisationImpl.updateProfile(abstractProfileToUpdate);
-      fail("Should have throw a collaborator exception when email is invalid");
+      fail("Should have throw a user exception when email is invalid");
     } catch (UserException e) {
-      assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
+      assertThat(e.getMessage()).isEqualTo("Unknown user");
     }
   }
 
   @Test
-  public void should_find_email_of_collaborator_if_email_is_present() throws Exception {
+  public void should_find_email_of_user_if_email_is_present() throws Exception {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, Email.from("johndoe@myapp.fr"), null, null, null));
 
     Email email = userOrganisationImpl.findEmailOf(credentials.getUsername());

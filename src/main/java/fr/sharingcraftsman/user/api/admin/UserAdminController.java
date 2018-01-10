@@ -33,7 +33,7 @@ public class UserAdminController {
                                @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.getUsers(clientDTO, tokenDTO);
+    return adminService.getAllUsers(clientDTO, tokenDTO);
   }
 
   @ApiOperation(value = "Endpoint to add user", response = ResponseEntity.class)
@@ -46,7 +46,7 @@ public class UserAdminController {
                                 @RequestHeader("secret") String secret,
                                 @RequestHeader("username") String username,
                                 @RequestHeader("access-token") String accessToken,
-                                @RequestBody AdminUserDTO user) {
+                                @RequestBody UserInfoDTO user) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return adminService.addUser(clientDTO, tokenDTO, user);
@@ -62,7 +62,7 @@ public class UserAdminController {
                                    @RequestHeader("secret") String secret,
                                    @RequestHeader("username") String username,
                                    @RequestHeader("access-token") String accessToken,
-                                   @RequestBody AdminUserDTO user) {
+                                   @RequestBody UserInfoDTO user) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return adminService.updateUser(clientDTO, tokenDTO, user);

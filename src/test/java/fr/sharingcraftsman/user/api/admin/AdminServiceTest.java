@@ -6,8 +6,8 @@ import fr.sharingcraftsman.user.api.authorization.GroupDTO;
 import fr.sharingcraftsman.user.api.authorization.RoleDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
-import fr.sharingcraftsman.user.domain.admin.exceptions.UnknownBaseUserForAdminCollaborator;
+import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
+import fr.sharingcraftsman.user.domain.admin.UnknownUserInfo;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
@@ -53,8 +53,8 @@ public class AdminServiceTest {
 
   private ClientDTO clientDTO;
   private TokenDTO tokenDTO;
-  private AdminUserDTO user;
-  private AdminUserDTO adminUser;
+  private UserInfoDTO user;
+  private UserInfoDTO adminUser;
 
   @Before
   public void setUp() throws Exception {
@@ -65,14 +65,14 @@ public class AdminServiceTest {
     group.addRole(new RoleDTO("ROLE_USER"));
     AuthorizationsDTO authorization = new AuthorizationsDTO();
     authorization.addGroup(group);
-    user = new AdminUserDTO("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
+    user = new UserInfoDTO("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
     user.setPassword("password");
 
     GroupDTO adminGroup = new GroupDTO("ADMINS");
     adminGroup.addRoles(Arrays.asList(new RoleDTO("ROLE_USER"), new RoleDTO("ROLE_ADMIN")));
     AuthorizationsDTO adminAuthorization = new AuthorizationsDTO();
     adminAuthorization.addGroup(adminGroup);
-    adminUser = new AdminUserDTO("admin@toto.fr", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", adminAuthorization, true, 1514631600000L, 1514631600000L);
+    adminUser = new UserInfoDTO("admin@toto.fr", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", adminAuthorization, true, 1514631600000L, 1514631600000L);
     adminUser.setPassword("password");
 
     clientDTO = new ClientDTO("client", "secret");
@@ -86,19 +86,19 @@ public class AdminServiceTest {
 
   @Test
   public void should_get_list_of_users_with_profile_and_authorizations() throws Exception {
-    List<UserForAdmin> collaborators = Arrays.asList(
-            UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date()),
-            UserForAdmin.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date())
+    List<UserInfoOld> users = Arrays.asList(
+            UserInfoOld.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date()),
+            UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date())
     );
-    given(userForAdminRepository.getAllCollaborators()).willReturn(collaborators);
+    given(userForAdminRepository.getAllUsers()).willReturn(users);
     given(userAuthorizationRepository.findGroupsOf(Username.from("john@doe.fr"))).willReturn(Collections.singletonList(Group.from("USERS")));
     given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
 
-    ResponseEntity response = adminService.getUsers(clientDTO, tokenDTO);
+    ResponseEntity response = adminService.getAllUsers(clientDTO, tokenDTO);
 
-    verify(userForAdminRepository).getAllCollaborators();
+    verify(userForAdminRepository).getAllUsers();
     assertThat(response.getBody()).isEqualTo(Arrays.asList(user, adminUser));
   }
 
@@ -106,7 +106,7 @@ public class AdminServiceTest {
   public void should_get_unauthorized_if_client_is_not_known() throws Exception {
     given(clientRepository.findClient(any(Client.class))).willReturn(UnknownClient.get());
 
-    ResponseEntity response = adminService.getUsers(clientDTO, tokenDTO);
+    ResponseEntity response = adminService.getAllUsers(clientDTO, tokenDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
@@ -116,7 +116,7 @@ public class AdminServiceTest {
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("USERS")));
     given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
 
-    ResponseEntity response = adminService.getUsers(clientDTO, tokenDTO);
+    ResponseEntity response = adminService.getAllUsers(clientDTO, tokenDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
@@ -125,45 +125,45 @@ public class AdminServiceTest {
   public void should_delete_user() throws Exception {
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
-    Mockito.doNothing().when(userForAdminRepository).deleteCollaborator(any(Username.class));
-    given(userForAdminRepository.findCollaboratorFromUsername(Username.from("hello@world.fr"))).willReturn(User.from("hello@world.fr", "passwrdo"));
+    Mockito.doNothing().when(userForAdminRepository).deleteUser(any(Username.class));
+    given(userForAdminRepository.findUserFromUsername(Username.from("hello@world.fr"))).willReturn(User.from("hello@world.fr", "passwrdo"));
 
     ResponseEntity response = adminService.deleteUser(clientDTO, tokenDTO, "hello@world.fr");
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    verify(userForAdminRepository).deleteCollaborator(Username.from("hello@world.fr"));
+    verify(userForAdminRepository).deleteUser(Username.from("hello@world.fr"));
   }
 
   @Test
   public void should_update_user() throws Exception {
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
-    given(userForAdminRepository.findAdminCollaboratorFromUsername(Username.from("john@doe.fr"))).willReturn(
-            UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date())
+    given(userForAdminRepository.findAdminUserFromUsername(Username.from("john@doe.fr"))).willReturn(
+            UserInfoOld.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date())
     );
 
     GroupDTO group = new GroupDTO("USERS");
     group.addRole(new RoleDTO("ROLE_USER"));
     AuthorizationsDTO authorization = new AuthorizationsDTO();
     authorization.addGroup(group);
-    AdminUserDTO userToUpdate = new AdminUserDTO("john@doe.fr", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
+    UserInfoDTO userToUpdate = new UserInfoDTO("john@doe.fr", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
     userToUpdate.setPassword("password");
     adminService.updateUser(clientDTO, tokenDTO, userToUpdate);
 
-    UserForAdmin updatedUser = UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date());
-    verify(userForAdminRepository).updateCollaborator(updatedUser);
+    UserInfoOld updatedUser = UserInfoOld.from("john@doe.fr", "password", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date());
+    verify(userForAdminRepository).updateUser(updatedUser);
   }
 
   @Test
   public void should_create_a_new_user() throws Exception {
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
-    given(userForAdminRepository.findAdminCollaboratorFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownBaseUserForAdminCollaborator());
+    given(userForAdminRepository.findAdminUserFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUserInfo());
 
     adminService.addUser(clientDTO, tokenDTO, user);
 
-    UserForAdmin newCollaborator = UserForAdmin.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date());
-    verify(userForAdminRepository).createCollaborator(newCollaborator);
+    UserInfoOld newUser = UserInfoOld.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date());
+    verify(userForAdminRepository).createUser(newUser);
   }
 
   @Test

@@ -1,6 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
-import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
+import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.*;
 import fr.sharingcraftsman.user.domain.user.Profile;
@@ -170,14 +170,14 @@ public class UserEntity {
     linkedin = userEntity.linkedin;
   }
 
-  public void updateFromAdminCollaborator(UserForAdmin collaborator) {
-    username = collaborator.getUsernameContent();
-    firstname = collaborator.getFirstname();
-    lastname = collaborator.getLastname();
-    email = collaborator.getEmail();
-    website = collaborator.getWebsite();
-    github = collaborator.getGithub();
-    linkedin = collaborator.getLinkedin();
+  public void updateFromAdminUser(UserInfoOld user) {
+    username = user.getUsernameContent();
+    firstname = user.getFirstname();
+    lastname = user.getLastname();
+    email = user.getEmail();
+    website = user.getWebsite();
+    github = user.getGithub();
+    linkedin = user.getLinkedin();
   }
 
   public static UserEntity fromDomainToInfra(User user) {
@@ -191,21 +191,21 @@ public class UserEntity {
     );
   }
 
-  public static UserEntity fromDomainToInfra(UserForAdmin collaborator) {
+  public static UserEntity fromDomainToInfra(UserInfoOld user) {
     return new UserEntity(
-            collaborator.getUsernameContent(),
-            collaborator.getFirstname(),
-            collaborator.getLastname(),
-            collaborator.getEmail(),
-            collaborator.getWebsite(),
-            collaborator.getGithub(),
-            collaborator.getLinkedin()
+            user.getUsernameContent(),
+            user.getFirstname(),
+            user.getLastname(),
+            user.getEmail(),
+            user.getWebsite(),
+            user.getGithub(),
+            user.getLinkedin()
     );
   }
 
-  public static List<UserForAdmin> fromInfraToAdminDomain(List<UserEntity> userEntities) {
+  public static List<UserInfoOld> fromInfraToAdminDomain(List<UserEntity> userEntities) {
     return userEntities.stream()
-            .map(user -> UserForAdmin.from(
+            .map(user -> UserInfoOld.from(
                     user.getUsername(),
                     user.getPassword(),
                     user.getFirstname(),
@@ -221,8 +221,8 @@ public class UserEntity {
             .collect(Collectors.toList());
   }
 
-  public static UserForAdmin fromInfraToAdminDomain(UserEntity userEntity) {
-    return UserForAdmin.from(
+  public static UserInfoOld fromInfraToAdminDomain(UserEntity userEntity) {
+    return UserInfoOld.from(
             userEntity.getUsername(),
             userEntity.getPassword(),
             userEntity.getFirstname(),

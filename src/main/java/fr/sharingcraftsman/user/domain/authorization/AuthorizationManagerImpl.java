@@ -53,7 +53,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
   public void addGroup(Username username, Groups groupToAdd) {
     List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
     if (doesNotAlreadyHaveGroup(groupToAdd, groups)) {
-      userAuthorizationRepository.addGroupToCollaborator(username, groupToAdd);
+      userAuthorizationRepository.addGroupToUser(username, groupToAdd);
     }
   }
 
@@ -61,7 +61,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
   public void removeGroup(Username username, Groups groupToRemove) {
     List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
     if (hasGivenGroup(groupToRemove, groups)) {
-      userAuthorizationRepository.removeGroupFromCollaborator(username, groupToRemove);
+      userAuthorizationRepository.removeGroupFromUser(username, groupToRemove);
     }
   }
 

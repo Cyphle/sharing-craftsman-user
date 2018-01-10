@@ -18,38 +18,38 @@ public class AdministrationImpl implements Administration {
   }
 
   @Override
-  public List<UserForAdmin> getAllCollaborators() {
-    return userForAdminRepository.getAllCollaborators();
+  public List<UserInfoOld> getAllUsers() {
+    return userForAdminRepository.getAllUsers();
   }
 
   @Override
-  public void createCollaborator(UserForAdmin collaborator) throws AlreadyExistingUserException {
-    BaseUserForAdmin foundCollaborator = userForAdminRepository.findAdminCollaboratorFromUsername(collaborator.getUsername());
+  public void createUser(UserInfoOld user) throws AlreadyExistingUserException {
+    AbstractUserInfo foundUser = userForAdminRepository.findAdminUserFromUsername(user.getUsername());
 
-    if (foundCollaborator.isKnown())
-      throw new AlreadyExistingUserException("User already exists with username: " + collaborator.getUsernameContent());
+    if (foundUser.isKnown())
+      throw new AlreadyExistingUserException("User already exists with username: " + user.getUsernameContent());
 
-    userForAdminRepository.createCollaborator(collaborator);
+    userForAdminRepository.createUser(user);
   }
 
   @Override
-  public void updateCollaborator(UserForAdmin collaborator) throws UnknownUserException {
-    BaseUserForAdmin collaboratorToUpdate = userForAdminRepository.findAdminCollaboratorFromUsername(collaborator.getUsername());
+  public void updateUser(UserInfoOld user) throws UnknownUserException {
+    AbstractUserInfo userToUpdate = userForAdminRepository.findAdminUserFromUsername(user.getUsername());
 
-    if (!collaboratorToUpdate.isKnown())
-      throw new UnknownUserException("Unknown collaborator");
+    if (!userToUpdate.isKnown())
+      throw new UnknownUserException("Unknown user");
 
-    ((UserForAdmin) collaboratorToUpdate).updateFields(collaborator);
-    userForAdminRepository.updateCollaborator((UserForAdmin) collaboratorToUpdate);
+    ((UserInfoOld) userToUpdate).updateFields(user);
+    userForAdminRepository.updateUser((UserInfoOld) userToUpdate);
   }
 
   @Override
-  public void deleteCollaborator(Username username) throws UserException {
-    AbstractUser user = userForAdminRepository.findCollaboratorFromUsername(username);
+  public void deleteUser(Username username) throws UserException {
+    AbstractUser user = userForAdminRepository.findUserFromUsername(username);
 
     if (!user.isKnown())
       throw new UnknownUserException("Unknown user");
 
-    userForAdminRepository.deleteCollaborator(username);
+    userForAdminRepository.deleteUser(username);
   }
 }

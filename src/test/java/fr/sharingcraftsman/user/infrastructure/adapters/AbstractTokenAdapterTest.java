@@ -49,7 +49,7 @@ public class AbstractTokenAdapterTest {
   }
 
   @Test
-  public void should_delete_tokens_of_collaborator() throws Exception {
+  public void should_delete_tokens_of_user() throws Exception {
     Mockito.doNothing().when(accessTokenJpaRepository).deleteByUsername(any(String.class), any(String.class));
 
     tokenAdapter.deleteTokensOf(user, client);
@@ -58,7 +58,7 @@ public class AbstractTokenAdapterTest {
   }
 
   @Test
-  public void should_create_token_for_collaborator() throws Exception {
+  public void should_create_token_for_user() throws Exception {
     AccessTokenEntity accessTokenEntity = new AccessTokenEntity();
     accessTokenEntity.setClient("client");
     accessTokenEntity.setUsername("john@doe.fr");
