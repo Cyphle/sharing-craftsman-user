@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authentication.BaseToken;
@@ -65,7 +66,7 @@ public class BaseTokenAdapterTest {
     accessTokenEntity.setUsername("john@doe.fr");
     accessTokenEntity.setAccessToken(generateToken("clientjohn@doe.fr"));
     accessTokenEntity.setRefreshToken(generateToken("clientjohn@doe.fr"));
-    accessTokenEntity.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+    accessTokenEntity.setExpirationDate(DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0)));
     given(accessTokenJpaRepository.save(any(AccessTokenEntity.class))).willReturn(accessTokenEntity);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     AccessToken token = AccessToken.from(
@@ -84,7 +85,7 @@ public class BaseTokenAdapterTest {
 
   @Test
   public void should_return_a_valid_token_when_access_token_found() throws Exception {
-    given(accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(new AccessTokenEntity("john@doe.fr", "client", "aaa", "bbb", Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant())));
+    given(accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(new AccessTokenEntity("john@doe.fr", "client", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
 
     BaseToken foundBaseToken = tokenAdapter.findTokenFromAccessToken(client, credentials.getUsername(), token);
 
@@ -102,7 +103,7 @@ public class BaseTokenAdapterTest {
 
   @Test
   public void should_return_a_valid_token_when_refresh_token_found() throws Exception {
-    given(accessTokenJpaRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(new AccessTokenEntity("john@doe.fr", "client", "aaa", "bbb", Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant())));
+    given(accessTokenJpaRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(new AccessTokenEntity("john@doe.fr", "client", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
     AccessToken refreshToken = AccessToken.fromOnlyRefreshToken("bbb");
 
     BaseToken foundBaseToken = tokenAdapter.findTokenFromRefreshToken(client, credentials.getUsername(), refreshToken);

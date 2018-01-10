@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.infrastructure.repositories;
 
 import fr.sharingcraftsman.user.UserApplication;
+import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.infrastructure.models.AccessTokenEntity;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class AccessBaseTokenJpaRepositoryTest {
     accessTokenEntity.setUsername("john@doe.fr");
     accessTokenEntity.setAccessToken("aaa");
     accessTokenEntity.setRefreshToken("bbb");
-    accessTokenEntity.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+    accessTokenEntity.setExpirationDate(DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0)));
 
     entityManager.persist(accessTokenEntity);
   }

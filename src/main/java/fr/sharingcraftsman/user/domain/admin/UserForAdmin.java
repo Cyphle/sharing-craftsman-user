@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.domain.admin;
 
+import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.domain.common.*;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -127,7 +128,7 @@ public class UserForAdmin extends BaseUserForAdmin {
   }
 
   private LocalDateTime fromDateToLocalDatetime(Date date) {
-    return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+    return DateConverter.fromDateToLocalDateTime(date);
   }
 
   @Override

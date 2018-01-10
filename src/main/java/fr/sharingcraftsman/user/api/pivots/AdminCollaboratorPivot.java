@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.pivots;
 
 import fr.sharingcraftsman.user.api.admin.AdminUserDTO;
+import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 
 import java.time.Instant;
@@ -19,12 +20,8 @@ public class AdminCollaboratorPivot {
             user.getGithub(),
             user.getLinkedin(),
             user.isActive(),
-            fromLongToLocalDateTime(user.getCreationDate()),
-            fromLongToLocalDateTime(user.getLastUpdateDate())
+            DateConverter.fromLongToLocalDateTime(user.getCreationDate()),
+            DateConverter.fromLongToLocalDateTime(user.getLastUpdateDate())
     );
-  }
-
-  private static LocalDateTime fromLongToLocalDateTime(long value) {
-    return LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneId.systemDefault());
   }
 }

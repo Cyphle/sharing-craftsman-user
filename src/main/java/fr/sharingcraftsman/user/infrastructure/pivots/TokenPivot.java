@@ -17,7 +17,7 @@ public class TokenPivot {
     accessTokenEntity.setUsername(user.getUsername());
     accessTokenEntity.setAccessToken(token.getAccessToken());
     accessTokenEntity.setRefreshToken(token.getRefreshToken());
-    accessTokenEntity.setExpirationDate(Date.from(token.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
+    accessTokenEntity.setExpirationDate(DateConverter.fromLocalDateTimeToDate(token.getExpirationDate()));
     return accessTokenEntity;
   }
 

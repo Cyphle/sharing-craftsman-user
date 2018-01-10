@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.admin.BaseUserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
@@ -37,7 +38,7 @@ public class HRAdminAdapterTest {
   @Before
   public void setUp() throws Exception {
     hrAdminAdapter = new UserForAdminAdapter(userJpaRepository, dateService);
-    given(dateService.nowInDate()).willReturn(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
+    given(dateService.nowInDate()).willReturn(DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0)));
   }
 
   @Test
