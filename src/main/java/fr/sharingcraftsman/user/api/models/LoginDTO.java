@@ -8,20 +8,20 @@ public class LoginDTO {
   @ApiModelProperty(example = "client")
   private String password;
   @ApiModelProperty(example = "true, false")
-  private boolean stayLogged;
+  private boolean persistentLogging;
 
   public LoginDTO() { }
 
   public LoginDTO(String username, String password) {
     this.username = username;
     this.password = password;
-    this.stayLogged = false;
+    this.persistentLogging = false;
   }
 
-  public LoginDTO(String username, String password, boolean stayLogged) {
+  public LoginDTO(String username, String password, boolean persistentLogging) {
     this.username = username;
     this.password = password;
-    this.stayLogged = stayLogged;
+    this.persistentLogging = persistentLogging;
   }
 
   public String getUsername() {
@@ -41,6 +41,6 @@ public class LoginDTO {
   }
 
   public boolean isPersistentLogging() {
-    return stayLogged;
+    return persistentLogging;
   }
 }
