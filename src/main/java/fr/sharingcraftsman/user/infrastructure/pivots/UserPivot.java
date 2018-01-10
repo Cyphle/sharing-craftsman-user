@@ -16,7 +16,10 @@ public class UserPivot {
   }
 
   public static User fromInfraToDomain(UserEntity userEntity) throws CredentialsException {
-    return User.from(userEntity.getUsername(), userEntity.getPassword());
+    return User.from(
+            userEntity.getUsername(),
+            userEntity.getPassword() != null ? userEntity.getPassword() : "UNSET"
+    );
   }
 
   public static UserEntity fromDomainToInfra(UserForAdmin collaborator) {

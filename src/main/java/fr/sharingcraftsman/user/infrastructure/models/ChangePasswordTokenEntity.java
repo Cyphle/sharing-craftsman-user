@@ -1,13 +1,12 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "change_password_key_token")
+@Table(name = "change_password_token")
 @ToString
 public class ChangePasswordTokenEntity {
   @Id

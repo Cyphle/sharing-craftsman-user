@@ -31,13 +31,14 @@ public class ChangePasswordTokenAdapter implements ChangePasswordTokenRepository
   }
 
   @Override
-  public void deleteChangePasswordKeyOf(Username username) {
+  public void deleteChangePasswordTokenOf(Username username) {
     ChangePasswordTokenEntity token = changePasswordTokenRepository.findByUsername(username.getUsername());
-    changePasswordTokenRepository.delete(token);
+    if (token != null)
+      changePasswordTokenRepository.delete(token);
   }
 
   @Override
-  public ChangePasswordToken createChangePasswordKeyFor(ChangePasswordToken changePasswordToken) throws CredentialsException {
+  public ChangePasswordToken createChangePasswordTokenFor(ChangePasswordToken changePasswordToken) throws CredentialsException {
     ChangePasswordTokenEntity token = ChangePasswordTokenPivot.fromDomainToInfra(changePasswordToken);
     User user = UserPivot.fromInfraToDomain(userRepository.findByUsername(changePasswordToken.getUsername()));
     return ChangePasswordTokenPivot.fromInfraToDomain(user, changePasswordTokenRepository.save(token));

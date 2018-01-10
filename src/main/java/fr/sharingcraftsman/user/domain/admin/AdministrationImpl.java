@@ -24,10 +24,10 @@ public class AdministrationImpl implements Administration {
 
   @Override
   public void deleteCollaborator(Username username) throws UserException {
-    BaseUser collaborator = userForAdminRepository.findCollaboratorFromUsername(username);
+    BaseUser user = userForAdminRepository.findCollaboratorFromUsername(username);
 
-    if (!collaborator.isKnown())
-      throw new UnknownUserException("Unknown collaborator");
+    if (!user.isKnown())
+      throw new UnknownUserException("Unknown user");
 
     userForAdminRepository.deleteCollaborator(username);
   }

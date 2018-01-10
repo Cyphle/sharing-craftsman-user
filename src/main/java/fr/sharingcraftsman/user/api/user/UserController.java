@@ -40,10 +40,10 @@ public class UserController {
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.GET, value = "/request-change-password")
-  public ResponseEntity requestChangePasswordKey(@RequestHeader("client") String client,
-                                                 @RequestHeader("secret") String secret,
-                                                 @RequestHeader("username") String username,
-                                                 @RequestHeader("access-token") String accessToken) {
+  public ResponseEntity requestChangePasswordToken(@RequestHeader("client") String client,
+                                                   @RequestHeader("secret") String secret,
+                                                   @RequestHeader("username") String username,
+                                                   @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
     return userService.requestChangePassword(clientDTO, tokenDTO);
@@ -65,7 +65,7 @@ public class UserController {
     return userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
   }
 
-  @ApiOperation(value = "Endpoint to generate key when lost password", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to generate token when lost password", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -75,7 +75,7 @@ public class UserController {
                                        @RequestHeader("secret") String secret,
                                        @RequestHeader("username") String username) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
-    return userService.generateLostPasswordKey(clientDTO, username);
+    return userService.generateLostPasswordToken(clientDTO, username);
   }
 
   @ApiOperation(value = "Update profile endpoint", response = ProfileDTO.class)

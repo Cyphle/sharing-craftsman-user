@@ -34,17 +34,17 @@ public class ChangePasswordTokenAdapterTest {
   }
 
   @Test
-  public void should_delete_user_change_password_key() throws Exception {
+  public void should_delete_user_change_password_token() throws Exception {
     given(changePasswordTokenJpaRepository.findByUsername("john@doe.fr")).willReturn(new ChangePasswordTokenEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date()));
 
-    changePasswordTokenAdapter.deleteChangePasswordKeyOf(Username.from("john@doe.fr"));
+    changePasswordTokenAdapter.deleteChangePasswordTokenOf(Username.from("john@doe.fr"));
 
     ChangePasswordTokenEntity token = new ChangePasswordTokenEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date());
     verify(changePasswordTokenJpaRepository).delete(token);
   }
 
   @Test
-  public void should_create_change_password_token_with_change_password_key() throws Exception {
+  public void should_create_change_password_token_with_change_password_token() throws Exception {
     given(userRepository.findByUsername(any(String.class))).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
     given(changePasswordTokenJpaRepository.save(any(ChangePasswordTokenEntity.class))).willReturn(new ChangePasswordTokenEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date()));
 
@@ -53,7 +53,7 @@ public class ChangePasswordTokenAdapterTest {
             "aaa",
             LocalDateTime.of(2017, 12, 25, 12, 0)
     );
-    changePasswordTokenAdapter.createChangePasswordKeyFor(changePasswordToken);
+    changePasswordTokenAdapter.createChangePasswordTokenFor(changePasswordToken);
 
     ChangePasswordTokenEntity token = new ChangePasswordTokenEntity("john@doe.fr", "aaa", new Date());
     verify(changePasswordTokenJpaRepository).save(token);

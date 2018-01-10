@@ -5,11 +5,11 @@ import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.user.ChangePasswordToken;
 
 public class ChangePasswordTokenForLostPasswordDTO {
-  private final ChangePasswordTokenDTO changePasswordKey;
+  private final ChangePasswordTokenDTO changePasswordToken;
   private final EmailDTO email;
 
   public ChangePasswordTokenForLostPasswordDTO(ChangePasswordToken changePasswordToken, Email email) {
-    this.changePasswordKey = ChangePasswordTokenPivot.fromDomainToApi(changePasswordToken);
+    this.changePasswordToken = ChangePasswordTokenPivot.fromDomainToApi(changePasswordToken);
     this.email = EmailDTO.fromDomainToApi(email);
   }
 }

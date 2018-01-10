@@ -6,6 +6,6 @@ import fr.sharingcraftsman.user.domain.user.ChangePasswordInfo;
 
 public class ChangePasswordPivot {
   public static ChangePasswordInfo fromApiToDomain(ChangePasswordDTO changePasswordDTO) throws PasswordException {
-    return ChangePasswordInfo.from(changePasswordDTO.getChangePasswordKey(), changePasswordDTO.getOldPassword(), changePasswordDTO.getNewPassword());
+    return ChangePasswordInfo.from(changePasswordDTO.getChangePasswordToken(), changePasswordDTO.getOldPassword(), changePasswordDTO.getNewPassword());
   }
 }

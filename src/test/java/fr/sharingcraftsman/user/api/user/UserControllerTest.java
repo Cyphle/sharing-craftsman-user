@@ -104,7 +104,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void should_generate_key_when_lost_password() throws Exception {
+  public void should_generate_token_when_lost_password() throws Exception {
     given(userService.requestChangePassword(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(get("/users/lost-password")

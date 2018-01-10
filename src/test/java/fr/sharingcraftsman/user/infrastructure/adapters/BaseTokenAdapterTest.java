@@ -63,14 +63,14 @@ public class BaseTokenAdapterTest {
     AccessTokenEntity accessTokenEntity = new AccessTokenEntity();
     accessTokenEntity.setClient("client");
     accessTokenEntity.setUsername("john@doe.fr");
-    accessTokenEntity.setAccessToken(generateKey("clientjohn@doe.fr"));
-    accessTokenEntity.setRefreshToken(generateKey("clientjohn@doe.fr"));
+    accessTokenEntity.setAccessToken(generateToken("clientjohn@doe.fr"));
+    accessTokenEntity.setRefreshToken(generateToken("clientjohn@doe.fr"));
     accessTokenEntity.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
     given(accessTokenJpaRepository.save(any(AccessTokenEntity.class))).willReturn(accessTokenEntity);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     AccessToken token = AccessToken.from(
-            generateKey(client.getName() + user.getUsername()),
-            generateKey(client.getName() + user.getUsername()),
+            generateToken(client.getName() + user.getUsername()),
+            generateToken(client.getName() + user.getUsername()),
             dateService.getDayAt(8)
     );
 
@@ -119,7 +119,7 @@ public class BaseTokenAdapterTest {
     assertThat(foundBaseToken.isValid()).isFalse();
   }
 
-  private String generateKey(String seed) {
+  private String generateToken(String seed) {
     SecureRandom random = new SecureRandom(seed.getBytes());
     byte bytes[] = new byte[96];
     random.nextBytes(bytes);

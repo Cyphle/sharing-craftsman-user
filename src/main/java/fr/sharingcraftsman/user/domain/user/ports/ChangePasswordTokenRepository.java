@@ -7,7 +7,7 @@ import fr.sharingcraftsman.user.domain.user.ChangePasswordToken;
 public interface ChangePasswordTokenRepository {
   ChangePasswordToken findByUsername(Username username) throws CredentialsException;
 
-  void deleteChangePasswordKeyOf(Username username);
+  void deleteChangePasswordTokenOf(Username username);
 
-  ChangePasswordToken createChangePasswordKeyFor(ChangePasswordToken changePasswordToken) throws CredentialsException;
+  ChangePasswordToken createChangePasswordTokenFor(ChangePasswordToken changePasswordToken) throws CredentialsException;
 }

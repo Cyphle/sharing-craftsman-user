@@ -131,8 +131,8 @@ public class UserServiceTest {
   public void should_get_change_password_token_when_requesting_to_change_password() throws Exception {
     User user = User.from("john@doe.fr", "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
-    ChangePasswordToken key = ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
-    given(changePasswordTokenRepository.createChangePasswordKeyFor(any(ChangePasswordToken.class))).willReturn(key);
+    ChangePasswordToken token = ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
+    given(changePasswordTokenRepository.createChangePasswordTokenFor(any(ChangePasswordToken.class))).willReturn(token);
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
@@ -161,7 +161,7 @@ public class UserServiceTest {
     ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
     changePasswordDTO.setOldPassword("password");
     changePasswordDTO.setNewPassword("newpassword");
-    changePasswordDTO.setChangePasswordKey("aaa");
+    changePasswordDTO.setChangePasswordToken("aaa");
     ResponseEntity response = userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -183,14 +183,14 @@ public class UserServiceTest {
   }
 
   @Test
-  public void should_generate_key_when_lost_password() throws Exception {
+  public void should_generate_token_when_lost_password() throws Exception {
     User user = User.from("john@doe.fr", "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
-    ChangePasswordToken key = ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
-    given(changePasswordTokenRepository.createChangePasswordKeyFor(any(ChangePasswordToken.class))).willReturn(key);
+    ChangePasswordToken token = ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
+    given(changePasswordTokenRepository.createChangePasswordTokenFor(any(ChangePasswordToken.class))).willReturn(token);
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
 
-    ResponseEntity response = userService.generateLostPasswordKey(clientDTO, "john@doe.fr");
+    ResponseEntity response = userService.generateLostPasswordToken(clientDTO, "john@doe.fr");
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

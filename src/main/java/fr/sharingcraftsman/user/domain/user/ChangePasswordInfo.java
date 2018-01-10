@@ -4,12 +4,12 @@ import fr.sharingcraftsman.user.domain.common.Password;
 import fr.sharingcraftsman.user.domain.common.PasswordException;
 
 public class ChangePasswordInfo {
-  private String changePasswordKey;
+  private String changePasswordToken;
   private final Password oldPassword;
   private final Password newPassword;
 
-  private ChangePasswordInfo(String changePasswordKey, Password oldPassword, Password newPassword) {
-    this.changePasswordKey = changePasswordKey;
+  private ChangePasswordInfo(String changePasswordToken, Password oldPassword, Password newPassword) {
+    this.changePasswordToken = changePasswordToken;
     this.oldPassword = oldPassword;
     this.newPassword = newPassword;
   }
@@ -22,11 +22,11 @@ public class ChangePasswordInfo {
     return oldPassword;
   }
 
-  public static ChangePasswordInfo from(String changePasswordKey, String oldPassword, String newPassword) throws PasswordException {
-    return new ChangePasswordInfo(changePasswordKey, Password.from(oldPassword), Password.from(newPassword));
+  public static ChangePasswordInfo from(String changePasswordToken, String oldPassword, String newPassword) throws PasswordException {
+    return new ChangePasswordInfo(changePasswordToken, Password.from(oldPassword), Password.from(newPassword));
   }
 
-  public String getChangePasswordKey() {
-    return changePasswordKey;
+  public String getChangePasswordToken() {
+    return changePasswordToken;
   }
 }

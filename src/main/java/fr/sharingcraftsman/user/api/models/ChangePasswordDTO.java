@@ -1,19 +1,19 @@
 package fr.sharingcraftsman.user.api.models;
 
 public class ChangePasswordDTO {
-  private String changePasswordKey;
+  private String changePasswordToken;
   private String oldPassword;
   private String newPassword;
 
   public ChangePasswordDTO() {
   }
 
-  public String getChangePasswordKey() {
-    return changePasswordKey;
+  public String getChangePasswordToken() {
+    return changePasswordToken;
   }
 
-  public void setChangePasswordKey(String changePasswordKey) {
-    this.changePasswordKey = changePasswordKey;
+  public void setChangePasswordToken(String changePasswordToken) {
+    this.changePasswordToken = changePasswordToken;
   }
 
   public String getOldPassword() {

@@ -56,7 +56,7 @@ public class UserOrganisationImplAdminTest {
       organisation.deleteCollaborator(Username.from("hello@world.fr"));
       fail("Should have throw collaborator exception when not found");
     } catch (UserException e) {
-      assertThat(e.getMessage()).isEqualTo("Unknown collaborator");
+      assertThat(e.getMessage()).isEqualTo("Unknown user");
     }
   }
 

@@ -151,7 +151,7 @@ public class UserService {
     }
   }
 
-  public ResponseEntity generateLostPasswordKey(ClientDTO clientDTO, String username) {
+  public ResponseEntity generateLostPasswordToken(ClientDTO clientDTO, String username) {
     if (!clientOrganisation.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
       log.warn("Un authorized client:" + clientDTO.getName());
       return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
@@ -160,8 +160,8 @@ public class UserService {
     try {
       ChangePasswordToken changePasswordToken = userOrganisation.createChangePasswordTokenFor(Username.from(username));
       Email email = userOrganisation.findEmailOf(Username.from(username));
-      ChangePasswordTokenForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordTokenForLostPasswordDTO(changePasswordToken, email);
-      return ResponseEntity.ok(changePasswordKeyForLostPassword);
+      ChangePasswordTokenForLostPasswordDTO changePasswordTokenForLostPassword = new ChangePasswordTokenForLostPasswordDTO(changePasswordToken, email);
+      return ResponseEntity.ok(changePasswordTokenForLostPassword);
     } catch (UserException | CredentialsException e) {
       log.warn("Error: " + e.getMessage());
       return ResponseEntity

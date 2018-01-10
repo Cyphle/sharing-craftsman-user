@@ -56,7 +56,7 @@ public class AdminService {
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
   }
 
-  public ResponseEntity getUsers(ClientDTO clientDTO, TokenDTO tokenDTO) {
+  ResponseEntity getUsers(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
@@ -90,7 +90,7 @@ public class AdminService {
     return ResponseEntity.ok(users);
   }
 
-  public ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
+  ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
@@ -107,7 +107,7 @@ public class AdminService {
     }
   }
 
-  public ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
+  ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
@@ -125,7 +125,7 @@ public class AdminService {
     }
   }
 
-  public ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
+  ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, AdminUserDTO user) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
@@ -171,7 +171,7 @@ public class AdminService {
     }
   }
 
-  public ResponseEntity removeGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
+  ResponseEntity removeGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
@@ -188,7 +188,7 @@ public class AdminService {
     }
   }
 
-  public ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
+  ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
@@ -198,7 +198,7 @@ public class AdminService {
     return ResponseEntity.ok().build();
   }
 
-  public ResponseEntity removeRoleFromGroup(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
+  ResponseEntity removeRoleFromGroup(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
     if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);

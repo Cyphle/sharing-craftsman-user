@@ -42,13 +42,13 @@ public class UserOrganisationImpl implements UserOrganisation {
     if (!collaboratorExists(username))
       throw new UnknownUserException("Unknown collaborator");
 
-    changePasswordTokenRepository.deleteChangePasswordKeyOf(username);
+    changePasswordTokenRepository.deleteChangePasswordTokenOf(username);
     ChangePasswordToken changePasswordToken = ChangePasswordToken.from(
             User.from(username),
             crypter.encrypt(username.getUsername()),
             dateService.getDayAt(1)
     );
-    return changePasswordTokenRepository.createChangePasswordKeyFor(changePasswordToken);
+    return changePasswordTokenRepository.createChangePasswordTokenFor(changePasswordToken);
   }
 
   @Override
@@ -60,11 +60,11 @@ public class UserOrganisationImpl implements UserOrganisation {
       throw new UnknownUserException("Unknown collaborator");
 
     ChangePasswordToken token = changePasswordTokenRepository.findByUsername(username);
-    checkChangePasswordKeyValidity(changePasswordInfo, token);
+    checkChangePasswordTokenValidity(changePasswordInfo, token);
 
     ((User) baseUser).setPassword(changePasswordInfo.getNewPassword().getEncryptedVersion());
     userRepository.updateUserPassword((User) baseUser);
-    changePasswordTokenRepository.deleteChangePasswordKeyOf(username);
+    changePasswordTokenRepository.deleteChangePasswordTokenOf(username);
   }
 
   @Override
@@ -97,8 +97,8 @@ public class UserOrganisationImpl implements UserOrganisation {
     return Email.from("");
   }
 
-  private void checkChangePasswordKeyValidity(ChangePasswordInfo changePasswordInfo, ChangePasswordToken token) throws InvalidChangePasswordTokenException {
-    if (!changePasswordInfo.getChangePasswordKey().equals(token.getToken()) || token.getExpirationDate().isBefore(dateService.now()))
+  private void checkChangePasswordTokenValidity(ChangePasswordInfo changePasswordInfo, ChangePasswordToken token) throws InvalidChangePasswordTokenException {
+    if (!changePasswordInfo.getChangePasswordToken().equals(token.getToken()) || token.getExpirationDate().isBefore(dateService.now()))
       throw new InvalidChangePasswordTokenException("Invalid token to change password");
   }
 

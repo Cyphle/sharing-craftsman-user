@@ -13,9 +13,6 @@ public class AdminUserDTO {
   private String website;
   private String github;
   private String linkedin;
-  private boolean active;
-  private String changePasswordKey = "";
-  private long changePasswordKeyExpirationDate;
   private AuthorizationsDTO authorizations;
   private boolean isActive;
   private long creationDate;
@@ -49,7 +46,7 @@ public class AdminUserDTO {
     this.lastUpdateDate = lastUpdateDate;
   }
 
-  public AdminUserDTO(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean active, long creationDate, long lastUpdateDate) {
+  public AdminUserDTO(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, long creationDate, long lastUpdateDate) {
     this.username = username;
     this.password = password;
     this.firstname = firstname;
@@ -58,7 +55,7 @@ public class AdminUserDTO {
     this.website = website;
     this.github = github;
     this.linkedin = linkedin;
-    this.active = active;
+    this.isActive = isActive;
     this.creationDate = creationDate;
     this.lastUpdateDate = lastUpdateDate;
   }
@@ -135,14 +132,6 @@ public class AdminUserDTO {
     this.authorizations = authorizations;
   }
 
-  public String getChangePasswordKey() {
-    return changePasswordKey;
-  }
-
-  public long getChangePasswordKeyExpirationDate() {
-    return changePasswordKeyExpirationDate;
-  }
-
   public boolean isActive() {
     return isActive;
   }
@@ -174,7 +163,6 @@ public class AdminUserDTO {
 
     AdminUserDTO that = (AdminUserDTO) o;
 
-    if (changePasswordKeyExpirationDate != that.changePasswordKeyExpirationDate) return false;
     if (isActive != that.isActive) return false;
     if (username != null ? !username.equals(that.username) : that.username != null) return false;
     if (password != null ? !password.equals(that.password) : that.password != null) return false;
@@ -184,8 +172,6 @@ public class AdminUserDTO {
     if (website != null ? !website.equals(that.website) : that.website != null) return false;
     if (github != null ? !github.equals(that.github) : that.github != null) return false;
     if (linkedin != null ? !linkedin.equals(that.linkedin) : that.linkedin != null) return false;
-    if (changePasswordKey != null ? !changePasswordKey.equals(that.changePasswordKey) : that.changePasswordKey != null)
-      return false;
     return authorizations != null ? authorizations.equals(that.authorizations) : that.authorizations == null;
   }
 
@@ -199,8 +185,6 @@ public class AdminUserDTO {
     result = 31 * result + (website != null ? website.hashCode() : 0);
     result = 31 * result + (github != null ? github.hashCode() : 0);
     result = 31 * result + (linkedin != null ? linkedin.hashCode() : 0);
-    result = 31 * result + (changePasswordKey != null ? changePasswordKey.hashCode() : 0);
-    result = 31 * result + (int) (changePasswordKeyExpirationDate ^ (changePasswordKeyExpirationDate >>> 32));
     result = 31 * result + (authorizations != null ? authorizations.hashCode() : 0);
     result = 31 * result + (isActive ? 1 : 0);
     return result;

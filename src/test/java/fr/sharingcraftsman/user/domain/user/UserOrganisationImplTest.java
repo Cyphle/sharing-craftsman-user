@@ -68,7 +68,7 @@ public class UserOrganisationImplTest {
   }
 
   @Test
-  public void should_delete_change_request_key_and_create_change_request_key() throws Exception {
+  public void should_delete_change_request_token_and_create_change_request_token() throws Exception {
     User user = User.from("john@doe.fr",  "password");
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
@@ -76,12 +76,12 @@ public class UserOrganisationImplTest {
 
     userOrganisationImpl.createChangePasswordTokenFor(username);
 
-    verify(changePasswordTokenRepository).deleteChangePasswordKeyOf(username);
-    verify(changePasswordTokenRepository).createChangePasswordKeyFor(any(ChangePasswordToken.class));
+    verify(changePasswordTokenRepository).deleteChangePasswordTokenOf(username);
+    verify(changePasswordTokenRepository).createChangePasswordTokenFor(any(ChangePasswordToken.class));
   }
 
   @Test
-  public void should_throw_exception_if_collaborator_does_not_exists_when_creating_change_password_key() throws Exception {
+  public void should_throw_exception_if_collaborator_does_not_exists_when_creating_change_password_token() throws Exception {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUser());
 
@@ -126,7 +126,7 @@ public class UserOrganisationImplTest {
   }
 
   @Test
-  public void should_throw_invalid_change_password_key_exception_if_key_is_not_valid() throws Exception {
+  public void should_throw_invalid_change_password_token_exception_if_token_is_not_valid() throws Exception {
     try {
       given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(User.from(credentials));
       User user = User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A==");
@@ -134,14 +134,14 @@ public class UserOrganisationImplTest {
       ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
       userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
-      fail("Should throw invalid change password key exception");
+      fail("Should throw invalid change password token exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");
     }
   }
 
   @Test
-  public void should_throw_invalid_change_password_key_exception_if_key_is_expired() throws Exception {
+  public void should_throw_invalid_change_password_token_exception_if_token_is_expired() throws Exception {
     try {
       User user = User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A==");
       given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
@@ -154,7 +154,7 @@ public class UserOrganisationImplTest {
       ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
       userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
-      fail("Should throw invalid change password key exception");
+      fail("Should throw invalid change password token exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");
     }

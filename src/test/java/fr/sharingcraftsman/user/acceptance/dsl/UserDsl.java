@@ -1,6 +1,5 @@
 package fr.sharingcraftsman.user.acceptance.dsl;
 
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @ToString
@@ -13,8 +12,6 @@ public class UserDsl {
   private String website;
   private String github;
   private String linkedin;
-  private String changePasswordKey = "";
-  private long changePasswordKeyExpirationDate;
   private AuthorizationDsl authorizations;
   private boolean isActive;
   private long creationDate;
@@ -82,22 +79,6 @@ public class UserDsl {
 
   public void setLinkedin(String linkedin) {
     this.linkedin = linkedin;
-  }
-
-  public String getChangePasswordKey() {
-    return changePasswordKey;
-  }
-
-  public void setChangePasswordKey(String changePasswordKey) {
-    this.changePasswordKey = changePasswordKey;
-  }
-
-  public long getChangePasswordKeyExpirationDate() {
-    return changePasswordKeyExpirationDate;
-  }
-
-  public void setChangePasswordKeyExpirationDate(long changePasswordKeyExpirationDate) {
-    this.changePasswordKeyExpirationDate = changePasswordKeyExpirationDate;
   }
 
   public AuthorizationDsl getAuthorizations() {
