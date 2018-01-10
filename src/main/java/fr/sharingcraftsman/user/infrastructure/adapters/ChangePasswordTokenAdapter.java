@@ -6,8 +6,7 @@ import fr.sharingcraftsman.user.domain.user.ChangePasswordToken;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.ports.ChangePasswordTokenRepository;
 import fr.sharingcraftsman.user.infrastructure.models.ChangePasswordTokenEntity;
-import fr.sharingcraftsman.user.infrastructure.pivots.ChangePasswordTokenPivot;
-import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
+import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.ChangePasswordTokenJpaRepository;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,8 @@ public class ChangePasswordTokenAdapter implements ChangePasswordTokenRepository
 
   @Override
   public ChangePasswordToken findByUsername(Username username) throws CredentialsException {
-    User user = UserPivot.fromInfraToDomain(userRepository.findByUsername(username.getUsername()));
-    return ChangePasswordTokenPivot.fromInfraToDomain(user, changePasswordTokenRepository.findByUsername(username.getUsername()));
+    User user = UserEntity.fromInfraToDomain(userRepository.findByUsername(username.getUsername()));
+    return ChangePasswordTokenEntity.fromInfraToDomain(user, changePasswordTokenRepository.findByUsername(username.getUsername()));
   }
 
   @Override
@@ -39,8 +38,8 @@ public class ChangePasswordTokenAdapter implements ChangePasswordTokenRepository
 
   @Override
   public ChangePasswordToken createChangePasswordTokenFor(ChangePasswordToken changePasswordToken) throws CredentialsException {
-    ChangePasswordTokenEntity token = ChangePasswordTokenPivot.fromDomainToInfra(changePasswordToken);
-    User user = UserPivot.fromInfraToDomain(userRepository.findByUsername(changePasswordToken.getUsername()));
-    return ChangePasswordTokenPivot.fromInfraToDomain(user, changePasswordTokenRepository.save(token));
+    ChangePasswordTokenEntity token = ChangePasswordTokenEntity.fromDomainToInfra(changePasswordToken);
+    User user = UserEntity.fromInfraToDomain(userRepository.findByUsername(changePasswordToken.getUsername()));
+    return ChangePasswordTokenEntity.fromInfraToDomain(user, changePasswordTokenRepository.save(token));
   }
 }

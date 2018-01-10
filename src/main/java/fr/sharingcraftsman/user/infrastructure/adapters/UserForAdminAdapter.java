@@ -2,16 +2,15 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import com.google.common.collect.Lists;
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.BaseUserForAdmin;
-import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
+import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.exceptions.UnknownBaseUserForAdminCollaborator;
+import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.BaseUser;
 import fr.sharingcraftsman.user.domain.user.UnknownUser;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
-import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,7 @@ public class UserForAdminAdapter implements UserForAdminRepository {
   @Override
   public List<UserForAdmin> getAllCollaborators() {
     List<UserEntity> userEntities = Lists.newArrayList(userJpaRepository.findAll());
-    return UserPivot.fromInfraToAdminDomain(userEntities);
+    return UserEntity.fromInfraToAdminDomain(userEntities);
   }
 
   @Override
@@ -49,7 +48,7 @@ public class UserForAdminAdapter implements UserForAdminRepository {
       return new UnknownUser();
 
     try {
-      return UserPivot.fromInfraToDomain(foundUserEntity);
+      return UserEntity.fromInfraToDomain(foundUserEntity);
     } catch (CredentialsException e) {
       return new UnknownUser();
     }
@@ -70,12 +69,12 @@ public class UserForAdminAdapter implements UserForAdminRepository {
     if (foundUserEntity == null)
       return new UnknownBaseUserForAdminCollaborator();
 
-    return UserPivot.fromInfraToAdminDomain(foundUserEntity);
+    return UserEntity.fromInfraToAdminDomain(foundUserEntity);
   }
 
   @Override
   public void createCollaborator(UserForAdmin collaborator) {
-    UserEntity userEntityToCreate = UserPivot.fromDomainToInfra(collaborator);
+    UserEntity userEntityToCreate = UserEntity.fromDomainToInfra(collaborator);
     userEntityToCreate.setCreationDate(dateService.nowInDate());
     userEntityToCreate.setLastUpdateDate(dateService.nowInDate());
     userJpaRepository.save(userEntityToCreate);

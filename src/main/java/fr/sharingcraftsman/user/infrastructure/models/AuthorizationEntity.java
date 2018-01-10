@@ -1,9 +1,15 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
+import fr.sharingcraftsman.user.domain.authorization.Group;
+import fr.sharingcraftsman.user.domain.authorization.Role;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "authorizations")
@@ -49,5 +55,23 @@ public class AuthorizationEntity {
 
   public void setRole(String role) {
     this.role = role;
+  }
+
+  public static List<Role> fromInfraToDomain(List<AuthorizationEntity> authorizationEntities) {
+    return authorizationEntities.stream()
+            .map(groupRole -> Role.from(groupRole.getRole()))
+            .collect(Collectors.toList());
+  }
+
+  public static Set<Group> fromInfraToDomainRolesGroupedByGroup(Iterable<AuthorizationEntity> roles) {
+    Set<Group> groups = new HashSet<>();
+    roles.forEach(role -> groups.add(Group.from(role.getGroup())));
+    roles.forEach(role -> {
+      groups.forEach(group -> {
+        if (role.getGroup().equals(group.getName()))
+          group.addRole(Role.from(role.getRole()));
+      });
+    });
+    return groups;
   }
 }

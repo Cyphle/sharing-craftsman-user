@@ -5,7 +5,6 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.UnknownClient;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.infrastructure.models.ClientEntity;
-import fr.sharingcraftsman.user.infrastructure.pivots.ClientPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.ClientJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ public class ClientAdapter implements ClientRepository {
 
   @Override
   public Client createClient(Client client) {
-    ClientEntity ClientEntity = ClientPivot.fromDomainToInfra(client);
-    return ClientPivot.fromInfraToDomain(clientJpaRepository.save(ClientEntity));
+    ClientEntity clientEntity = ClientEntity.fromDomainToInfra(client);
+    return ClientEntity.fromInfraToDomain(clientJpaRepository.save(clientEntity));
   }
 }

@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
+import fr.sharingcraftsman.user.domain.client.Client;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
@@ -78,5 +79,13 @@ public class ClientEntity {
 
   public void setLastUpdateDate(Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
+  }
+
+  public static ClientEntity fromDomainToInfra(Client client) {
+    return new ClientEntity(client.getName(), client.getSecret());
+  }
+
+  public static Client fromInfraToDomain(ClientEntity clientEntity) {
+    return Client.from(clientEntity.getName(), clientEntity.getSecret());
   }
 }

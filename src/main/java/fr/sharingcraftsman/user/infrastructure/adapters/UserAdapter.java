@@ -8,13 +8,9 @@ import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.*;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
-import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.ZoneId;
-import java.util.Date;
 
 @Service
 public class UserAdapter implements UserRepository {
@@ -29,7 +25,7 @@ public class UserAdapter implements UserRepository {
 
   @Override
   public void createNewUser(User user) {
-    UserEntity userEntity = UserPivot.fromDomainToInfra(user);
+    UserEntity userEntity = UserEntity.fromDomainToInfra(user);
     userEntity.setCreationDate(dateService.nowInDate());
     userEntity.setLastUpdateDate(dateService.nowInDate());
     userJpaRepository.save(userEntity);
@@ -43,7 +39,7 @@ public class UserAdapter implements UserRepository {
       return new UnknownUser();
 
     try {
-      return UserPivot.fromInfraToDomain(foundUserEntity);
+      return UserEntity.fromInfraToDomain(foundUserEntity);
     } catch (CredentialsException e) {
       return new UnknownUser();
     }
@@ -57,7 +53,7 @@ public class UserAdapter implements UserRepository {
       return new UnknownUser();
 
     try {
-      return UserPivot.fromInfraToDomain(foundUserEntity);
+      return UserEntity.fromInfraToDomain(foundUserEntity);
     } catch (CredentialsException e) {
       return new UnknownUser();
     }
@@ -79,7 +75,7 @@ public class UserAdapter implements UserRepository {
       return new UnknownProfile();
 
     try {
-      return UserPivot.fromInfraToDomainProfile(userEntity);
+      return UserEntity.fromInfraToDomainProfile(userEntity);
     } catch (UsernameException e) {
       return new UnknownProfile();
     }
@@ -88,11 +84,11 @@ public class UserAdapter implements UserRepository {
   @Override
   public BaseProfile updateProfileOf(Profile profileToUpdate) {
     UserEntity userEntity = userJpaRepository.findByUsername(profileToUpdate.getUsernameContent());
-    userEntity.updateFromProfile(UserPivot.fromDomainToInfraProfile(profileToUpdate));
+    userEntity.updateFromProfile(UserEntity.fromDomainToInfraProfile(profileToUpdate));
     userEntity.setLastUpdateDate(dateService.nowInDate());
     UserEntity updatedUserEntity = userJpaRepository.save(userEntity);
     try {
-      return UserPivot.fromInfraToDomainProfile(updatedUserEntity);
+      return UserEntity.fromInfraToDomainProfile(updatedUserEntity);
     } catch (UsernameException e) {
       return new UnknownProfile();
     }

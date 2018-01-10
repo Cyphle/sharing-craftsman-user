@@ -1,5 +1,8 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
+import fr.sharingcraftsman.user.common.DateConverter;
+import fr.sharingcraftsman.user.domain.user.ChangePasswordToken;
+import fr.sharingcraftsman.user.domain.user.User;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -59,6 +62,14 @@ public class ChangePasswordTokenEntity {
 
   public void setChangePasswordExpirationDate(Date changePasswordExpirationDate) {
     this.changePasswordExpirationDate = changePasswordExpirationDate;
+  }
+
+  public static ChangePasswordToken fromInfraToDomain(User user, ChangePasswordTokenEntity token) {
+    return ChangePasswordToken.from(user, token.getChangePasswordToken(), DateConverter.fromDateToLocalDateTime(token.getChangePasswordExpirationDate()));
+  }
+
+  public static ChangePasswordTokenEntity fromDomainToInfra(ChangePasswordToken changePasswordToken) {
+    return new ChangePasswordTokenEntity(changePasswordToken.getUsername(), changePasswordToken.getToken(), DateConverter.fromLocalDateTimeToDate(changePasswordToken.getExpirationDate()));
   }
 
   @Override

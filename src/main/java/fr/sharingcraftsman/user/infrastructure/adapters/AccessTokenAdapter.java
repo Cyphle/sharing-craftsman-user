@@ -6,7 +6,6 @@ import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.AccessTokenEntity;
-import fr.sharingcraftsman.user.infrastructure.pivots.TokenPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.AccessTokenJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +26,8 @@ public class AccessTokenAdapter implements AccessTokenRepository {
 
   @Override
   public AccessToken createNewToken(Client client, User user, AccessToken token) {
-    AccessTokenEntity accessTokenEntity = accessTokenJpaRepository.save(TokenPivot.fromDomainToInfra(user, client, token));
-    return TokenPivot.fromInfraToDomain(accessTokenEntity);
+    AccessTokenEntity accessTokenEntity = accessTokenJpaRepository.save(AccessTokenEntity.fromDomainToInfra(user, client, token));
+    return AccessTokenEntity.fromInfraToDomain(accessTokenEntity);
   }
 
   @Override
@@ -38,7 +37,7 @@ public class AccessTokenAdapter implements AccessTokenRepository {
     if (foundToken == null)
       return new InvalidToken();
 
-    return TokenPivot.fromInfraToDomain(foundToken);
+    return AccessTokenEntity.fromInfraToDomain(foundToken);
   }
 
   @Override
@@ -48,6 +47,6 @@ public class AccessTokenAdapter implements AccessTokenRepository {
     if (foundToken == null)
       return new InvalidToken();
 
-    return TokenPivot.fromInfraToDomain(foundToken);
+    return AccessTokenEntity.fromInfraToDomain(foundToken);
   }
 }

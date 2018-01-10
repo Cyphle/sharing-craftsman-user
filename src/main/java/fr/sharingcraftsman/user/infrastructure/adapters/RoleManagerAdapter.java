@@ -5,8 +5,7 @@ import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.infrastructure.models.AuthorizationEntity;
-import fr.sharingcraftsman.user.infrastructure.pivots.GroupPivot;
-import fr.sharingcraftsman.user.infrastructure.pivots.RolePivot;
+import fr.sharingcraftsman.user.infrastructure.models.UserAuthorizationEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.AuthorizationJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,17 +24,17 @@ public class RoleManagerAdapter implements AuthorizationRepository {
 
   @Override
   public List<Role> getRolesOf(String group) {
-    return RolePivot.fromInfraToDomain(authorizationJpaRepository.findByGroup(group));
+    return AuthorizationEntity.fromInfraToDomain(authorizationJpaRepository.findByGroup(group));
   }
 
   @Override
   public Set<Group> getAllRolesWithTheirGroups() {
-    return RolePivot.fromInfraToDomainRolesGroupedByGroup(authorizationJpaRepository.findAll());
+    return AuthorizationEntity.fromInfraToDomainRolesGroupedByGroup(authorizationJpaRepository.findAll());
   }
 
   @Override
   public void createNewGroupsWithRole(List<Group> groups) {
-    groups.forEach(group -> authorizationJpaRepository.save(GroupPivot.fromDomainToInfra(group)));
+    groups.forEach(group -> authorizationJpaRepository.save(UserAuthorizationEntity.fromDomainToInfra(group)));
   }
 
   @Override

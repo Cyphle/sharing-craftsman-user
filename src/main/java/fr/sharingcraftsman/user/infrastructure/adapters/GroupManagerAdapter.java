@@ -1,11 +1,10 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.domain.authorization.Group;
-import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.infrastructure.models.UserAuthorizationEntity;
-import fr.sharingcraftsman.user.infrastructure.pivots.GroupPivot;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserAuthorizationJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class GroupManagerAdapter implements UserAuthorizationRepository {
 
   @Override
   public List<Group> findGroupsOf(Username username) {
-    return GroupPivot.fromInfraToDomain(userAuthorizationJpaRepository.findByUsername(username.getUsername()));
+    return UserAuthorizationEntity.fromInfraToDomain(userAuthorizationJpaRepository.findByUsername(username.getUsername()));
   }
 
   @Override
