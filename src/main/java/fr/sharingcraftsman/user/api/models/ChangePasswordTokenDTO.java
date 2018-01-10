@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.api.models;
 
+import fr.sharingcraftsman.user.domain.user.ChangePasswordToken;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
@@ -16,5 +17,9 @@ public class ChangePasswordTokenDTO {
 
   public void setToken(String token) {
     this.token = token;
+  }
+
+  public static ChangePasswordTokenDTO fromDomainToApi(ChangePasswordToken changePasswordToken) {
+    return new ChangePasswordTokenDTO(changePasswordToken.getToken());
   }
 }

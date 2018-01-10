@@ -1,12 +1,9 @@
 package fr.sharingcraftsman.user.api.admin;
 
+import fr.sharingcraftsman.user.api.models.AuthorizationsDTO;
 import fr.sharingcraftsman.user.api.models.ClientDTO;
 import fr.sharingcraftsman.user.api.models.GroupDTO;
 import fr.sharingcraftsman.user.api.models.TokenDTO;
-import fr.sharingcraftsman.user.api.pivots.AdminCollaboratorPivot;
-import fr.sharingcraftsman.user.api.pivots.AuthorizationPivot;
-import fr.sharingcraftsman.user.api.pivots.ClientPivot;
-import fr.sharingcraftsman.user.api.pivots.GroupPivot;
 import fr.sharingcraftsman.user.domain.admin.AdministrationImpl;
 import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import fr.sharingcraftsman.user.domain.admin.ports.Administration;
@@ -81,7 +78,7 @@ public class AdminService {
     users.forEach(user -> {
       try {
         Authorization authorization = authorizationManager.getAuthorizationsOf(Username.from(user.getUsername()));
-        user.setAuthorizations(AuthorizationPivot.fromDomainToApi(authorization));
+        user.setAuthorizations(AuthorizationsDTO.fromDomainToApi(authorization));
       } catch (UsernameException e) {
         e.printStackTrace();
       }
@@ -114,7 +111,7 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      UserForAdmin collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+      UserForAdmin collaborator = AdminUserDTO.fromApiToDomain(user);
       company.updateCollaborator(collaborator);
       return ResponseEntity.ok().build();
     } catch (UserException e) {
@@ -132,7 +129,7 @@ public class AdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      UserForAdmin collaborator = AdminCollaboratorPivot.fromApiToDomain(user);
+      UserForAdmin collaborator = AdminUserDTO.fromApiToDomain(user);
       company.createCollaborator(collaborator);
       authorizationManager.addGroup(Username.from(user.getUsername()), Groups.USERS);
       return ResponseEntity.ok().build();
@@ -150,7 +147,7 @@ public class AdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    Set<GroupDTO> groups = GroupPivot.groupFromDomainToApi(authorizationManager.getAllRolesWithTheirGroups());
+    Set<GroupDTO> groups = GroupDTO.groupFromDomainToApi(authorizationManager.getAllRolesWithTheirGroups());
     return ResponseEntity.ok(groups);
   }
 
@@ -194,7 +191,7 @@ public class AdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    authorizationManager.createNewGroupWithRoles(GroupPivot.fromApiToDomain(groupDTO));
+    authorizationManager.createNewGroupWithRoles(GroupDTO.fromApiToDomain(groupDTO));
     return ResponseEntity.ok().build();
   }
 
@@ -204,12 +201,12 @@ public class AdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    authorizationManager.removeRoleFromGroup(GroupPivot.fromApiToDomain(groupDTO));
+    authorizationManager.removeRoleFromGroup(GroupDTO.fromApiToDomain(groupDTO));
     return ResponseEntity.ok().build();
   }
 
   private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (!clientOrganisation.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
+    if (!clientOrganisation.clientExists(ClientDTO.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
       return true;
     }

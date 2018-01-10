@@ -1,5 +1,7 @@
 package fr.sharingcraftsman.user.api.models;
 
+import fr.sharingcraftsman.user.domain.client.Client;
+
 public class ClientDTO {
   private String name;
   private String secret;
@@ -26,5 +28,9 @@ public class ClientDTO {
 
   public void setSecret(String secret) {
     this.secret = secret;
+  }
+
+  public static Client fromApiToDomain(ClientDTO clientDTO) {
+    return Client.from(clientDTO.getName(), clientDTO.getSecret());
   }
 }

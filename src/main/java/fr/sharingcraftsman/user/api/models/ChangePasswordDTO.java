@@ -1,5 +1,8 @@
 package fr.sharingcraftsman.user.api.models;
 
+import fr.sharingcraftsman.user.domain.common.PasswordException;
+import fr.sharingcraftsman.user.domain.user.ChangePasswordInfo;
+
 public class ChangePasswordDTO {
   private String changePasswordToken;
   private String oldPassword;
@@ -30,5 +33,9 @@ public class ChangePasswordDTO {
 
   public void setNewPassword(String newPassword) {
     this.newPassword = newPassword;
+  }
+
+  public static ChangePasswordInfo fromApiToDomain(ChangePasswordDTO changePasswordDTO) throws PasswordException {
+    return ChangePasswordInfo.from(changePasswordDTO.getChangePasswordToken(), changePasswordDTO.getOldPassword(), changePasswordDTO.getNewPassword());
   }
 }

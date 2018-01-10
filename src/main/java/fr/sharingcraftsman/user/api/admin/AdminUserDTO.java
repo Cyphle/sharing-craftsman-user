@@ -1,6 +1,8 @@
 package fr.sharingcraftsman.user.api.admin;
 
 import fr.sharingcraftsman.user.api.models.AuthorizationsDTO;
+import fr.sharingcraftsman.user.common.DateConverter;
+import fr.sharingcraftsman.user.domain.admin.UserForAdmin;
 import lombok.ToString;
 
 @ToString
@@ -154,6 +156,22 @@ public class AdminUserDTO {
 
   public void setLastUpdateDate(long lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
+  }
+
+  public static UserForAdmin fromApiToDomain(AdminUserDTO user) {
+    return UserForAdmin.from(
+            user.getUsername(),
+            user.getPassword(),
+            user.getFirstname(),
+            user.getLastname(),
+            user.getEmail(),
+            user.getWebsite(),
+            user.getGithub(),
+            user.getLinkedin(),
+            user.isActive(),
+            DateConverter.fromLongToLocalDateTime(user.getCreationDate()),
+            DateConverter.fromLongToLocalDateTime(user.getLastUpdateDate())
+    );
   }
 
   @Override

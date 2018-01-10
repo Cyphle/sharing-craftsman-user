@@ -1,7 +1,6 @@
 package fr.sharingcraftsman.user.api.client;
 
 import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.pivots.ClientPivot;
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.exceptions.ClientException;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
@@ -26,7 +25,7 @@ public class ClientService {
   public ResponseEntity register(ClientDTO ClientDTO) {
     try {
       log.info("Registering new client: " + ClientDTO.getName());
-      clientOrganisation.createNewClient(ClientPivot.fromApiToDomain(ClientDTO));
+      clientOrganisation.createNewClient(ClientDTO.fromApiToDomain(ClientDTO));
     } catch (ClientException e) {
       log.warn("Client already exists: " + ClientDTO.getName());
       return ResponseEntity

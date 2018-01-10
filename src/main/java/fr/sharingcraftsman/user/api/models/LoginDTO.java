@@ -1,5 +1,7 @@
 package fr.sharingcraftsman.user.api.models;
 
+import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import io.swagger.annotations.ApiModelProperty;
 
 public class LoginDTO {
@@ -42,5 +44,13 @@ public class LoginDTO {
 
   public boolean isPersistentLogging() {
     return persistentLogging;
+  }
+
+  public static Credentials fromApiToDomain(LoginDTO loginDTO) throws CredentialsException {
+    return Credentials.buildWithPersistentLogging(
+            loginDTO.getUsername(),
+            loginDTO.getPassword(),
+            loginDTO.isPersistentLogging()
+    );
   }
 }
