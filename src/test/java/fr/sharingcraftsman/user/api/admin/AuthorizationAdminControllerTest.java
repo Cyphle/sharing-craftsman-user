@@ -40,7 +40,7 @@ public class AuthorizationAdminControllerTest {
   private WebApplicationContext context;
 
   @MockBean
-  private AdminService adminService;
+  private AuthorizationAdminService authorizationAdminService;
 
   @Before
   public void setup() {
@@ -56,7 +56,7 @@ public class AuthorizationAdminControllerTest {
     GroupDTO groupAdmin = new GroupDTO("ADMINS");
     groupAdmin.addRoles(Arrays.asList(new RoleDTO("ROLE_USER"), new RoleDTO("ROLE_ADMIN")));
     List<GroupDTO> groups = Arrays.asList(groupUser, groupAdmin);
-    given(adminService.getGroups(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(groups));
+    given(authorizationAdminService.getGroups(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(groups));
 
     this.mvc.perform(get("/admin/roles/groups")
             .header("client", "client")

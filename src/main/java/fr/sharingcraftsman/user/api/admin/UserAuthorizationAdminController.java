@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/users")
 @Api(description = "Endpoints to for admin")
 public class UserAuthorizationAdminController {
-  private AdminService adminService;
+  private UserAuthorizationAdminService userAuthorizationAdminService;
 
   @Autowired
-  public UserAuthorizationAdminController(AdminService adminService) {
-    this.adminService = adminService;
+  public UserAuthorizationAdminController(UserAuthorizationAdminService userAuthorizationAdminService) {
+    this.userAuthorizationAdminService = userAuthorizationAdminService;
   }
 
   @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
@@ -35,7 +35,7 @@ public class UserAuthorizationAdminController {
                                  @RequestBody UserGroupDTO userGroupDTO) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.addGroupToUser(clientDTO, tokenDTO, userGroupDTO);
+    return userAuthorizationAdminService.addGroupToUser(clientDTO, tokenDTO, userGroupDTO);
   }
 
   @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
@@ -51,6 +51,6 @@ public class UserAuthorizationAdminController {
                                     @RequestBody UserGroupDTO userGroupDTO) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.removeGroupToUser(clientDTO, tokenDTO, userGroupDTO);
+    return userAuthorizationAdminService.removeGroupToUser(clientDTO, tokenDTO, userGroupDTO);
   }
 }

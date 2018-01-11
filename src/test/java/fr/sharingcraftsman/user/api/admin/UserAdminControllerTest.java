@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {UserApplication.class})
 @WebMvcTest(UserAdminController.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class UserEntityAdminControllerTest {
+public class UserAdminControllerTest {
   @Autowired
   private MockMvc mvc;
 
@@ -41,7 +41,7 @@ public class UserEntityAdminControllerTest {
   private WebApplicationContext context;
 
   @MockBean
-  private AdminService adminService;
+  private UserAdminService userAdminService;
 
   private UserInfoDTO userDTO;
 
@@ -60,7 +60,7 @@ public class UserEntityAdminControllerTest {
 
   @Test
   public void should_get_list_of_users_with_their_profile() throws Exception {
-    given(adminService.getAllUsers(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(Collections.singletonList(userDTO)));
+    given(userAdminService.getAllUsers(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(Collections.singletonList(userDTO)));
 
     this.mvc.perform(get("/admin/users")
             .header("client", "client")
@@ -73,7 +73,7 @@ public class UserEntityAdminControllerTest {
 
   @Test
   public void should_delete_user() throws Exception {
-    given(adminService.deleteUser(any(ClientDTO.class), any(TokenDTO.class), any(String.class))).willReturn(ResponseEntity.ok().build());
+    given(userAdminService.deleteUser(any(ClientDTO.class), any(TokenDTO.class), any(String.class))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(delete("/admin/users/hello@world.fr")
             .header("client", "client")
@@ -85,7 +85,7 @@ public class UserEntityAdminControllerTest {
 
   @Test
   public void should_update_a_user() throws Exception {
-    given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(UserInfoDTO.class))).willReturn(ResponseEntity.ok(userDTO));
+    given(userAdminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(UserInfoDTO.class))).willReturn(ResponseEntity.ok(userDTO));
 
     this.mvc.perform(put("/admin/users")
             .header("client", "client")
@@ -99,7 +99,7 @@ public class UserEntityAdminControllerTest {
 
   @Test
   public void should_add_user() throws Exception {
-    given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(UserInfoDTO.class))).willReturn(ResponseEntity.ok(userDTO));
+    given(userAdminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(UserInfoDTO.class))).willReturn(ResponseEntity.ok(userDTO));
 
     this.mvc.perform(post("/admin/users")
             .header("client", "client")

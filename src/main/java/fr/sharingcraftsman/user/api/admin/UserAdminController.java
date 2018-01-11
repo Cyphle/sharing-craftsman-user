@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/users")
 @Api(description = "Endpoints to for admin")
 public class UserAdminController {
-  private AdminService adminService;
+  private UserAdminService userAdminService;
 
   @Autowired
-  public UserAdminController(AdminService adminService) {
-    this.adminService = adminService;
+  public UserAdminController(UserAdminService userAdminService) {
+    this.userAdminService = userAdminService;
   }
 
   @ApiOperation(value = "Endpoint to get users", response = ResponseEntity.class)
@@ -33,7 +33,7 @@ public class UserAdminController {
                                @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.getAllUsers(clientDTO, tokenDTO);
+    return userAdminService.getAllUsers(clientDTO, tokenDTO);
   }
 
   @ApiOperation(value = "Endpoint to add user", response = ResponseEntity.class)
@@ -49,7 +49,7 @@ public class UserAdminController {
                                 @RequestBody UserInfoDTO user) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.addUser(clientDTO, tokenDTO, user);
+    return userAdminService.addUser(clientDTO, tokenDTO, user);
   }
 
   @ApiOperation(value = "Endpoint to update informations of user", response = ResponseEntity.class)
@@ -65,7 +65,7 @@ public class UserAdminController {
                                    @RequestBody UserInfoDTO user) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.updateUser(clientDTO, tokenDTO, user);
+    return userAdminService.updateUser(clientDTO, tokenDTO, user);
   }
 
   @ApiOperation(value = "Endpoint to delete a user", response = ResponseEntity.class)
@@ -81,6 +81,6 @@ public class UserAdminController {
                                @PathVariable String usernameToDelete) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.deleteUser(clientDTO, tokenDTO, usernameToDelete);
+    return userAdminService.deleteUser(clientDTO, tokenDTO, usernameToDelete);
   }
 }

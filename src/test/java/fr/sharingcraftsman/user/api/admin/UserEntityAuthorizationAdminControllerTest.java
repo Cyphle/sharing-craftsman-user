@@ -32,7 +32,7 @@ public class UserEntityAuthorizationAdminControllerTest {
   private WebApplicationContext context;
 
   @MockBean
-  private AdminService adminService;
+  private UserAuthorizationAdminService userAuthorizationAdminService;
 
   @Before
   public void setup() {

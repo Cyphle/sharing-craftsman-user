@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/roles")
 @Api(description = "Endpoints to for admin")
 public class AuthorizationAdminController {
-  private AdminService adminService;
+  private AuthorizationAdminService authorizationAdminService;
 
   @Autowired
-  public AuthorizationAdminController(AdminService adminService) {
-    this.adminService = adminService;
+  public AuthorizationAdminController(AuthorizationAdminService authorizationAdminService) {
+    this.authorizationAdminService = authorizationAdminService;
   }
 
   @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
@@ -34,7 +34,7 @@ public class AuthorizationAdminController {
                                 @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.getGroups(clientDTO, tokenDTO);
+    return authorizationAdminService.getGroups(clientDTO, tokenDTO);
   }
 
   @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
@@ -50,7 +50,7 @@ public class AuthorizationAdminController {
                                     @RequestBody GroupDTO groupDTO) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.createNewGroupWithRoles(clientDTO, tokenDTO, groupDTO);
+    return authorizationAdminService.createNewGroupWithRoles(clientDTO, tokenDTO, groupDTO);
   }
 
   @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
@@ -66,6 +66,6 @@ public class AuthorizationAdminController {
                                     @RequestBody GroupDTO groupDTO) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
     TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.removeRoleFromGroup(clientDTO, tokenDTO, groupDTO);
+    return authorizationAdminService.removeRoleFromGroup(clientDTO, tokenDTO, groupDTO);
   }
 }
