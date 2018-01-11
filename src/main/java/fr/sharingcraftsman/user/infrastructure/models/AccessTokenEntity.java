@@ -88,7 +88,7 @@ public class AccessTokenEntity {
   public static AccessTokenEntity fromDomainToInfra(User user, Client client, AccessToken token) {
     AccessTokenEntity accessTokenEntity = new AccessTokenEntity();
     accessTokenEntity.setClient(client.getName());
-    accessTokenEntity.setUsername(user.getUsername());
+    accessTokenEntity.setUsername(user.getUsernameContent());
     accessTokenEntity.setAccessToken(token.getAccessToken());
     accessTokenEntity.setRefreshToken(token.getRefreshToken());
     accessTokenEntity.setExpirationDate(DateConverter.fromLocalDateTimeToDate(token.getExpirationDate()));

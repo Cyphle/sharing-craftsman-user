@@ -75,8 +75,8 @@ public class UserAdapter implements UserRepository {
 
   @Override
   public void updateUserPassword(User user) {
-    UserEntity userEntity = userJpaRepository.findByUsername(user.getUsername());
-    userEntity.setPassword(user.getPassword());
+    UserEntity userEntity = userJpaRepository.findByUsername(user.getUsernameContent());
+    userEntity.setPassword(user.getPasswordContent());
     userEntity.setLastUpdateDate(dateService.nowInDate());
     userJpaRepository.save(userEntity);
   }

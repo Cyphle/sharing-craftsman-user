@@ -23,11 +23,15 @@ public class User extends AbstractUser {
     this.password = password;
   }
 
-  public String getUsername() {
+  public Username getUsername() {
+    return username;
+  }
+
+  public String getUsernameContent() {
     return username.getUsername();
   }
 
-  public String getPassword() {
+  public String getPasswordContent() {
     return password.getPassword();
   }
 

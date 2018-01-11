@@ -75,8 +75,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
   private AbstractToken generateToken(Client client, User user, boolean isPersistentLogging) {
     AccessToken token = AccessToken.from(
-            generateToken(client.getName() + user.getUsername()),
-            generateToken(client.getName() + user.getUsername()),
+            generateToken(client.getName() + user.getUsernameContent()),
+            generateToken(client.getName() + user.getUsernameContent()),
             dateService.getDayAt(isPersistentLogging ? LONG_VALIDITY_OFFSET : SHORT_VALIDITY_OFFSET)
     );
 

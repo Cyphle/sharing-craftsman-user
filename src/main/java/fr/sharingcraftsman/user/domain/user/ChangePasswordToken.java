@@ -14,7 +14,7 @@ public class ChangePasswordToken {
   }
 
   public String getUsername() {
-    return user.getUsername();
+    return user.getUsernameContent();
   }
 
   public String getToken() {

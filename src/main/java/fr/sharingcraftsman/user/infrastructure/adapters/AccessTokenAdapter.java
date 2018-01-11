@@ -47,6 +47,6 @@ public class AccessTokenAdapter implements AccessTokenRepository {
 
   @Override
   public void deleteTokensOf(User user, Client client) {
-    accessTokenJpaRepository.deleteByUsername(user.getUsername(), client.getName());
+    accessTokenJpaRepository.deleteByUsername(user.getUsernameContent(), client.getName());
   }
 }

@@ -1,9 +1,6 @@
 package fr.sharingcraftsman.user.common;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Date;
 
 public class DateConverter {
@@ -17,5 +14,10 @@ public class DateConverter {
 
   public static Date fromLocalDateTimeToDate(LocalDateTime localDateTime) {
     return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+  }
+
+  public static long fromLocalDateTimeToLong(LocalDateTime localDateTime) {
+    ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
+    return zdt.toInstant().toEpochMilli();
   }
 }

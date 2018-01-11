@@ -68,8 +68,8 @@ public class AbstractTokenAdapterTest {
     given(accessTokenJpaRepository.save(any(AccessTokenEntity.class))).willReturn(accessTokenEntity);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     AccessToken token = AccessToken.from(
-            generateToken(client.getName() + user.getUsername()),
-            generateToken(client.getName() + user.getUsername()),
+            generateToken(client.getName() + user.getUsernameContent()),
+            generateToken(client.getName() + user.getUsernameContent()),
             dateService.getDayAt(8)
     );
 

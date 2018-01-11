@@ -65,6 +65,13 @@ public class UserEntity {
     this.password = password;
   }
 
+  public UserEntity(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, Date creationDate, Date lastUpdateDate) {
+    this(username, password, firstname, lastname, email, website, github, linkedin);
+    this.isActive = isActive;
+    this.creationDate = creationDate;
+    this.lastUpdateDate = lastUpdateDate;
+  }
+
   public long getId() {
     return id;
   }
@@ -181,7 +188,7 @@ public class UserEntity {
   }
 
   public static UserEntity fromDomainToInfra(User user) {
-    return new UserEntity(user.getUsername(), user.getPassword());
+    return new UserEntity(user.getUsernameContent(), user.getPasswordContent());
   }
 
   public static User fromInfraToDomain(UserEntity userEntity) throws CredentialsException {

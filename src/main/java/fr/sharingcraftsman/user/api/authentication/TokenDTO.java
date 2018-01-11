@@ -76,8 +76,7 @@ public class TokenDTO {
     apiToken.setRefreshToken(token.getRefreshToken());
     apiToken.setUsername(username.getUsername());
 
-    ZonedDateTime zdt = token.getExpirationDate().atZone(ZoneId.systemDefault());
-    apiToken.setExpirationDate(zdt.toInstant().toEpochMilli());
+    apiToken.setExpirationDate(DateConverter.fromLocalDateTimeToLong(token.getExpirationDate()));
     return apiToken;
   }
 

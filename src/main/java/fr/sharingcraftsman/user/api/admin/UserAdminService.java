@@ -4,7 +4,9 @@ import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.authorization.AuthorizationsDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.domain.admin.AdministrationImpl;
+import fr.sharingcraftsman.user.domain.admin.UserInfo;
 import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
+import fr.sharingcraftsman.user.domain.admin.ports.AdminUserRepository;
 import fr.sharingcraftsman.user.domain.admin.ports.Administration;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authorization.Authorization;
@@ -35,9 +37,10 @@ public class UserAdminService extends AbstractAdminService {
           UserForAdminRepository userForAdminRepository,
           ClientRepository clientRepository,
           UserAuthorizationRepository userAuthorizationRepository,
-          AuthorizationRepository authorizationRepository) {
+          AuthorizationRepository authorizationRepository,
+          AdminUserRepository adminUserRepository) {
     clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
-    userOrganisation = new AdministrationImpl(userForAdminRepository);
+    userOrganisation = new AdministrationImpl(userForAdminRepository, adminUserRepository);
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
   }
 
@@ -47,10 +50,10 @@ public class UserAdminService extends AbstractAdminService {
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
-    List<UserInfoOld> fetchedUsers = userOrganisation.getAllUsers();
+    List<UserInfo> fetchedUsers = userOrganisation.getAllUsers();
     List<UserInfoDTO> users = fetchedUsers.stream()
             .map(user -> new UserInfoDTO(
-                    user.getUsernameContent(),
+                    user.getUsername(),
                     user.getPassword(),
                     user.getFirstname(),
                     user.getLastname(),

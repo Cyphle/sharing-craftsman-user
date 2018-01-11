@@ -122,8 +122,7 @@ public class UserInfoOld extends AbstractUserInfo {
   }
 
   private long fromLocalDatetimeToLong(LocalDateTime localDateTime) {
-    ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
-    return zdt.toInstant().toEpochMilli();
+    return DateConverter.fromLocalDateTimeToLong(localDateTime);
   }
 
   private LocalDateTime fromDateToLocalDatetime(Date date) {

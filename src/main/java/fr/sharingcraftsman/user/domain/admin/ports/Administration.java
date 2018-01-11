@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.domain.admin.ports;
 
+import fr.sharingcraftsman.user.domain.admin.UserInfo;
 import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
@@ -9,7 +10,7 @@ import fr.sharingcraftsman.user.domain.user.exceptions.UnknownUserException;
 import java.util.List;
 
 public interface Administration {
-  List<UserInfoOld> getAllUsers();
+  List<UserInfo> getAllUsers();
 
   void createUser(UserInfoOld user) throws AlreadyExistingUserException;
 

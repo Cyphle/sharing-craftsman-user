@@ -6,8 +6,11 @@ import fr.sharingcraftsman.user.api.authorization.GroupDTO;
 import fr.sharingcraftsman.user.api.authorization.RoleDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.common.DateService;
+import fr.sharingcraftsman.user.domain.admin.TechnicalUserDetails;
 import fr.sharingcraftsman.user.domain.admin.UnknownUserInfo;
+import fr.sharingcraftsman.user.domain.admin.UserInfo;
 import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
+import fr.sharingcraftsman.user.domain.admin.ports.AdminUserRepository;
 import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
@@ -16,7 +19,11 @@ import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepo
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.UnknownClient;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
+import fr.sharingcraftsman.user.domain.common.Email;
+import fr.sharingcraftsman.user.domain.common.Link;
+import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +50,8 @@ import static org.mockito.Mockito.verify;
 public class UserAdminServiceTest {
   @Mock
   private UserForAdminRepository userForAdminRepository;
+  @Mock
+  private AdminUserRepository adminUserRepository;
   @Mock
   private UserAuthorizationRepository userAuthorizationRepository;
   @Mock
@@ -84,16 +93,23 @@ public class UserAdminServiceTest {
     tokenDTO.setUsername("admin@toto.fr");
     tokenDTO.setAccessToken("aaa");
 
-    userAdminService = new UserAdminService(userForAdminRepository, clientRepository, userAuthorizationRepository, authorizationRepository);
+    userAdminService = new UserAdminService(userForAdminRepository, clientRepository, userAuthorizationRepository, authorizationRepository, adminUserRepository);
   }
 
   @Test
   public void should_get_list_of_users_with_profile_and_authorizations() throws Exception {
-    List<UserInfoOld> users = Arrays.asList(
-            UserInfoOld.from("john@doe.fr", "password", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", true, new Date(), new Date()),
-            UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date())
-    );
-    given(userForAdminRepository.getAllUsers()).willReturn(users);
+    given(adminUserRepository.getAllUsers()).willReturn(Arrays.asList(
+            User.from("john@doe.fr", "password"),
+            User.from("admin@toto.fr", "password")
+    ));
+    given(adminUserRepository.getAllProfiles()).willReturn(Arrays.asList(
+            Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
+            Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("admin@toto.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto"))
+    ));
+    given(adminUserRepository.getAllTechnicalUserDetails()).willReturn(Arrays.asList(
+            TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0)),
+            TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
+    ));
     given(userAuthorizationRepository.findGroupsOf(Username.from("john@doe.fr"))).willReturn(Collections.singletonList(Group.from("USERS")));
     given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
@@ -101,7 +117,7 @@ public class UserAdminServiceTest {
 
     ResponseEntity response = userAdminService.getAllUsers(clientDTO, tokenDTO);
 
-    verify(userForAdminRepository).getAllUsers();
+    verify(adminUserRepository).getAllUsers();
     assertThat(response.getBody()).isEqualTo(Arrays.asList(user, adminUser));
   }
 

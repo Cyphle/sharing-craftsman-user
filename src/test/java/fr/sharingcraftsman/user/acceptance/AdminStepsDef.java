@@ -271,9 +271,6 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
             .filter(user -> !((UserDsl) user).getUsername().equals("admin@scuser.fr"))
             .collect(Collectors.toList());
 
-    System.out.println(fetchedUsers);
-    System.out.println(expectedUsers);
-
     assertThat(fetchedUsers).isEqualTo(expectedUsers);
   }
 }
