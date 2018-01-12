@@ -47,7 +47,7 @@ public class UserAdminService extends AbstractAdminService {
 
     List<UserInfo> fetchedUsers = userOrganisation.getAllUsers();
     List<UserInfoDTO> users = fetchedUsers.stream()
-            .map(user -> new UserInfoDTO(
+            .map(user -> UserInfoDTO.from(
                     user.getUsernameContent(),
                     user.getPasswordContent(),
                     user.getFirstname(),

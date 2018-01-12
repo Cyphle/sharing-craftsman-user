@@ -57,14 +57,14 @@ public class UserAuthorizationAdminServiceTest {
     group.addRole(new RoleDTO("ROLE_USER"));
     AuthorizationsDTO authorization = new AuthorizationsDTO();
     authorization.addGroup(group);
-    user = new UserInfoDTO("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
+    user = UserInfoDTO.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
     user.setPassword("password");
 
     GroupDTO adminGroup = new GroupDTO("ADMINS");
     adminGroup.addRoles(Arrays.asList(new RoleDTO("ROLE_USER"), new RoleDTO("ROLE_ADMIN")));
     AuthorizationsDTO adminAuthorization = new AuthorizationsDTO();
     adminAuthorization.addGroup(adminGroup);
-    adminUser = new UserInfoDTO("admin@toto.fr", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", adminAuthorization, true, 1514631600000L, 1514631600000L);
+    adminUser = UserInfoDTO.from("admin@toto.fr", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", adminAuthorization, true, 1514631600000L, 1514631600000L);
     adminUser.setPassword("password");
 
     clientDTO = new ClientDTO("client", "secret");
@@ -80,7 +80,7 @@ public class UserAuthorizationAdminServiceTest {
   public void should_add_group_to_user() throws Exception {
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
-    UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world", "USERS");
+    UserGroupDTO newGroupForUser = UserGroupDTO.from("hello@world", "USERS");
 
     ResponseEntity response = userAuthorizationAdminService.addGroupToUser(clientDTO, tokenDTO, newGroupForUser);
 
@@ -91,7 +91,7 @@ public class UserAuthorizationAdminServiceTest {
   public void should_remove_group_to_user() throws Exception {
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
-    UserGroupDTO newGroupForUser = new UserGroupDTO("hello@world", "USERS");
+    UserGroupDTO newGroupForUser = UserGroupDTO.from("hello@world", "USERS");
 
     ResponseEntity response = userAuthorizationAdminService.removeGroupToUser(clientDTO, tokenDTO, newGroupForUser);
 

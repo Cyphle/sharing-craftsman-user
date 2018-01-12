@@ -27,7 +27,7 @@ public class UserInfoDTO {
   public UserInfoDTO() {
   }
 
-  public UserInfoDTO(
+  private UserInfoDTO(
           String username,
           String firstname,
           String lastname,
@@ -52,7 +52,7 @@ public class UserInfoDTO {
     this.lastUpdateDate = lastUpdateDate;
   }
 
-  public UserInfoDTO(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, long creationDate, long lastUpdateDate) {
+  private UserInfoDTO(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, long creationDate, long lastUpdateDate) {
     this.username = username;
     this.password = password;
     this.firstname = firstname;
@@ -168,6 +168,14 @@ public class UserInfoDTO {
             Profile.from(Username.from(user.getUsername()), Name.of(user.getFirstname()), Name.of(user.getLastname()), Email.from(user.getEmail()), Link.to(user.getWebsite()), Link.to(user.getGithub()), Link.to(user.getLinkedin())),
             TechnicalUserDetails.from(Username.from(user.getUsername()), user.isActive, DateConverter.fromLongToLocalDateTime(user.getCreationDate()), DateConverter.fromLongToLocalDateTime(user.getLastUpdateDate()))
     );
+  }
+
+  public static UserInfoDTO from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, long creationDate, long lastUpdateDate) {
+    return new UserInfoDTO(username, password, firstname, lastname, email, website, github, linkedin, isActive, creationDate, lastUpdateDate);
+  }
+
+  public static UserInfoDTO from(String username, String firstname, String lastname, String email, String website, String github, String linkedin, AuthorizationsDTO authorizations, boolean isActive, long creationDate, long lastUpdateDate) {
+    return new UserInfoDTO(username, firstname, lastname, email, website, github, linkedin, authorizations, isActive, creationDate, lastUpdateDate);
   }
 
   @Override
