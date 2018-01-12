@@ -166,7 +166,7 @@ public class UserAdminServiceTest {
     userAdminService.updateUser(clientDTO, tokenDTO, userToUpdate);
 
     UserInfo updatedUser = UserInfo.from(
-            User.from("john@doe.fr", "password"),
+            User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="),
             Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("new@email.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
     );
@@ -182,7 +182,7 @@ public class UserAdminServiceTest {
     userAdminService.addUser(clientDTO, tokenDTO, user);
 
     UserInfo newUser = UserInfo.from(
-            User.from("john@doe.fr", "password"),
+            User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="),
             Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
     );
