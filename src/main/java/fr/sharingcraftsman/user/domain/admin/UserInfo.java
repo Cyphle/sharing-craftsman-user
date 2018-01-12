@@ -1,11 +1,15 @@
 package fr.sharingcraftsman.user.domain.admin;
 
 import fr.sharingcraftsman.user.common.DateConverter;
+import fr.sharingcraftsman.user.domain.common.Password;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.User;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @EqualsAndHashCode
+@ToString
 public class UserInfo extends AbstractUserInfo {
   private User user;
   private Profile profile;
@@ -17,12 +21,24 @@ public class UserInfo extends AbstractUserInfo {
     this.technicalUserDetails = technicalUserDetails;
   }
 
-  public String getUsername() {
+  public Username getUsername() {
+    return user.getUsername();
+  }
+
+  public String getUsernameContent() {
     return user.getUsernameContent();
   }
 
-  public String getPassword() {
+  public Password getPassword() {
+    return user.getPassword();
+  }
+
+  public String getPasswordContent() {
     return user.getPasswordContent();
+  }
+
+  public void setPassword(Password password) {
+    this.user.setPassword(password);
   }
 
   public String getFirstname() {
@@ -59,6 +75,12 @@ public class UserInfo extends AbstractUserInfo {
 
   public long getLastUpdateDate() {
     return DateConverter.fromLocalDateTimeToLong(technicalUserDetails.getLastUpdateDate());
+  }
+
+  public void updateFields(UserInfo userUpdated) {
+    user.updateFields(userUpdated.user);
+    profile.updateFields(userUpdated.profile);
+    technicalUserDetails.updateFields(userUpdated.technicalUserDetails);
   }
 
   @Override

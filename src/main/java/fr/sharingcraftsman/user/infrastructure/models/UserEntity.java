@@ -1,6 +1,8 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
-import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
+import fr.sharingcraftsman.user.common.DateConverter;
+import fr.sharingcraftsman.user.domain.admin.TechnicalUserDetails;
+import fr.sharingcraftsman.user.domain.admin.UserInfo;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.*;
 import fr.sharingcraftsman.user.domain.user.Profile;
@@ -9,8 +11,6 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -43,7 +43,8 @@ public class UserEntity {
   @Column(name = "last_update_date")
   private Date lastUpdateDate;
 
-  public UserEntity() { }
+  public UserEntity() {
+  }
 
   public UserEntity(String username, String password) {
     this.username = username;
@@ -177,7 +178,7 @@ public class UserEntity {
     linkedin = userEntity.linkedin;
   }
 
-  public void updateFromAdminUser(UserInfoOld user) {
+  public void updateFromAdmin(UserInfo user) {
     username = user.getUsernameContent();
     firstname = user.getFirstname();
     lastname = user.getLastname();
@@ -198,9 +199,10 @@ public class UserEntity {
     );
   }
 
-  public static UserEntity fromDomainToInfra(UserInfoOld user) {
+  public static UserEntity fromDomainToInfra(UserInfo user) {
     return new UserEntity(
             user.getUsernameContent(),
+            user.getPasswordContent(),
             user.getFirstname(),
             user.getLastname(),
             user.getEmail(),
@@ -210,37 +212,12 @@ public class UserEntity {
     );
   }
 
-  public static List<UserInfoOld> fromInfraToAdminDomain(List<UserEntity> userEntities) {
-    return userEntities.stream()
-            .map(user -> UserInfoOld.from(
-                    user.getUsername(),
-                    user.getPassword(),
-                    user.getFirstname(),
-                    user.getLastname(),
-                    user.getEmail(),
-                    user.getWebsite(),
-                    user.getGithub(),
-                    user.getLinkedin(),
-                    user.isActive(),
-                    user.getCreationDate(),
-                    user.getLastUpdateDate()
-            ))
-            .collect(Collectors.toList());
-  }
-
-  public static UserInfoOld fromInfraToAdminDomain(UserEntity userEntity) {
-    return UserInfoOld.from(
-            userEntity.getUsername(),
-            userEntity.getPassword(),
-            userEntity.getFirstname(),
-            userEntity.getLastname(),
-            userEntity.getEmail(),
-            userEntity.getWebsite(),
-            userEntity.getGithub(),
-            userEntity.getLinkedin(),
-            userEntity.isActive(),
-            userEntity.getCreationDate(),
-            userEntity.getLastUpdateDate());
+  public static UserInfo fromInfraToAdminDomain(UserEntity userEntity) throws UsernameException, PasswordException {
+    return UserInfo.from(
+            User.from(userEntity.getUsername(), userEntity.getPassword()),
+            Profile.from(Username.from(userEntity.getUsername()), Name.of(userEntity.getFirstname()), Name.of(userEntity.getLastname()), Email.from(userEntity.getEmail()), Link.to(userEntity.getWebsite()), Link.to(userEntity.getGithub()), Link.to(userEntity.getLinkedin())),
+            TechnicalUserDetails.from(Username.from(userEntity.getUsername()), userEntity.isActive(), DateConverter.fromDateToLocalDateTime(userEntity.getCreationDate()), DateConverter.fromDateToLocalDateTime(userEntity.getLastUpdateDate()))
+    );
   }
 
   public static Profile fromInfraToDomainProfile(UserEntity userEntity) throws UsernameException {

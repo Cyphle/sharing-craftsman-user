@@ -1,9 +1,11 @@
 package fr.sharingcraftsman.user.domain.admin;
 
 import fr.sharingcraftsman.user.domain.common.Username;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
+@ToString
 public class TechnicalUserDetails {
   private Username username;
   private boolean isActive;
@@ -35,6 +37,10 @@ public class TechnicalUserDetails {
 
   public LocalDateTime getLastUpdateDate() {
     return lastUpdateDate;
+  }
+
+  public void updateFields(TechnicalUserDetails technicalUserDetails) {
+    isActive = technicalUserDetails.isActive;
   }
 
   @Override

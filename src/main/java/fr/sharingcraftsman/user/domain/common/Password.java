@@ -2,7 +2,9 @@ package fr.sharingcraftsman.user.domain.common;
 
 import fr.sharingcraftsman.user.domain.utils.Crypter;
 import fr.sharingcraftsman.user.domain.utils.CrypterFactory;
+import lombok.ToString;
 
+@ToString
 public class Password {
   public static Crypter crypter = CrypterFactory.getCrypter();
 

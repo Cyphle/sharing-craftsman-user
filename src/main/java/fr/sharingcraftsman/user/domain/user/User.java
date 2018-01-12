@@ -31,12 +31,20 @@ public class User extends AbstractUser {
     return username.getUsername();
   }
 
+  public Password getPassword() {
+    return password;
+  }
+
   public String getPasswordContent() {
     return password.getPassword();
   }
 
   public void setPassword(Password password) {
     this.password = password;
+  }
+
+  public void updateFields(User user) {
+    username = user.username;
   }
 
   @Override

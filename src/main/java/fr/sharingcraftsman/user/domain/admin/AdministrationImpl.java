@@ -1,7 +1,7 @@
 package fr.sharingcraftsman.user.domain.admin;
 
 import fr.sharingcraftsman.user.domain.admin.ports.AdminUserRepository;
-import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
+import fr.sharingcraftsman.user.domain.common.Password;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.User;
@@ -16,12 +16,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class AdministrationImpl implements Administration {
-  // TODO To delete
-  private UserForAdminRepository userForAdminRepository;
   private AdminUserRepository adminUserRepository;
 
-  public AdministrationImpl(UserForAdminRepository userForAdminRepository, AdminUserRepository adminUserRepository) {
-    this.userForAdminRepository = userForAdminRepository;
+  public AdministrationImpl(AdminUserRepository adminUserRepository) {
     this.adminUserRepository = adminUserRepository;
   }
 
@@ -30,9 +27,43 @@ public class AdministrationImpl implements Administration {
     List<User> users = adminUserRepository.getAllUsers();
     List<Profile> profiles = adminUserRepository.getAllProfiles();
     List<TechnicalUserDetails> technicalUserDetails = adminUserRepository.getAllTechnicalUserDetails();
+    return mapUsersInfo(users, profiles, technicalUserDetails);
+  }
 
+  @Override
+  public void createUser(UserInfo user) throws AlreadyExistingUserException {
+    AbstractUserInfo foundUser = adminUserRepository.findUserInfoFromUsername(user.getUsername());
+
+    if (foundUser.isKnown())
+      throw new AlreadyExistingUserException("User already exists with username: " + user.getUsernameContent());
+
+    user.setPassword(user.getPassword().getEncryptedVersion());
+    adminUserRepository.createUser(user);
+  }
+
+  @Override
+  public void updateUser(UserInfo user) throws UnknownUserException {
+    AbstractUserInfo userToUpdate = adminUserRepository.findUserInfoFromUsername(user.getUsername());
+
+    if (!userToUpdate.isKnown())
+      throw new UnknownUserException("Unknown user");
+
+    changeUserInfo(user, (UserInfo) userToUpdate);
+    adminUserRepository.updateUser((UserInfo) userToUpdate);
+  }
+
+  @Override
+  public void deleteUser(Username username) throws UserException {
+    AbstractUser user = adminUserRepository.findUserFromUsername(username);
+
+    if (!user.isKnown())
+      throw new UnknownUserException("Unknown user");
+
+    adminUserRepository.deleteUser(username);
+  }
+
+  private List<UserInfo> mapUsersInfo(List<User> users, List<Profile> profiles, List<TechnicalUserDetails> technicalUserDetails) {
     List<UserInfo> userInfos = new ArrayList<>();
-
     users.forEach(user -> {
       Optional<Profile> profile = profiles.stream()
               .filter(p -> p.getUsername().equals(user.getUsername()))
@@ -45,38 +76,22 @@ public class AdministrationImpl implements Administration {
         userInfos.add(UserInfo.from(user, profile.get(), technicalUserDetail.get()));
       }
     });
-
     return userInfos;
   }
 
-  @Override
-  public void createUser(UserInfoOld user) throws AlreadyExistingUserException {
-    AbstractUserInfo foundUser = userForAdminRepository.findAdminUserFromUsername(user.getUsername());
-
-    if (foundUser.isKnown())
-      throw new AlreadyExistingUserException("User already exists with username: " + user.getUsernameContent());
-
-    userForAdminRepository.createUser(user);
+  private void changeUserInfo(UserInfo user, UserInfo userToUpdate) {
+    userToUpdate.updateFields(user);
+    changeUserPassword(user, userToUpdate);
   }
 
-  @Override
-  public void updateUser(UserInfoOld user) throws UnknownUserException {
-    AbstractUserInfo userToUpdate = userForAdminRepository.findAdminUserFromUsername(user.getUsername());
+  private void changeUserPassword(UserInfo user, UserInfo userToUpdate) {
+    if (!user.getPasswordContent().equals("NOPASSWORD")) {
+      Password newPassword = user.getPassword().getEncryptedVersion();
+      Password oldPassword = userToUpdate.getPassword();
 
-    if (!userToUpdate.isKnown())
-      throw new UnknownUserException("Unknown user");
-
-    ((UserInfoOld) userToUpdate).updateFields(user);
-    userForAdminRepository.updateUser((UserInfoOld) userToUpdate);
-  }
-
-  @Override
-  public void deleteUser(Username username) throws UserException {
-    AbstractUser user = userForAdminRepository.findUserFromUsername(username);
-
-    if (!user.isKnown())
-      throw new UnknownUserException("Unknown user");
-
-    userForAdminRepository.deleteUser(username);
+      if (!newPassword.equals(oldPassword)) {
+        userToUpdate.setPassword(newPassword);
+      }
+    }
   }
 }

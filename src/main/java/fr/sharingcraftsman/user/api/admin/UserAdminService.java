@@ -5,10 +5,8 @@ import fr.sharingcraftsman.user.api.authorization.AuthorizationsDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.domain.admin.AdministrationImpl;
 import fr.sharingcraftsman.user.domain.admin.UserInfo;
-import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
 import fr.sharingcraftsman.user.domain.admin.ports.AdminUserRepository;
 import fr.sharingcraftsman.user.domain.admin.ports.Administration;
-import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authorization.Authorization;
 import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
@@ -16,6 +14,7 @@ import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationReposito
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
+import fr.sharingcraftsman.user.domain.common.PasswordException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
@@ -34,13 +33,12 @@ public class UserAdminService extends AbstractAdminService {
 
   @Autowired
   public UserAdminService(
-          UserForAdminRepository userForAdminRepository,
           ClientRepository clientRepository,
           UserAuthorizationRepository userAuthorizationRepository,
           AuthorizationRepository authorizationRepository,
           AdminUserRepository adminUserRepository) {
     clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
-    userOrganisation = new AdministrationImpl(userForAdminRepository, adminUserRepository);
+    userOrganisation = new AdministrationImpl(adminUserRepository);
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
   }
 
@@ -53,8 +51,8 @@ public class UserAdminService extends AbstractAdminService {
     List<UserInfo> fetchedUsers = userOrganisation.getAllUsers();
     List<UserInfoDTO> users = fetchedUsers.stream()
             .map(user -> new UserInfoDTO(
-                    user.getUsername(),
-                    user.getPassword(),
+                    user.getUsernameContent(),
+                    user.getPasswordContent(),
                     user.getFirstname(),
                     user.getLastname(),
                     user.getEmail(),
@@ -85,11 +83,11 @@ public class UserAdminService extends AbstractAdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      UserInfoOld userInfo = UserInfoDTO.fromApiToDomain(user);
+      UserInfo userInfo = UserInfoDTO.fromApiToDomain(user);
       userOrganisation.createUser(userInfo);
       authorizationManager.addGroup(Username.from(user.getUsername()), Groups.USERS);
       return ResponseEntity.ok().build();
-    } catch (UserException | UsernameException e) {
+    } catch (UserException | UsernameException | PasswordException e) {
       log.warn("Error:" + e.getMessage());
       return ResponseEntity
               .badRequest()
@@ -104,10 +102,10 @@ public class UserAdminService extends AbstractAdminService {
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
 
     try {
-      UserInfoOld userInfo = UserInfoDTO.fromApiToDomain(user);
+      UserInfo userInfo = UserInfoDTO.fromApiToDomain(user);
       userOrganisation.updateUser(userInfo);
       return ResponseEntity.ok().build();
-    } catch (UserException e) {
+    } catch (UserException | PasswordException | UsernameException e) {
       log.warn("Error while updating user " + user.getUsername() + ": " + e.getMessage());
       return ResponseEntity
               .badRequest()

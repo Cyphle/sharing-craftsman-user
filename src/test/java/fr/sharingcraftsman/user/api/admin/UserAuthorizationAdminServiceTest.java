@@ -6,40 +6,32 @@ import fr.sharingcraftsman.user.api.authorization.GroupDTO;
 import fr.sharingcraftsman.user.api.authorization.RoleDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
-import fr.sharingcraftsman.user.domain.admin.UnknownUserInfo;
-import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.client.UnknownClient;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserAuthorizationAdminServiceTest {
-  @Mock
-  private UserForAdminRepository userForAdminRepository;
   @Mock
   private UserAuthorizationRepository userAuthorizationRepository;
   @Mock

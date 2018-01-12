@@ -26,10 +26,10 @@ Feature: Admin functionalities
 
   Scenario: Create, delete, update users
     Given I create the following users
-      | Username    | Firstname | Lastname | Email           | Website             | Github                 | Linkedin                 |
-      | john@doe.fr | John      | Doe      | john@doe.fr     | www.johndoe.fr      | github.com/johndoe     | linkedin.com/johndoe     |
-      | misterhello | Mister    | Hello    | mister@hello.fr | www.misterhello.com | github.com/misterhello | linkedin.com/misterhello |
-      | foo@bar.com | Foo       | Bar      | foo@bar.com     | www.foobar.de       | github.com/foobar      | linkedin.com/foobar      |
+      | Username    | Password | Firstname | Lastname | Email           | Website             | Github                 | Linkedin                 |
+      | john@doe.fr | password | John      | Doe      | john@doe.fr     | www.johndoe.fr      | github.com/johndoe     | linkedin.com/johndoe     |
+      | misterhello | password | Mister    | Hello    | mister@hello.fr | www.misterhello.com | github.com/misterhello | linkedin.com/misterhello |
+      | foo@bar.com | password | Foo       | Bar      | foo@bar.com     | www.foobar.de       | github.com/foobar      | linkedin.com/foobar      |
     And I create the following authorizations
       | Group | Role      |
       | USERS | ROLE_USER |

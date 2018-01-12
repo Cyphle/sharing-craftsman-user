@@ -2,7 +2,11 @@ package fr.sharingcraftsman.user.api.admin;
 
 import fr.sharingcraftsman.user.api.authorization.AuthorizationsDTO;
 import fr.sharingcraftsman.user.common.DateConverter;
-import fr.sharingcraftsman.user.domain.admin.UserInfoOld;
+import fr.sharingcraftsman.user.domain.admin.TechnicalUserDetails;
+import fr.sharingcraftsman.user.domain.admin.UserInfo;
+import fr.sharingcraftsman.user.domain.common.*;
+import fr.sharingcraftsman.user.domain.user.Profile;
+import fr.sharingcraftsman.user.domain.user.User;
 import lombok.ToString;
 
 @ToString
@@ -158,19 +162,11 @@ public class UserInfoDTO {
     this.lastUpdateDate = lastUpdateDate;
   }
 
-  public static UserInfoOld fromApiToDomain(UserInfoDTO user) {
-    return UserInfoOld.from(
-            user.getUsername(),
-            user.getPassword(),
-            user.getFirstname(),
-            user.getLastname(),
-            user.getEmail(),
-            user.getWebsite(),
-            user.getGithub(),
-            user.getLinkedin(),
-            user.isActive(),
-            DateConverter.fromLongToLocalDateTime(user.getCreationDate()),
-            DateConverter.fromLongToLocalDateTime(user.getLastUpdateDate())
+  public static UserInfo fromApiToDomain(UserInfoDTO user) throws UsernameException, PasswordException {
+    return UserInfo.from(
+            User.from(user.getUsername(), user.getPassword() != null && !user.getPassword().isEmpty() ? user.getPassword() : "NOPASSWORD"),
+            Profile.from(Username.from(user.getUsername()), Name.of(user.getFirstname()), Name.of(user.getLastname()), Email.from(user.getEmail()), Link.to(user.getWebsite()), Link.to(user.getGithub()), Link.to(user.getLinkedin())),
+            TechnicalUserDetails.from(Username.from(user.getUsername()), user.isActive, DateConverter.fromLongToLocalDateTime(user.getCreationDate()), DateConverter.fromLongToLocalDateTime(user.getLastUpdateDate()))
     );
   }
 

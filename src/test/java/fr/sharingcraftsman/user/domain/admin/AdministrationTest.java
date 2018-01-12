@@ -1,7 +1,6 @@
 package fr.sharingcraftsman.user.domain.admin;
 
 import fr.sharingcraftsman.user.domain.admin.ports.AdminUserRepository;
-import fr.sharingcraftsman.user.domain.admin.ports.UserForAdminRepository;
 import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
@@ -10,7 +9,6 @@ import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.UnknownUser;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
-import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +17,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,15 +29,13 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class AdministrationTest {
   @Mock
-  private UserForAdminRepository userForAdminRepository;
-  @Mock
   private AdminUserRepository userRepository;
 
   private AdministrationImpl organisation;
 
   @Before
   public void setUp() throws Exception {
-    organisation = new AdministrationImpl(userForAdminRepository, userRepository);
+    organisation = new AdministrationImpl(userRepository);
   }
 
   @Test
@@ -76,18 +70,18 @@ public class AdministrationTest {
 
   @Test
   public void should_delete_user_if_exists() throws Exception {
-    given(userForAdminRepository.findUserFromUsername(Username.from("hello@world.fr"))).willReturn(User.from("hello@world.fr", "password"));
+    given(userRepository.findUserFromUsername(Username.from("hello@world.fr"))).willReturn(User.from("hello@world.fr", "password"));
 
     organisation.deleteUser(Username.from("hello@world.fr"));
 
-    verify(userForAdminRepository).findUserFromUsername(Username.from("hello@world.fr"));
-    verify(userForAdminRepository).deleteUser(Username.from("hello@world.fr"));
+    verify(userRepository).findUserFromUsername(Username.from("hello@world.fr"));
+    verify(userRepository).deleteUser(Username.from("hello@world.fr"));
   }
 
   @Test
   public void should_throw_unknown_user_exception_if_user_not_found() throws Exception {
     try {
-      given(userForAdminRepository.findUserFromUsername(any(Username.class))).willReturn(new UnknownUser());
+      given(userRepository.findUserFromUsername(any(Username.class))).willReturn(new UnknownUser());
       organisation.deleteUser(Username.from("hello@world.fr"));
       fail("Should have throw user exception when not found");
     } catch (UserException e) {
@@ -97,26 +91,46 @@ public class AdministrationTest {
 
   @Test
   public void should_update_user() throws Exception {
-    UserInfoOld foundUser = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    given(userForAdminRepository.findAdminUserFromUsername(foundUser.getUsername())).willReturn(foundUser);
+    UserInfo foundUser = UserInfo.from(
+            User.from("admin@toto.fr", "password"),
+            Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("new@email.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto")),
+            TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
+    );
+    given(userRepository.findUserInfoFromUsername(foundUser.getUsername())).willReturn(foundUser);
 
-    UserInfoOld userToUpdate = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
+    UserInfo userToUpdate = UserInfo.from(
+            User.from("admin@toto.fr", "password"),
+            Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("new@email.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto")),
+            TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
+    );
     organisation.updateUser(userToUpdate);
 
-    UserInfoOld expectedUser = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    verify(userForAdminRepository).findAdminUserFromUsername(expectedUser.getUsername());
-    verify(userForAdminRepository).updateUser(expectedUser);
+    UserInfo expectedUser = UserInfo.from(
+            User.from("admin@toto.fr", "T49xWf/l7gatvfVwethwDw=="),
+            Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("new@email.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto")),
+            TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
+    );
+    verify(userRepository).findUserInfoFromUsername(expectedUser.getUsername());
+    verify(userRepository).updateUser(expectedUser);
   }
 
   @Test
   public void should_create_user() throws Exception {
-    given(userForAdminRepository.findAdminUserFromUsername(any(Username.class))).willReturn(new UnknownUserInfo());
+    given(userRepository.findUserInfoFromUsername(any(Username.class))).willReturn(new UnknownUserInfo());
 
-    UserInfoOld userToCreate = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
+    UserInfo userToCreate = UserInfo.from(
+            User.from("admin@toto.fr", "password"),
+            Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("new@email.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto")),
+            TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
+    );
     organisation.createUser(userToCreate);
 
-    UserInfoOld expectedUser = UserInfoOld.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", true, new Date(), new Date());
-    verify(userForAdminRepository).findAdminUserFromUsername(expectedUser.getUsername());
-    verify(userForAdminRepository).createUser(expectedUser);
+    UserInfo expectedUser = UserInfo.from(
+            User.from("admin@toto.fr", "T49xWf/l7gatvfVwethwDw=="),
+            Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("new@email.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto")),
+            TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
+    );
+    verify(userRepository).findUserInfoFromUsername(expectedUser.getUsername());
+    verify(userRepository).createUser(expectedUser);
   }
 }

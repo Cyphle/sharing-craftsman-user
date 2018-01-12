@@ -64,7 +64,7 @@ public class Profile extends AbstractProfile {
     return linkedin.getLink();
   }
 
-  public List<ValidationError> validate() {
+  List<ValidationError> validate() {
     List<ValidationError> errors = new ArrayList<>();
 
     if (!email.isValid())
@@ -73,13 +73,22 @@ public class Profile extends AbstractProfile {
     return errors;
   }
 
-  public void updateFrom(Profile newProfile) {
+  void updateFrom(Profile newProfile) {
     firstname = newProfile.firstname;
     lastname = newProfile.lastname;
     email = newProfile.email;
     website = newProfile.website;
     github = newProfile.github;
     linkedin = newProfile.linkedin;
+  }
+
+  public void updateFields(Profile profile) {
+    firstname = profile.firstname;
+    lastname = profile.lastname;
+    email = profile.email;
+    website = profile.website;
+    github = profile.github;
+    linkedin = profile.linkedin;
   }
 
   @Override
