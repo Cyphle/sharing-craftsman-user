@@ -2,7 +2,6 @@ package fr.sharingcraftsman.user.api.admin;
 
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
-import fr.sharingcraftsman.user.domain.admin.ports.Administration;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.authorization.Authorization;
 import fr.sharingcraftsman.user.domain.authorization.Group;
@@ -12,15 +11,24 @@ import fr.sharingcraftsman.user.domain.common.Username;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 
 public class AbstractAdminService {
   protected final Logger log = LoggerFactory.getLogger(this.getClass());
-  protected ClientOrganisation clientOrganisation;
-  protected AuthorizationManager authorizationManager;
+  ClientOrganisation clientOrganisation;
+  AuthorizationManager authorizationManager;
 
-  protected boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
+  ResponseEntity isUnauthorized(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    HttpStatus isAdmin = isAdmin(tokenDTO);
+    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+    return null;
+  }
+
+  boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
     if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
       log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
       return true;
@@ -28,7 +36,7 @@ public class AbstractAdminService {
     return false;
   }
 
-  protected HttpStatus isAdmin(TokenDTO tokenDTO) {
+  HttpStatus isAdmin(TokenDTO tokenDTO) {
     try {
       Authorization requesterAuthorization = authorizationManager.getAuthorizationsOf(Username.from(tokenDTO.getUsername()));
 

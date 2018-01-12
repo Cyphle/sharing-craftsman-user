@@ -20,7 +20,6 @@ import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -43,10 +42,8 @@ public class UserAdminService extends AbstractAdminService {
   }
 
   ResponseEntity getAllUsers(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
 
     List<UserInfo> fetchedUsers = userOrganisation.getAllUsers();
     List<UserInfoDTO> users = fetchedUsers.stream()
@@ -77,10 +74,8 @@ public class UserAdminService extends AbstractAdminService {
   }
 
   ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
 
     try {
       UserInfo userInfo = UserInfoDTO.fromApiToDomain(user);
@@ -96,10 +91,8 @@ public class UserAdminService extends AbstractAdminService {
   }
 
   ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
 
     try {
       UserInfo userInfo = UserInfoDTO.fromApiToDomain(user);
@@ -114,10 +107,8 @@ public class UserAdminService extends AbstractAdminService {
   }
 
   ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
 
     try {
       userOrganisation.deleteUser(Username.from(usernameToDelete));

@@ -10,7 +10,6 @@ import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -28,30 +27,24 @@ public class AuthorizationAdminService extends AbstractAdminService {
   }
 
   ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
 
     Set<GroupDTO> groups = GroupDTO.groupFromDomainToApi(authorizationManager.getAllRolesWithTheirGroups());
     return ResponseEntity.ok(groups);
   }
 
   ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
 
     authorizationManager.createNewGroupWithRoles(GroupDTO.fromApiToDomain(groupDTO));
     return ResponseEntity.ok().build();
   }
 
   ResponseEntity removeRoleFromGroup(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
 
     authorizationManager.removeRoleFromGroup(GroupDTO.fromApiToDomain(groupDTO));
     return ResponseEntity.ok().build();

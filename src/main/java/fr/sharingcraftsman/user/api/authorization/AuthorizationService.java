@@ -47,11 +47,8 @@ public class AuthorizationService {
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
   }
 
-  public ResponseEntity getAuthorizations(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
-      log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to see authorizations with unauthorized client: " + clientDTO.getName());
-      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-    }
+  ResponseEntity getAuthorizations(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    if (isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
       log.info("Request to get authotizations of:" + tokenDTO.getUsername());
@@ -67,6 +64,14 @@ public class AuthorizationService {
               .badRequest()
               .body(e.getMessage());
     }
+  }
+
+  private boolean isUnauthorizedClient(ClientDTO clientDTO) {
+    if (clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
+      return false;
+    }
+    log.warn("Unauthorized client: " + clientDTO.getName());
+    return true;
   }
 
   private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO) throws UsernameException {

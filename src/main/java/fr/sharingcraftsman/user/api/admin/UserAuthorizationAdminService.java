@@ -12,7 +12,6 @@ import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +27,8 @@ public class UserAuthorizationAdminService extends AbstractAdminService {
   }
 
   ResponseEntity addGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
 
     try {
       authorizationManager.addGroup(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
@@ -45,10 +42,8 @@ public class UserAuthorizationAdminService extends AbstractAdminService {
   }
 
   ResponseEntity removeGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-
-    HttpStatus isAdmin = isAdmin(tokenDTO);
-    if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
+    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
 
     try {
       authorizationManager.removeGroup(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
