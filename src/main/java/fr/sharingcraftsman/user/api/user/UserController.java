@@ -33,7 +33,7 @@ public class UserController {
                                                    @RequestHeader("username") String username,
                                                    @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
-    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userService.requestChangePassword(clientDTO, tokenDTO);
   }
 
@@ -76,7 +76,7 @@ public class UserController {
                                        @RequestHeader("access-token") String accessToken,
                                        @RequestBody ChangePasswordDTO changePasswordDTO) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
-    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
   }
 
@@ -92,7 +92,7 @@ public class UserController {
                                        @RequestHeader("access-token") String accessToken,
                                        @RequestBody ProfileDTO profileDTO) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
-    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userService.updateProfile(clientDTO, tokenDTO, profileDTO);
   }
 }

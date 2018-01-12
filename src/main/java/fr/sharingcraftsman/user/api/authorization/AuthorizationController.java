@@ -35,7 +35,7 @@ public class AuthorizationController {
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
-    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return authorizationService.getAuthorizations(clientDTO, tokenDTO);
   }
 }

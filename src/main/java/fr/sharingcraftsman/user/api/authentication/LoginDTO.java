@@ -12,15 +12,15 @@ public class LoginDTO {
   @ApiModelProperty(example = "true, false")
   private boolean persistentLogging;
 
-  public LoginDTO() { }
+  private LoginDTO() { }
 
-  public LoginDTO(String username, String password) {
+  private LoginDTO(String username, String password) {
     this.username = username;
     this.password = password;
     this.persistentLogging = false;
   }
 
-  public LoginDTO(String username, String password, boolean persistentLogging) {
+  private LoginDTO(String username, String password, boolean persistentLogging) {
     this.username = username;
     this.password = password;
     this.persistentLogging = persistentLogging;
@@ -44,6 +44,14 @@ public class LoginDTO {
 
   public boolean isPersistentLogging() {
     return persistentLogging;
+  }
+
+  public static LoginDTO from(String username, String password) {
+    return new LoginDTO(username, password);
+  }
+
+  public static LoginDTO from(String username, String password, boolean persistentLogging) {
+    return new LoginDTO(username, password, persistentLogging);
   }
 
   public static Credentials fromApiToDomain(LoginDTO loginDTO) throws CredentialsException {

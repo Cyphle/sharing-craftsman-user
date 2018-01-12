@@ -59,10 +59,7 @@ public class AuthorizationServiceTest {
     clientDTO = new ClientDTO("client", "secret");
     given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "secret"));
 
-    token = new TokenDTO();
-    token.setUsername("john@doe.fr");
-    token.setAccessToken("aaa");
-
+    token = TokenDTO.from("john@doe.fr", "aaa");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
 
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);

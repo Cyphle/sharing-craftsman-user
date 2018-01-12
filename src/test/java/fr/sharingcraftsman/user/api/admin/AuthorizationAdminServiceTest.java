@@ -45,13 +45,8 @@ public class AuthorizationAdminServiceTest {
   @Before
   public void setUp() throws Exception {
     given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "secret"));
-
     clientDTO = new ClientDTO("client", "secret");
-
-    tokenDTO = new TokenDTO();
-    tokenDTO.setUsername("admin@toto.fr");
-    tokenDTO.setAccessToken("aaa");
-
+    tokenDTO = TokenDTO.from("admin@toto.fr", "aaa");
     authorizationAdminService = new AuthorizationAdminService(clientRepository, userAuthorizationRepository, authorizationRepository);
   }
 

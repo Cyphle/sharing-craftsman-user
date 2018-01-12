@@ -56,10 +56,10 @@ public class AuthenticationControllerTest {
 
   @Test
   public void should_log_in_and_get_token() throws Exception {
-    TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa", "bbb", DateConverter.fromLocalDateTimeToLong(LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0)));
+    TokenDTO tokenDTO = TokenDTO.from("john@doe.fr", "aaa", "bbb", DateConverter.fromLocalDateTimeToLong(LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0)));
     given(authenticationService.login(any(ClientDTO.class), any(LoginDTO.class))).willReturn(ResponseEntity.ok(tokenDTO));
 
-    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password", true);
+    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password", true);
 
     this.mvc.perform(post("/tokens/login")
             .header("client", "client")
@@ -74,10 +74,6 @@ public class AuthenticationControllerTest {
   @Test
   public void should_verify_token() throws Exception {
     given(authenticationService.checkToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
-
-    TokenDTO token = new TokenDTO();
-    token.setUsername("john@doe.fr");
-    token.setAccessToken("aaa");
 
     this.mvc.perform(get("/tokens/verify")
             .header("client", "client")
@@ -101,7 +97,7 @@ public class AuthenticationControllerTest {
 
   @Test
   public void should_request_for_a_new_access_token() throws Exception {
-    TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "ddd", "eee", DateConverter.fromLocalDateTimeToLong(LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0)));
+    TokenDTO tokenDTO = TokenDTO.from("john@doe.fr", "ddd", "eee", DateConverter.fromLocalDateTimeToLong(LocalDateTime.of(2018, Month.JANUARY, 2, 12, 0)));
     given(authenticationService.refreshToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(tokenDTO));
 
     this.mvc.perform(get("/tokens/refresh-token")

@@ -34,7 +34,7 @@ public class UserAuthorizationAdminController {
                                  @RequestHeader("access-token") String accessToken,
                                  @RequestBody UserGroupDTO userGroupDTO) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
-    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userAuthorizationAdminService.addGroupToUser(clientDTO, tokenDTO, userGroupDTO);
   }
 
@@ -50,7 +50,7 @@ public class UserAuthorizationAdminController {
                                     @RequestHeader("access-token") String accessToken,
                                     @RequestBody UserGroupDTO userGroupDTO) {
     ClientDTO clientDTO = new ClientDTO(client, secret);
-    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
+    TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userAuthorizationAdminService.removeGroupToUser(clientDTO, tokenDTO, userGroupDTO);
   }
 }

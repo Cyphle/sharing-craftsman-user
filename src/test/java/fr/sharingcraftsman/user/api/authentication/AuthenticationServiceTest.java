@@ -55,9 +55,7 @@ public class AuthenticationServiceTest {
     clientDTO = new ClientDTO("client", "secret");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
 
-    token = new TokenDTO();
-    token.setUsername("john@doe.fr");
-    token.setAccessToken("aaa");
+    token = TokenDTO.from("john@doe.fr", "aaa");
 
     user = User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
   }
@@ -68,7 +66,7 @@ public class AuthenticationServiceTest {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(validToken);
 
-    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password", true);
+    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password", true);
     ResponseEntity response = authenticationService.login(clientDTO, loginDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -120,14 +118,12 @@ public class AuthenticationServiceTest {
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(validToken);
     given(accessTokenRepository.findTokenFromRefreshToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    TokenDTO refreshToken = new TokenDTO();
-    refreshToken.setUsername("john@doe.fr");
-    refreshToken.setRefreshToken("bbb");
+    TokenDTO refreshToken = TokenDTO.from("john@doe.fr", "", "bbb");
 
     ResponseEntity response = authenticationService.refreshToken(clientDTO, refreshToken);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(new TokenDTO("john@doe.fr", "aaa", "bbb", 1514631600000L));
+    assertThat(response.getBody()).isEqualTo(TokenDTO.from("john@doe.fr", "aaa", "bbb", 1514631600000L));
     verify(accessTokenRepository).deleteTokensOf(any(User.class), any(Client.class));
   }
 }

@@ -69,13 +69,13 @@ public class UserServiceTest {
     userService = new UserService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, changePasswordTokenRepository, dateService);
     clientDTO = new ClientDTO("secret", "clientsecret");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
-    tokenDTO = new TokenDTO("john@doe.fr", "aaa");
+    tokenDTO = TokenDTO.from("john@doe.fr", "aaa");
   }
 
   @Test
   public void should_register_user() throws Exception {
     given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUser());
-    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
+    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
@@ -85,7 +85,7 @@ public class UserServiceTest {
 
   @Test
   public void should_get_invalid_credential_username_when_username_is_not_specified() throws Exception {
-    LoginDTO loginDTO = new LoginDTO("", "password");
+    LoginDTO loginDTO = LoginDTO.from("", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
@@ -96,7 +96,7 @@ public class UserServiceTest {
 
   @Test
   public void should_get_invalid_credential_password_when_username_is_not_specified() throws Exception {
-    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "");
+    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
@@ -108,7 +108,7 @@ public class UserServiceTest {
   @Test
   public void should_get_user_already_exists_when_using_already_existing_username() throws Exception {
     given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(User.from("john@doe.fr", "password"));
-    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
+    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
@@ -120,7 +120,7 @@ public class UserServiceTest {
   @Test
   public void should_get_unknown_client_response_when_client_is_not_known() throws Exception {
     given(clientRepository.findClient(any(Client.class))).willReturn(UnknownClient.get());
-    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
+    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
 
@@ -145,7 +145,7 @@ public class UserServiceTest {
   @Test
   public void should_get_unauthorized_if_access_token_is_invalid_when_requesting_password_change() throws Exception {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(new InvalidToken());
-    TokenDTO tokenDTO = new TokenDTO("john@doe.fr", "aaa");
+    TokenDTO tokenDTO = TokenDTO.from("john@doe.fr", "aaa");
 
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
 

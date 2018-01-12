@@ -68,10 +68,7 @@ public class UserAuthorizationAdminServiceTest {
     adminUser.setPassword("password");
 
     clientDTO = new ClientDTO("client", "secret");
-
-    tokenDTO = new TokenDTO();
-    tokenDTO.setUsername("admin@toto.fr");
-    tokenDTO.setAccessToken("aaa");
+    tokenDTO = TokenDTO.from("admin@toto.fr", "aaa");
 
     userAuthorizationAdminService = new UserAuthorizationAdminService(clientRepository, userAuthorizationRepository, authorizationRepository);
   }

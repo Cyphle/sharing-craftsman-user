@@ -51,7 +51,7 @@ public class UserControllerTest {
   public void should_register_a_new_user() throws Exception {
     given(userService.registerUser(any(ClientDTO.class), any(LoginDTO.class))).willReturn(ResponseEntity.ok().build());
 
-    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
+    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password");
 
     this.mvc.perform(post("/users/register")
             .header("client", "client")

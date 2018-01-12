@@ -6,9 +6,6 @@ import fr.sharingcraftsman.user.domain.common.Username;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
 @EqualsAndHashCode
 @ToString
 public class TokenDTO {
@@ -17,22 +14,22 @@ public class TokenDTO {
   private String refreshToken;
   private long expirationDate;
 
-  public TokenDTO() {
+  private TokenDTO() {
   }
 
-  public TokenDTO(String username, String accessToken, String refreshToken, long expirationDate) {
+  private TokenDTO(String username, String accessToken) {
+    this.username = username;
+    this.accessToken = accessToken;
+  }
+
+  private TokenDTO(String username, String accessToken, String refreshToken, long expirationDate) {
     this.username = username;
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     this.expirationDate = expirationDate;
   }
 
-  public TokenDTO(String username, String accessToken) {
-    this.username = username;
-    this.accessToken = accessToken;
-  }
-
-  public TokenDTO(String username, String accessToken, String refreshToken) {
+  private TokenDTO(String username, String accessToken, String refreshToken) {
     this.username = username;
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
@@ -68,6 +65,18 @@ public class TokenDTO {
 
   public void setExpirationDate(long expirationDate) {
     this.expirationDate = expirationDate;
+  }
+
+  public static TokenDTO from(String username, String accessToken) {
+    return new TokenDTO(username, accessToken);
+  }
+
+  public static TokenDTO from(String username, String accessToken, String refreshToken) {
+    return new TokenDTO(username, accessToken, refreshToken);
+  }
+
+  public static TokenDTO from(String username, String accessToken, String refreshToken, long expirationDate) {
+    return new TokenDTO(username, accessToken, refreshToken, expirationDate);
   }
 
   public static TokenDTO fromDomainToApi(AccessToken token, Username username) {

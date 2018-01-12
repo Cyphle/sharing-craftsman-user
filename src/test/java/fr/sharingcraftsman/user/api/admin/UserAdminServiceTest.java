@@ -82,10 +82,7 @@ public class UserAdminServiceTest {
     adminUser.setPassword("password");
 
     clientDTO = new ClientDTO("client", "secret");
-
-    tokenDTO = new TokenDTO();
-    tokenDTO.setUsername("admin@toto.fr");
-    tokenDTO.setAccessToken("aaa");
+    tokenDTO = TokenDTO.from("admin@toto.fr", "aaa");
 
     userAdminService = new UserAdminService(clientRepository, userAuthorizationRepository, authorizationRepository, adminUserRepository);
   }
