@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
-@Api(description = "Endpoints to register in the application")
+@Api(description = "Endpoints for user actions")
 public class UserController {
   private UserService userService;
 
@@ -22,9 +22,9 @@ public class UserController {
     this.userService = userService;
   }
 
-  @ApiOperation(value = "Request to change password - Send change password token", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to request a change password token", response = ResponseEntity.class)
   @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Response containing the token to change password"),
+          @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.GET, value = "/request-change-password")
@@ -37,7 +37,7 @@ public class UserController {
     return userService.getChangePasswordToken(clientDTO, tokenDTO);
   }
 
-  @ApiOperation(value = "Endpoint to generate token when lost password", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to request a lost password token to change it", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -50,7 +50,7 @@ public class UserController {
     return userService.getLostPasswordToken(clientDTO, username);
   }
 
-  @ApiOperation(value = "Post information to create a new client", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint for a user to register", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized"),
@@ -64,7 +64,7 @@ public class UserController {
     return userService.registerUser(clientDTO, loginDTO);
   }
 
-  @ApiOperation(value = "Change password endpoint", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to change password from received token", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -80,7 +80,7 @@ public class UserController {
     return userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
   }
 
-  @ApiOperation(value = "Update profile endpoint", response = ProfileDTO.class)
+  @ApiOperation(value = "Endpoint for a user to update its profile", response = ProfileDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")

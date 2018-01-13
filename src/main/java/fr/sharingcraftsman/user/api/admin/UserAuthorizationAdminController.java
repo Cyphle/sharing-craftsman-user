@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/users")
-@Api(description = "Endpoints to for admin")
+@Api(description = "Endpoints to manage users authorizations")
 public class UserAuthorizationAdminController {
   private UserAuthorizationAdminService userAuthorizationAdminService;
 
@@ -22,13 +22,13 @@ public class UserAuthorizationAdminController {
     this.userAuthorizationAdminService = userAuthorizationAdminService;
   }
 
-  @ApiOperation(value = "Endpoint to from groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to add group to user", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.POST, value = "/groups")
-  public ResponseEntity addGroup(@RequestHeader("client") String client,
+  public ResponseEntity addGroupToUser(@RequestHeader("client") String client,
                                  @RequestHeader("secret") String secret,
                                  @RequestHeader("username") String username,
                                  @RequestHeader("access-token") String accessToken,
@@ -38,7 +38,7 @@ public class UserAuthorizationAdminController {
     return userAuthorizationAdminService.addGroupToUser(clientDTO, tokenDTO, userGroupDTO);
   }
 
-  @ApiOperation(value = "Endpoint to from groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to remove a group from a user", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")

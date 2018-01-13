@@ -23,7 +23,7 @@ public class ClientController {
     this.clientService = clientService;
   }
 
-  @ApiOperation(value = "Post information to create a new client", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to create a new client", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")

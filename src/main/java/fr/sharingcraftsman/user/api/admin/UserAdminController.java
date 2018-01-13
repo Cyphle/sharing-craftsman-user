@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/users")
-@Api(description = "Endpoints to for admin")
+@Api(description = "Endpoints to manage users")
 public class UserAdminController {
   private UserAdminService userAdminService;
 
@@ -21,13 +21,13 @@ public class UserAdminController {
     this.userAdminService = userAdminService;
   }
 
-  @ApiOperation(value = "Endpoint to from users", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to get all users", response = UserInfoDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity verify(@RequestHeader("client") String client,
+  public ResponseEntity getAllUsers(@RequestHeader("client") String client,
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken) {
@@ -36,7 +36,7 @@ public class UserAdminController {
     return userAdminService.getAllUsers(clientDTO, tokenDTO);
   }
 
-  @ApiOperation(value = "Endpoint to add user", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to create a new user", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -52,7 +52,7 @@ public class UserAdminController {
     return userAdminService.addNewUser(clientDTO, tokenDTO, user);
   }
 
-  @ApiOperation(value = "Endpoint to update informations of user", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to update user information", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")

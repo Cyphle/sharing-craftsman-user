@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/roles")
-@Api(description = "Endpoints to manage roles and groups for users")
+@Api(description = "Endpoints to for user authorizations")
 public class AuthorizationController {
   private AuthorizationService authorizationService;
 
@@ -24,13 +24,13 @@ public class AuthorizationController {
     this.authorizationService = authorizationService;
   }
 
-  @ApiOperation(value = "Endpoint to from groups and roles", response = AuthorizationsDTO.class)
+  @ApiOperation(value = "Endpoint to get a user authorizations", response = AuthorizationsDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity verify(@RequestHeader("client") String client,
+  public ResponseEntity getAuthorizationsOfUser(@RequestHeader("client") String client,
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken) {

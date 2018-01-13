@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/roles")
-@Api(description = "Endpoints to for admin")
+@Api(description = "Endpoints to manage authorizations")
 public class AuthorizationAdminController {
   private AuthorizationAdminService authorizationAdminService;
 
@@ -22,7 +22,7 @@ public class AuthorizationAdminController {
     this.authorizationAdminService = authorizationAdminService;
   }
 
-  @ApiOperation(value = "Endpoint to from groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to get groups and roles", response = GroupDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -37,7 +37,7 @@ public class AuthorizationAdminController {
     return authorizationAdminService.getGroups(clientDTO, tokenDTO);
   }
 
-  @ApiOperation(value = "Endpoint to from groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to create a new group and/or role(s)", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -53,7 +53,7 @@ public class AuthorizationAdminController {
     return authorizationAdminService.createNewGroupWithRoles(clientDTO, tokenDTO, groupDTO);
   }
 
-  @ApiOperation(value = "Endpoint to from groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to delete a role from a group (if a group has no more role, it is does not exist anymore)", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")

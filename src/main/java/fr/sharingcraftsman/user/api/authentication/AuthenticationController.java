@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tokens")
-@Api(description = "Endpoints to manage token")
+@Api(description = "Endpoints to manage authentication of users")
 public class AuthenticationController {
   private AuthenticationService authenticationService;
 
@@ -20,13 +20,13 @@ public class AuthenticationController {
     this.authenticationService = authenticationService;
   }
 
-  @ApiOperation(value = "Verify token validity", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to check token validity", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.GET, value = "/verify")
-  public ResponseEntity verify(@RequestHeader("client") String client,
+  public ResponseEntity verifyToken(@RequestHeader("client") String client,
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken) {
@@ -35,7 +35,7 @@ public class AuthenticationController {
     return authenticationService.checkToken(clientDTO, tokenDTO);
   }
 
-  @ApiOperation(value = "Logout - Delete token", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to log out user", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -50,9 +50,9 @@ public class AuthenticationController {
     return authenticationService.logout(clientDTO, tokenDTO);
   }
 
-  @ApiOperation(value = "Refresh access token with refresh token", response = TokenDTO.class)
+  @ApiOperation(value = "Endpoint to get a new access token from refresh token", response = TokenDTO.class)
   @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Response containing new access token and new refresh token"),
+          @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.GET, value = "/refresh-token")
@@ -65,9 +65,9 @@ public class AuthenticationController {
     return authenticationService.refreshToken(clientDTO, tokenDTO);
   }
 
-  @ApiOperation(value = "Post log in information", response = TokenDTO.class)
+  @ApiOperation(value = "Endpoint to log in user", response = TokenDTO.class)
   @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Response with token containing username, client, access token, refresh token and expiration date"),
+          @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.POST, value = "/login")
