@@ -4,7 +4,7 @@ RUN apk add --no-cache bash
 RUN apk add --no-cache vim
 
 VOLUME /tmp
-ADD user.jar user.jar
+ADD userEntity.jar userEntity.jar
 
 ENV JAVA_OPTS=""
 
@@ -18,4 +18,4 @@ ENV DATABASE_NAME=<DB_NAME>
 
 EXPOSE 8080
 
-ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /user.jar
+ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /userEntity.jar

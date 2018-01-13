@@ -1,7 +1,9 @@
 package fr.sharingcraftsman.user.api.user;
 
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.models.*;
+import fr.sharingcraftsman.user.api.authentication.LoginDTO;
+import fr.sharingcraftsman.user.api.authentication.TokenDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,8 +50,7 @@ public class UserControllerTest {
   @Test
   public void should_register_a_new_user() throws Exception {
     given(userService.registerUser(any(ClientDTO.class), any(LoginDTO.class))).willReturn(ResponseEntity.ok().build());
-
-    LoginDTO loginDTO = new LoginDTO("john@doe.fr", "password");
+    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password");
 
     this.mvc.perform(post("/users/register")
             .header("client", "client")
@@ -61,7 +62,7 @@ public class UserControllerTest {
 
   @Test
   public void should_request_for_a_token_to_change_password() throws Exception {
-    given(userService.requestChangePassword(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
+    given(userService.getChangePasswordToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(get("/users/request-change-password")
             .header("client", "client")
@@ -74,10 +75,8 @@ public class UserControllerTest {
   @Test
   public void should_change_password() throws Exception {
     given(userService.changePassword(any(ClientDTO.class), any(TokenDTO.class), any(ChangePasswordDTO.class))).willReturn(ResponseEntity.ok().build());
+    ChangePasswordDTO changePassword = ChangePasswordDTO.from("password", "newpassword");
 
-    ChangePasswordDTO changePassword = new ChangePasswordDTO();
-    changePassword.setOldPassword("password");
-    changePassword.setNewPassword("newpassword");
     this.mvc.perform(post("/users/change-password")
             .header("client", "client")
             .header("secret", "clientsecret")
@@ -90,7 +89,7 @@ public class UserControllerTest {
 
   @Test
   public void should_update_profile() throws Exception {
-    ProfileDTO profile = new ProfileDTO("John", "Doe", "john@doe.fr", "www.johndoe.fr", "http://github.com/Johndoe", "linkedin.com/johndoe");
+    ProfileDTO profile = ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "http://github.com/Johndoe", "linkedin.com/johndoe");
     given(userService.updateProfile(any(ClientDTO.class), any(TokenDTO.class), any(ProfileDTO.class))).willReturn(ResponseEntity.ok(profile));
 
     this.mvc.perform(post("/users/change-password")
@@ -104,8 +103,8 @@ public class UserControllerTest {
   }
 
   @Test
-  public void should_generate_key_when_lost_password() throws Exception {
-    given(userService.requestChangePassword(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
+  public void should_generate_token_when_lost_password() throws Exception {
+    given(userService.getChangePasswordToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(get("/users/lost-password")
             .header("client", "client")

@@ -1,8 +1,9 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import fr.sharingcraftsman.user.domain.client.AbstractClient;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.infrastructure.models.OAuthClient;
-import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
+import fr.sharingcraftsman.user.infrastructure.models.ClientEntity;
+import fr.sharingcraftsman.user.infrastructure.repositories.ClientJpaRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,36 +19,35 @@ import static org.mockito.Mockito.verify;
 public class ClientAdapterTest {
   private ClientAdapter clientAdapter;
   @Mock
-  private ClientRepository clientRepository;
+  private ClientJpaRepository clientJpaRepository;
 
   @Before
   public void setUp() throws Exception {
-    clientAdapter = new ClientAdapter(clientRepository);
+    clientAdapter = new ClientAdapter(clientJpaRepository);
   }
 
   @Test
   public void should_get_client() throws Exception {
-    given(clientRepository.findByNameAndSecret("client", "secret")).willReturn(new OAuthClient("client", "secret"));
+    given(clientJpaRepository.findByNameAndSecret("client", "secret")).willReturn(ClientEntity.from("client", "secret"));
 
-    Client foundClient = clientAdapter.findClient(Client.from("client", "secret"));
+    AbstractClient foundClient = clientAdapter.findClient(Client.from("client", "secret"));
 
-    assertThat(foundClient).isEqualTo(Client.knownClient("client", "secret"));
+    assertThat(foundClient).isEqualTo(Client.from("client", "secret"));
   }
 
   @Test
   public void should_return_unknown_client_if_client_is_not_known() throws Exception {
-    Client foundClient = clientAdapter.findClient(Client.from("client", "secret"));
+    AbstractClient foundClient = clientAdapter.findClient(Client.from("client", "secret"));
 
     assertThat(foundClient.isKnown()).isFalse();
   }
 
   @Test
   public void should_create_new_client() throws Exception {
-    given(clientRepository.save(any(OAuthClient.class))).willReturn(new OAuthClient("sharingcraftsman", "secret"));
-    Client client = Client.from("sharingcraftsman", "secret");
+    given(clientJpaRepository.save(any(ClientEntity.class))).willReturn(ClientEntity.from("sharingcraftsman", "secret"));
 
-    clientAdapter.createClient(client);
+    clientAdapter.createClient(Client.from("sharingcraftsman", "secret"));
 
-    verify(clientRepository).save(new OAuthClient("sharingcraftsman", "secret"));
+    verify(clientJpaRepository).save(ClientEntity.from("sharingcraftsman", "secret"));
   }
 }

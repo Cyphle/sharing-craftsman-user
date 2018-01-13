@@ -1,6 +1,5 @@
 package fr.sharingcraftsman.user.acceptance.dsl;
 
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @ToString
@@ -13,8 +12,6 @@ public class UserDsl {
   private String website;
   private String github;
   private String linkedin;
-  private String changePasswordKey = "";
-  private long changePasswordKeyExpirationDate;
   private AuthorizationDsl authorizations;
   private boolean isActive;
   private long creationDate;
@@ -84,22 +81,6 @@ public class UserDsl {
     this.linkedin = linkedin;
   }
 
-  public String getChangePasswordKey() {
-    return changePasswordKey;
-  }
-
-  public void setChangePasswordKey(String changePasswordKey) {
-    this.changePasswordKey = changePasswordKey;
-  }
-
-  public long getChangePasswordKeyExpirationDate() {
-    return changePasswordKeyExpirationDate;
-  }
-
-  public void setChangePasswordKeyExpirationDate(long changePasswordKeyExpirationDate) {
-    this.changePasswordKeyExpirationDate = changePasswordKeyExpirationDate;
-  }
-
   public AuthorizationDsl getAuthorizations() {
     return authorizations;
   }
@@ -141,7 +122,6 @@ public class UserDsl {
 
     if (isActive != userDsl.isActive) return false;
     if (username != null ? !username.equals(userDsl.username) : userDsl.username != null) return false;
-    if (password != null ? !password.equals(userDsl.password) : userDsl.password != null) return false;
     if (firstname != null ? !firstname.equals(userDsl.firstname) : userDsl.firstname != null) return false;
     if (lastname != null ? !lastname.equals(userDsl.lastname) : userDsl.lastname != null) return false;
     if (email != null ? !email.equals(userDsl.email) : userDsl.email != null) return false;
@@ -154,7 +134,6 @@ public class UserDsl {
   @Override
   public int hashCode() {
     int result = username != null ? username.hashCode() : 0;
-    result = 31 * result + (password != null ? password.hashCode() : 0);
     result = 31 * result + (firstname != null ? firstname.hashCode() : 0);
     result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
     result = 31 * result + (email != null ? email.hashCode() : 0);

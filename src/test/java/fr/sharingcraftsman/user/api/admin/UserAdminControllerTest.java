@@ -1,7 +1,12 @@
 package fr.sharingcraftsman.user.api.admin;
 
+import com.google.common.collect.Sets;
 import fr.sharingcraftsman.user.UserApplication;
-import fr.sharingcraftsman.user.api.models.*;
+import fr.sharingcraftsman.user.api.authentication.TokenDTO;
+import fr.sharingcraftsman.user.api.authorization.AuthorizationsDTO;
+import fr.sharingcraftsman.user.api.authorization.GroupDTO;
+import fr.sharingcraftsman.user.api.authorization.RoleDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,9 +42,9 @@ public class UserAdminControllerTest {
   private WebApplicationContext context;
 
   @MockBean
-  private AdminService adminService;
+  private UserAdminService userAdminService;
 
-  private AdminUserDTO userDTO;
+  private UserInfoDTO userDTO;
 
   @Before
   public void setup() {
@@ -47,16 +52,24 @@ public class UserAdminControllerTest {
             .webAppContextSetup(context)
             .build();
 
-    GroupDTO group = new GroupDTO("USERS");
-    group.addRole(new RoleDTO("ROLE_USER"));
-    AuthorizationsDTO authorization = new AuthorizationsDTO();
-    authorization.addGroup(group);
-    userDTO = new AdminUserDTO("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
+    userDTO = UserInfoDTO.from(
+            "john@doe.fr",
+            "John",
+            "Doe",
+            "john@doe.fr",
+            "www.johndoe.fr",
+            "github.com/johndoe",
+            "linkedin.com/johndoe",
+            AuthorizationsDTO.from(Sets.newHashSet(GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER"))))),
+            true,
+            1514631600000L,
+            1514631600000L
+    );
   }
 
   @Test
   public void should_get_list_of_users_with_their_profile() throws Exception {
-    given(adminService.getUsers(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(Collections.singletonList(userDTO)));
+    given(userAdminService.getAllUsers(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(Collections.singletonList(userDTO)));
 
     this.mvc.perform(get("/admin/users")
             .header("client", "client")
@@ -69,7 +82,7 @@ public class UserAdminControllerTest {
 
   @Test
   public void should_delete_user() throws Exception {
-    given(adminService.deleteUser(any(ClientDTO.class), any(TokenDTO.class), any(String.class))).willReturn(ResponseEntity.ok().build());
+    given(userAdminService.deleteUser(any(ClientDTO.class), any(TokenDTO.class), any(String.class))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(delete("/admin/users/hello@world.fr")
             .header("client", "client")
@@ -81,7 +94,7 @@ public class UserAdminControllerTest {
 
   @Test
   public void should_update_a_user() throws Exception {
-    given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(AdminUserDTO.class))).willReturn(ResponseEntity.ok(userDTO));
+    given(userAdminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(UserInfoDTO.class))).willReturn(ResponseEntity.ok(userDTO));
 
     this.mvc.perform(put("/admin/users")
             .header("client", "client")
@@ -95,7 +108,7 @@ public class UserAdminControllerTest {
 
   @Test
   public void should_add_user() throws Exception {
-    given(adminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(AdminUserDTO.class))).willReturn(ResponseEntity.ok(userDTO));
+    given(userAdminService.updateUser(any(ClientDTO.class), any(TokenDTO.class), any(UserInfoDTO.class))).willReturn(ResponseEntity.ok(userDTO));
 
     this.mvc.perform(post("/admin/users")
             .header("client", "client")

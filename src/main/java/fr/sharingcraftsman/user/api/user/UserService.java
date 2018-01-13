@@ -1,27 +1,32 @@
 package fr.sharingcraftsman.user.api.user;
 
-import fr.sharingcraftsman.user.api.models.*;
-import fr.sharingcraftsman.user.api.pivots.*;
+import fr.sharingcraftsman.user.api.authentication.LoginDTO;
+import fr.sharingcraftsman.user.api.authentication.TokenDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
-import fr.sharingcraftsman.user.domain.authentication.OAuthAuthenticator;
-import fr.sharingcraftsman.user.domain.authentication.TokenAdministrator;
-import fr.sharingcraftsman.user.domain.authorization.GroupAdministrator;
-import fr.sharingcraftsman.user.domain.authorization.GroupRoleAuthorizer;
+import fr.sharingcraftsman.user.domain.authentication.AuthenticationManagerImpl;
+import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
+import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
+import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
+import fr.sharingcraftsman.user.domain.authorization.UserAuthorizationManagerImpl;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
-import fr.sharingcraftsman.user.domain.authorization.RoleAdministrator;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationManager;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.client.ClientAdministrator;
-import fr.sharingcraftsman.user.domain.client.ClientStock;
-import fr.sharingcraftsman.user.domain.common.Email;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.company.*;
-import fr.sharingcraftsman.user.domain.ports.authentication.Authenticator;
-import fr.sharingcraftsman.user.domain.ports.authorization.Authorizer;
-import fr.sharingcraftsman.user.domain.ports.client.ClientManager;
-import fr.sharingcraftsman.user.domain.ports.company.Company;
-import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
+import fr.sharingcraftsman.user.domain.user.AbstractProfile;
+import fr.sharingcraftsman.user.domain.user.ChangePasswordToken;
+import fr.sharingcraftsman.user.domain.user.Profile;
+import fr.sharingcraftsman.user.domain.user.UserOrganisationImpl;
+import fr.sharingcraftsman.user.domain.user.exceptions.ProfileValidationException;
+import fr.sharingcraftsman.user.domain.user.exceptions.UnknownUserException;
+import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
+import fr.sharingcraftsman.user.domain.user.ports.ChangePasswordTokenRepository;
+import fr.sharingcraftsman.user.domain.user.ports.UserOrganisation;
+import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,153 +34,130 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
-
 @Service
 public class UserService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
-  private final Authenticator authenticator;
-  private Company company;
-  private ClientManager clientManager;
-  private Authorizer authorizer;
+  private final AuthenticationManager authenticationManager;
+  private UserOrganisation userOrganisation;
+  private UserAuthorizationManager userAuthorizationManager;
+  private AuthorizationVerifierService authorizationVerifierService;
 
   @Autowired
   public UserService(
-          HumanResourceAdministrator humanResourceAdministrator,
-          ClientStock clientStock,
-          TokenAdministrator tokenAdministrator,
-          GroupAdministrator groupAdministrator,
-          RoleAdministrator roleAdministrator,
-          DateService dateService) {
-    company = new Organisation(humanResourceAdministrator, dateService);
-    clientManager = new ClientAdministrator(clientStock, new SimpleSecretGenerator());
-    authenticator = new OAuthAuthenticator(humanResourceAdministrator, tokenAdministrator, dateService);
-    authorizer = new GroupRoleAuthorizer(groupAdministrator, roleAdministrator);
+          UserRepository userRepository,
+          AccessTokenRepository accessTokenRepository,
+          UserAuthorizationRepository userAuthorizationRepository,
+          AuthorizationRepository authorizationRepository,
+          ChangePasswordTokenRepository changePasswordTokenRepository,
+          DateService dateService,
+          AuthorizationVerifierService authorizationVerifierService) {
+    userOrganisation = new UserOrganisationImpl(userRepository, changePasswordTokenRepository, dateService);
+    authenticationManager = new AuthenticationManagerImpl(userRepository, accessTokenRepository, dateService);
+    userAuthorizationManager = new UserAuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    this.authorizationVerifierService = authorizationVerifierService;
   }
 
-  public ResponseEntity registerUser(ClientDTO clientDTO, LoginDTO loginDTO) {
-    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + loginDTO.getUsername() + " is trying to log in with unauthorized client: " + clientDTO.getName());
-      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-    }
+  ResponseEntity getChangePasswordToken(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    log.info("[UserService::getChangePasswordToken] Client: " + clientDTO.getName() + ", User: " + tokenDTO.getUsername());
 
-    try {
-      log.info("User is registering with username:" + loginDTO.getUsername());
-      Credentials credentials = LoginPivot.fromApiToDomain(loginDTO);
-
-      company.createNewCollaborator(credentials);
-      authorizer.addGroup(credentials, Groups.USERS);
-      return ResponseEntity.ok().build();
-    } catch (CredentialsException | CollaboratorException e) {
-      log.warn("Error with registering " + loginDTO.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
-    }
-  }
-
-  public ResponseEntity requestChangePassword(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to request for change password with unauthorized client: " + clientDTO.getName());
-      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-    }
+    if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
 
-      if (verifyToken(clientDTO, tokenDTO, credentials))
+      if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
-      return ResponseEntity.ok(ChangePasswordTokenPivot.fromDomainToApi(changePasswordKey));
-    } catch (UsernameException | UnknownCollaboratorException e) {
-      log.warn("Error with change password request " + tokenDTO.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
+      ChangePasswordToken changePasswordToken = userOrganisation.createChangePasswordTokenFor(Username.from(tokenDTO.getUsername()));
+      return ResponseEntity.ok(ChangePasswordTokenDTO.fromDomainToApi(changePasswordToken));
+    } catch (UnknownUserException | CredentialsException e) {
+      return logAndSendBadRequest(e);
     }
   }
 
-  public ResponseEntity changePassword(ClientDTO clientDTO, TokenDTO tokenDTO, ChangePasswordDTO changePasswordDTO) {
-    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to change password with unauthorized client: " + clientDTO.getName());
-      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-    }
+  ResponseEntity changePassword(ClientDTO clientDTO, TokenDTO tokenDTO, ChangePasswordDTO changePasswordDTO) {
+    log.info("[UserService::changePassword] Client: " + clientDTO.getName() + ", User: " + tokenDTO.getUsername());
+
+    if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
       log.info("Request for a change password token for:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.buildEncryptedCredentials(
-              usernameBuilder.from(tokenDTO.getUsername()),
-              passwordBuilder.from(changePasswordDTO.getOldPassword()),
-              false
+
+      if (verifyToken(clientDTO, tokenDTO))
+        return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+
+      authenticationManager.logout(Client.from(clientDTO.getName(), ""), Username.from(tokenDTO.getUsername()), TokenDTO.fromApiToDomain(tokenDTO));
+      userOrganisation.changePasswordOfUser(Username.from(tokenDTO.getUsername()), ChangePasswordDTO.fromApiToDomain(changePasswordDTO));
+      return ResponseEntity.ok().build();
+    } catch (CredentialsException | UserException e) {
+      return logAndSendBadRequest(e);
+    }
+  }
+
+  ResponseEntity registerUser(ClientDTO clientDTO, LoginDTO loginDTO) {
+    log.info("[UserService::registerUser] Client: " + clientDTO.getName() + ", User: " + loginDTO.getUsername());
+
+    if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    try {
+      log.info("UserEntity is registering with username:" + loginDTO.getUsername());
+
+      userOrganisation.createNewUser(LoginDTO.fromApiToDomain(loginDTO));
+      userAuthorizationManager.addGroupToUser(Username.from(loginDTO.getUsername()), Groups.USERS);
+      return ResponseEntity.ok().build();
+    } catch (CredentialsException | UserException e) {
+      return logAndSendBadRequest(e);
+    }
+  }
+
+  ResponseEntity getLostPasswordToken(ClientDTO clientDTO, String username) {
+    log.info("[UserService::getChangePasswordToken] Client: " + clientDTO.getName() + ", User: " + username);
+
+    if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    try {
+      ChangePasswordTokenForLostPasswordDTO changePasswordTokenForLostPassword = ChangePasswordTokenForLostPasswordDTO.from(
+              userOrganisation.createChangePasswordTokenFor(Username.from(username)),
+              userOrganisation.findEmailOf(Username.from(username))
       );
-
-      if (verifyToken(clientDTO, tokenDTO, credentials))
-        return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
-
-      authenticator.logout(credentials, new Client(clientDTO.getName(), "", false), TokenPivot.fromApiToDomain(tokenDTO));
-      company.changePassword(credentials, ChangePasswordPivot.fromApiToDomain(changePasswordDTO));
-      return ResponseEntity.ok().build();
-    } catch (CredentialsException | CollaboratorException e) {
-      log.warn("Error with change password: " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
+      return ResponseEntity.ok(changePasswordTokenForLostPassword);
+    } catch (UserException | CredentialsException e) {
+      return logAndSendBadRequest(e);
     }
   }
 
-  public ResponseEntity updateProfile(ClientDTO clientDTO, TokenDTO tokenDTO, ProfileDTO profileDTO) {
-    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("User " + tokenDTO.getUsername() + " is trying to change profile with unauthorized client: " + clientDTO.getName());
-      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-    }
+  ResponseEntity updateProfile(ClientDTO clientDTO, TokenDTO tokenDTO, ProfileDTO profileDTO) {
+    log.info("[UserService::updateProfile] Client: " + clientDTO.getName() + ", User: " + tokenDTO.getUsername());
+
+    if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
       log.info("Request for a update profile with token:" + tokenDTO.getUsername());
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(tokenDTO.getUsername()), null, false);
 
-      if (verifyToken(clientDTO, tokenDTO, credentials))
+      if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      Profile updatedProfile = company.updateProfile(ProfilePivot.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
-      return ResponseEntity.ok(ProfilePivot.fromDomainToApi((KnownProfile) updatedProfile));
-     } catch (ProfileException e) {
-      log.warn("Validation errors with update profile:" + tokenDTO.getUsername() + ": " + e.getMessage());
+      AbstractProfile updatedAbstractProfile = userOrganisation.updateProfile(ProfileDTO.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
+      return ResponseEntity.ok(ProfileDTO.fromDomainToApi((Profile) updatedAbstractProfile));
+     } catch (ProfileValidationException e) {
+      log.warn("Validation errors: " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getErrors());
-    } catch (CredentialsException | CollaboratorException e) {
-      log.warn("Error with update profile " + tokenDTO.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
+    } catch (CredentialsException | UserException e) {
+      return logAndSendBadRequest(e);
     }
   }
 
-  public ResponseEntity generateLostPasswordKey(ClientDTO clientDTO, String username) {
-    if (!clientManager.clientExists(ClientPivot.fromApiToDomain(clientDTO))) {
-      log.warn("Un authorized client:" + clientDTO.getName());
-      return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
-    }
-
-    try {
-      Credentials credentials = Credentials.buildCredentials(usernameBuilder.from(username), null, false);
-      ChangePasswordKey changePasswordKey = company.createChangePasswordKeyFor(credentials);
-      Email email = company.findEmailOf(credentials);
-      ChangePasswordKeyForLostPasswordDTO changePasswordKeyForLostPassword = new ChangePasswordKeyForLostPasswordDTO(changePasswordKey, email);
-      return ResponseEntity.ok(changePasswordKeyForLostPassword);
-    } catch (UsernameException | CollaboratorException e) {
-      log.warn("Error: " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
-    }
+  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO) throws UsernameException {
+    Client client = Client.from(clientDTO.getName(), "");
+    return !authenticationManager.isTokenValid(client, Username.from(tokenDTO.getUsername()), TokenDTO.fromApiToDomain(tokenDTO));
   }
 
-  private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO, Credentials credentials) {
-    Client client = new Client(clientDTO.getName(), "", false);
-    return !authenticator.isTokenValid(credentials, client, TokenPivot.fromApiToDomain(tokenDTO));
+  private ResponseEntity logAndSendBadRequest(Exception e) {
+    log.warn("Error: " + e.getMessage());
+    return ResponseEntity
+            .badRequest()
+            .body(e.getMessage());
   }
 }

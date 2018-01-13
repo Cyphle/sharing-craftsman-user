@@ -2,11 +2,10 @@ package fr.sharingcraftsman.user.domain.common;
 
 import fr.sharingcraftsman.user.domain.utils.Crypter;
 import fr.sharingcraftsman.user.domain.utils.CrypterFactory;
-import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@EqualsAndHashCode
+@ToString
 public class Password {
-  public static PasswordBuilder passwordBuilder = new PasswordBuilder();
   public static Crypter crypter = CrypterFactory.getCrypter();
 
   private String password;
@@ -23,12 +22,25 @@ public class Password {
     return password;
   }
 
-  public static class PasswordBuilder {
-    public Password from(String password) throws PasswordException {
-      if (password.isEmpty())
-        throw new PasswordException("Password cannot be empty");
+  public static Password from(String password) throws PasswordException {
+    if (password.isEmpty())
+      throw new PasswordException("Password cannot be empty");
 
-      return new Password(password);
-    }
+    return new Password(password);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Password password1 = (Password) o;
+
+    return password != null ? password.equals(password1.password) : password1.password == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return password != null ? password.hashCode() : 0;
   }
 }

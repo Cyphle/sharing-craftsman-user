@@ -1,12 +1,17 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.common.DateService;
-import fr.sharingcraftsman.user.domain.authentication.*;
+import fr.sharingcraftsman.user.domain.authentication.AccessToken;
+import fr.sharingcraftsman.user.domain.authentication.AbstractToken;
+import fr.sharingcraftsman.user.domain.authentication.Credentials;
+import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.company.Collaborator;
-import fr.sharingcraftsman.user.domain.company.Person;
-import fr.sharingcraftsman.user.infrastructure.models.OAuthToken;
-import fr.sharingcraftsman.user.infrastructure.repositories.TokenRepository;
+import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.user.User;
+import fr.sharingcraftsman.user.infrastructure.models.AccessTokenEntity;
+import fr.sharingcraftsman.user.infrastructure.repositories.AccessTokenJpaRepository;
+import fr.sharingcraftsman.user.utils.TokenGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,13 +22,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZoneId;
 import java.util.Base64;
-import java.util.Date;
 
-import static fr.sharingcraftsman.user.domain.authentication.ValidToken.validTokenBuilder;
-import static fr.sharingcraftsman.user.domain.common.Password.passwordBuilder;
-import static fr.sharingcraftsman.user.domain.common.Username.usernameBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -32,107 +32,101 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class TokenAdapterTest {
   @Mock
-  private TokenRepository tokenRepository;
+  private AccessTokenJpaRepository accessTokenJpaRepository;
   @Mock
   private DateService dateService;
-  private TokenAdministrator tokenAdapter;
-  private ValidToken token;
-  private Credentials credentials;
+  private AccessTokenRepository tokenAdapter;
+
+  private AccessToken token;
   private Client client;
-  private Collaborator collaborator;
+  private User user;
 
   @Before
   public void setUp() throws Exception {
-    tokenAdapter = new TokenAdapter(tokenRepository);
-    token = validTokenBuilder
-            .withAccessToken("aaa")
-            .withRefreshToken("bbb")
-            .expiringThe(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
-            .build();
-    credentials = Credentials.buildEncryptedCredentials(usernameBuilder.from("john@doe.fr"), passwordBuilder.from("password"), false);
-    client = Client.knownClient("client", "secret");
-    collaborator = Collaborator.from(credentials);
+    tokenAdapter = new AccessTokenAdapter(accessTokenJpaRepository);
+
+    client = Client.from("client", "secret");
+    token = AccessToken.from("aaa", "bbb", LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    user = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
   }
 
   @Test
-  public void should_delete_tokens_of_collaborator() throws Exception {
-    Mockito.doNothing().when(tokenRepository).deleteByUsername(any(String.class), any(String.class));
+  public void should_delete_tokens_of_user() throws Exception {
+    Mockito.doNothing().when(accessTokenJpaRepository).deleteByUsername(any(String.class), any(String.class));
 
-    tokenAdapter.deleteTokensOf(collaborator, client);
+    tokenAdapter.deleteTokensOf(user, client);
 
-    verify(tokenRepository).deleteByUsername("john@doe.fr", "client");
+    verify(accessTokenJpaRepository).deleteByUsername("john@doe.fr", "client");
   }
 
   @Test
-  public void should_create_token_for_collaborator() throws Exception {
-    OAuthToken oAuthToken = new OAuthToken();
-    oAuthToken.setClient("client");
-    oAuthToken.setUsername("john@doe.fr");
-    oAuthToken.setAccessToken(generateKey("clientjohn@doe.fr"));
-    oAuthToken.setRefreshToken(generateKey("clientjohn@doe.fr"));
-    oAuthToken.setExpirationDate(Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant()));
-    given(tokenRepository.save(any(OAuthToken.class))).willReturn(oAuthToken);
+  public void should_create_token_for_user() throws Exception {
+    given(accessTokenJpaRepository.save(any(AccessTokenEntity.class))).willReturn(
+            AccessTokenEntity.from(
+                    "client",
+                    "john@doe.fr",
+                    TokenGenerator.generateToken("clientjohn@doe.fr"),
+                    TokenGenerator.generateToken("clientjohn@doe.fr"),
+                    DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
+            )
+    );
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    ValidToken token = validTokenBuilder
-            .withAccessToken(generateKey(client.getName() + collaborator.getUsername()))
-            .withRefreshToken(generateKey(client.getName() + collaborator.getUsername()))
-            .expiringThe(dateService.getDayAt(8))
-            .build();
 
-    ValidToken createdToken = tokenAdapter.createNewToken(client, collaborator, token);
+    AccessToken createdToken = tokenAdapter.createNewToken(
+            client,
+            user,
+            AccessToken.from(
+                    TokenGenerator.generateToken(client.getName() + user.getUsernameContent()),
+                    TokenGenerator.generateToken(client.getName() + user.getUsernameContent()),
+                    dateService.getDayAt(8)
+            )
+    );
 
     assertThat(createdToken.getAccessToken()).hasSize(128);
     assertThat(createdToken.getRefreshToken()).hasSize(128);
     assertThat(createdToken.getExpirationDate()).isEqualTo(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    verify(tokenRepository).save(any(OAuthToken.class));
+    verify(accessTokenJpaRepository).save(any(AccessTokenEntity.class));
   }
 
   @Test
   public void should_return_a_valid_token_when_access_token_found() throws Exception {
-    given(tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(new OAuthToken("john@doe.fr", "client", "aaa", "bbb", Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant())));
+    given(accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(AccessTokenEntity.from("client", "john@doe.fr", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
 
-    Token foundToken = tokenAdapter.findTokenFromAccessToken(client, credentials, token);
+    AbstractToken foundAbstractToken = tokenAdapter.findTokenFromAccessToken(client, Username.from("john@doe.fr"), token);
 
-    assertThat(foundToken.isValid()).isTrue();
+    assertThat(foundAbstractToken.isValid()).isTrue();
   }
 
   @Test
   public void should_return_an_invalid_token_when_access_token_not_found() throws Exception {
-    given(tokenRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(null);
+    given(accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(null);
 
-    Token foundToken = tokenAdapter.findTokenFromAccessToken(client, credentials, token);
+    AbstractToken foundAbstractToken = tokenAdapter.findTokenFromAccessToken(client, Username.from("john@doe.fr"), token);
 
-    assertThat(foundToken.isValid()).isFalse();
+    assertThat(foundAbstractToken.isValid()).isFalse();
   }
 
   @Test
   public void should_return_a_valid_token_when_refresh_token_found() throws Exception {
-    given(tokenRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(new OAuthToken("john@doe.fr", "client", "aaa", "bbb", Date.from(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0).atZone(ZoneId.systemDefault()).toInstant())));
-    ValidToken refreshToken = validTokenBuilder
-            .withAccessToken("")
-            .withRefreshToken("bbb")
-            .expiringThe(null)
-            .build();
+    given(accessTokenJpaRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(AccessTokenEntity.from("client", "john@doe.fr", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
 
-    Token foundToken = tokenAdapter.findTokenFromRefreshToken(client, credentials, refreshToken);
+    AbstractToken foundAbstractToken = tokenAdapter.findTokenFromRefreshToken(
+            client,
+            Username.from("john@doe.fr"),
+            AccessToken.fromOnlyRefreshToken("bbb")
+    );
 
-    assertThat(foundToken.isValid()).isTrue();
+    assertThat(foundAbstractToken.isValid()).isTrue();
   }
 
   @Test
   public void should_return_an_invalid_token_when_refresh_token_not_found() throws Exception {
-    given(tokenRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(null);
+    given(accessTokenJpaRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(null);
 
-    Token foundToken = tokenAdapter.findTokenFromRefreshToken(client, credentials, token);
+    AbstractToken foundAbstractToken = tokenAdapter.findTokenFromRefreshToken(client, Username.from("john@doe.fr"), token);
 
-    assertThat(foundToken.isValid()).isFalse();
+    assertThat(foundAbstractToken.isValid()).isFalse();
   }
 
-  private String generateKey(String seed) {
-    SecureRandom random = new SecureRandom(seed.getBytes());
-    byte bytes[] = new byte[96];
-    random.nextBytes(bytes);
-    Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
-    return encoder.encodeToString(bytes);
-  }
+
 }

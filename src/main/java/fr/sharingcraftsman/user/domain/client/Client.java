@@ -5,15 +5,13 @@ import lombok.ToString;
 
 @EqualsAndHashCode
 @ToString
-public class Client {
+public class Client extends AbstractClient {
   private String name;
   private String secret;
-  private boolean isKnown;
 
-  public Client(String name, String secret, boolean isKnown) {
+  private Client(String name, String secret) {
     this.name = name;
     this.secret = secret;
-    this.isKnown = isKnown;
   }
 
   public String getName() {
@@ -29,18 +27,10 @@ public class Client {
   }
 
   public boolean isKnown() {
-    return isKnown;
+    return true;
   }
 
   public static Client from(String name, String secret) {
-    return new Client(name, secret, false);
-  }
-
-  public static Client knownClient(String name, String secret) {
-    return new Client(name, secret, true);
-  }
-
-  public static Client unkownClient() {
-    return new Client("", "", false);
+    return new Client(name, secret);
   }
 }

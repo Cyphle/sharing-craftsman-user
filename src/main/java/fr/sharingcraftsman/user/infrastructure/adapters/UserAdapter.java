@@ -2,115 +2,93 @@ package fr.sharingcraftsman.user.infrastructure.adapters;
 
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
-import fr.sharingcraftsman.user.domain.authentication.CredentialsException;
+import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.company.*;
-import fr.sharingcraftsman.user.infrastructure.models.User;
-import fr.sharingcraftsman.user.infrastructure.pivots.UserPivot;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserRepository;
+import fr.sharingcraftsman.user.domain.user.*;
+import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
+import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
-import java.util.Date;
-
 @Service
-public class UserAdapter implements HumanResourceAdministrator {
-  private UserRepository userRepository;
+public class UserAdapter implements UserRepository {
+  private UserJpaRepository userJpaRepository;
   private DateService dateService;
 
   @Autowired
-  public UserAdapter(UserRepository userRepository, DateService dateService) {
-    this.userRepository = userRepository;
+  public UserAdapter(UserJpaRepository userJpaRepository, DateService dateService) {
+    this.userJpaRepository = userJpaRepository;
     this.dateService = dateService;
   }
 
   @Override
-  public void createNewCollaborator(Collaborator collaborator) {
-    User user = UserPivot.fromDomainToInfra(collaborator);
-    user.setCreationDate(dateService.nowInDate());
-    user.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(user);
-  }
+  public AbstractUser findUserFromUsername(Username username) {
+    UserEntity foundUserEntity = userJpaRepository.findByUsername(username.getUsername());
 
-  @Override
-  public Person findCollaboratorFromUsername(Username username) {
-    User foundUser = userRepository.findByUsername(username.getUsername());
-
-    if (foundUser == null)
-      return new UnknownCollaborator();
+    if (foundUserEntity == null)
+      return new UnknownUser();
 
     try {
-      return UserPivot.fromInfraToDomain(foundUser);
+      return UserEntity.fromInfraToDomain(foundUserEntity);
     } catch (CredentialsException e) {
-      return new UnknownCollaborator();
+      return new UnknownUser();
     }
   }
 
   @Override
-  public Person findCollaboratorFromCredentials(Credentials credentials) {
-    User foundUser = userRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
+  public AbstractUser findUserFromCredentials(Credentials credentials) {
+    UserEntity foundUserEntity = userJpaRepository.findByUsernameAndPassword(credentials.getUsernameContent(), credentials.getPasswordContent());
 
-    if (foundUser == null)
-      return new UnknownCollaborator();
+    if (foundUserEntity == null)
+      return new UnknownUser();
 
     try {
-      return UserPivot.fromInfraToDomain(foundUser);
+      return UserEntity.fromInfraToDomain(foundUserEntity);
     } catch (CredentialsException e) {
-      return new UnknownCollaborator();
+      return new UnknownUser();
     }
   }
 
   @Override
-  public void deleteChangePasswordKeyOf(Credentials credentials) {
-    User user = userRepository.findByUsername(credentials.getUsernameContent());
-    user.setChangePasswordKey("");
-    user.setChangePasswordExpirationDate(null);
-    user.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(user);
-  }
+  public AbstractProfile findProfileOf(Username username) {
+    UserEntity userEntity = userJpaRepository.findByUsername(username.getUsername());
 
-  @Override
-  public ChangePasswordKey createChangePasswordKeyFor(ChangePasswordKey changePasswordKey) {
-    User user = userRepository.findByUsername(changePasswordKey.getUsername());
-    user.setChangePasswordKey(changePasswordKey.getKey());
-    user.setChangePasswordExpirationDate(Date.from(changePasswordKey.getExpirationDate().atZone(ZoneId.systemDefault()).toInstant()));
-    user.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(user);
-    return changePasswordKey;
-  }
-
-  @Override
-  public void updateCollaboratorPassword(Collaborator collaborator) {
-    User user = userRepository.findByUsername(collaborator.getUsername());
-    user.setPassword(collaborator.getPassword());
-    user.setLastUpdateDate(dateService.nowInDate());
-    userRepository.save(user);
-  }
-
-  @Override
-  public Profile findProfileOf(Username username) {
-    User user = userRepository.findByUsername(username.getUsername());
-
-    if (user == null)
+    if (userEntity == null)
       return new UnknownProfile();
 
     try {
-      return UserPivot.fromInfraToDomainProfile(user);
+      return UserEntity.fromInfraToDomainProfile(userEntity);
     } catch (UsernameException e) {
       return new UnknownProfile();
     }
   }
 
   @Override
-  public Profile updateProfileOf(KnownProfile profileToUpdate) {
-    User user = userRepository.findByUsername(profileToUpdate.getUsernameContent());
-    user.updateFromProfile(UserPivot.fromDomainToInfraProfile(profileToUpdate));
-    user.setLastUpdateDate(dateService.nowInDate());
-    User updatedUser = userRepository.save(user);
+  public void createNewUser(User user) {
+    UserEntity userEntity = UserEntity.fromDomainToInfra(user);
+    userEntity.setCreationDate(dateService.nowInDate());
+    userEntity.setLastUpdateDate(dateService.nowInDate());
+    userJpaRepository.save(userEntity);
+  }
+
+  @Override
+  public void updateUserPassword(User user) {
+    UserEntity userEntity = userJpaRepository.findByUsername(user.getUsernameContent());
+    userEntity.setPassword(user.getPasswordContent());
+    userEntity.setLastUpdateDate(dateService.nowInDate());
+    userJpaRepository.save(userEntity);
+  }
+
+  @Override
+  public AbstractProfile updateProfileOf(Profile profileToUpdate) {
+    UserEntity userEntity = userJpaRepository.findByUsername(profileToUpdate.getUsernameContent());
+    userEntity.updateFromProfile(UserEntity.fromDomainToInfraProfile(profileToUpdate));
+    userEntity.setLastUpdateDate(dateService.nowInDate());
+    UserEntity updatedUserEntity = userJpaRepository.save(userEntity);
     try {
-      return UserPivot.fromInfraToDomainProfile(updatedUser);
+      return UserEntity.fromInfraToDomainProfile(updatedUserEntity);
     } catch (UsernameException e) {
       return new UnknownProfile();
     }

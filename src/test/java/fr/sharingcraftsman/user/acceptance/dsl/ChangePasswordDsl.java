@@ -1,25 +1,25 @@
 package fr.sharingcraftsman.user.acceptance.dsl;
 
 public class ChangePasswordDsl {
-  private String changePasswordKey;
+  private String changePasswordToken;
   private String oldPassword;
   private String newPassword;
 
   public ChangePasswordDsl() {
   }
 
-  public ChangePasswordDsl(String changePasswordKey, String oldPassword, String newPassword) {
-    this.changePasswordKey = changePasswordKey;
+  public ChangePasswordDsl(String changePasswordToken, String oldPassword, String newPassword) {
+    this.changePasswordToken = changePasswordToken;
     this.oldPassword = oldPassword;
     this.newPassword = newPassword;
   }
 
-  public String getChangePasswordKey() {
-    return changePasswordKey;
+  public String getChangePasswordToken() {
+    return changePasswordToken;
   }
 
-  public void setChangePasswordKey(String changePasswordKey) {
-    this.changePasswordKey = changePasswordKey;
+  public void setChangePasswordToken(String changePasswordToken) {
+    this.changePasswordToken = changePasswordToken;
   }
 
   public String getOldPassword() {

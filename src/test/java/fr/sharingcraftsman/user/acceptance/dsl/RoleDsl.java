@@ -6,20 +6,20 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class RoleDsl {
-  private String role;
+  private String name;
 
   public RoleDsl() {
   }
 
-  public RoleDsl(String role) {
-    this.role = role;
+  public RoleDsl(String name) {
+    this.name = name;
   }
 
-  public String getRole() {
-    return role;
+  public String getName() {
+    return name;
   }
 
-  public void setRole(String role) {
-    this.role = role;
+  public void setName(String name) {
+    this.name = name;
   }
 }

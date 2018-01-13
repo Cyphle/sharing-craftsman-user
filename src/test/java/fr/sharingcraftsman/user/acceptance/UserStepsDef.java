@@ -7,7 +7,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.user.acceptance.config.SpringAcceptanceTestConfig;
 import fr.sharingcraftsman.user.acceptance.dsl.*;
-import fr.sharingcraftsman.user.api.models.ClientDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -36,7 +36,7 @@ public class UserStepsDef extends SpringAcceptanceTestConfig {
 
   @Given("^A client <(.*)> is registered$")
   public void createClient(String clientName) throws Exception {
-    ClientDTO client = new ClientDTO();
+    ClientDsl client = new ClientDsl();
     client.setName(clientName);
 
     this.mvc

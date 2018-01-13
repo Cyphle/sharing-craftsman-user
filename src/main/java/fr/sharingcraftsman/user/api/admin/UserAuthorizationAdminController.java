@@ -1,8 +1,8 @@
 package fr.sharingcraftsman.user.api.admin;
 
-import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.api.models.GroupDTO;
-import fr.sharingcraftsman.user.api.models.TokenDTO;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.api.authorization.GroupDTO;
+import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,32 +13,32 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/users")
-@Api(description = "Endpoints to for admin")
+@Api(description = "Endpoints to manage users authorizations")
 public class UserAuthorizationAdminController {
-  private AdminService adminService;
+  private UserAuthorizationAdminService userAuthorizationAdminService;
 
   @Autowired
-  public UserAuthorizationAdminController(AdminService adminService) {
-    this.adminService = adminService;
+  public UserAuthorizationAdminController(UserAuthorizationAdminService userAuthorizationAdminService) {
+    this.userAuthorizationAdminService = userAuthorizationAdminService;
   }
 
-  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to add group to user", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.POST, value = "/groups")
-  public ResponseEntity addGroup(@RequestHeader("client") String client,
+  public ResponseEntity addGroupToUser(@RequestHeader("client") String client,
                                  @RequestHeader("secret") String secret,
                                  @RequestHeader("username") String username,
                                  @RequestHeader("access-token") String accessToken,
                                  @RequestBody UserGroupDTO userGroupDTO) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
-    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.addGroupToUser(clientDTO, tokenDTO, userGroupDTO);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
+    TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
+    return userAuthorizationAdminService.addGroupToUser(clientDTO, tokenDTO, userGroupDTO);
   }
 
-  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to remove a group from a user", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -49,8 +49,8 @@ public class UserAuthorizationAdminController {
                                     @RequestHeader("username") String username,
                                     @RequestHeader("access-token") String accessToken,
                                     @RequestBody UserGroupDTO userGroupDTO) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
-    TokenDTO tokenDTO = new TokenDTO(username, accessToken);
-    return adminService.removeGroupToUser(clientDTO, tokenDTO, userGroupDTO);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
+    TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
+    return userAuthorizationAdminService.removeGroupToUser(clientDTO, tokenDTO, userGroupDTO);
   }
 }

@@ -12,12 +12,12 @@ public class Group {
   private Set<Role> roles;
   private String name;
 
-  public Group(String name) {
+  private Group(String name) {
     this.name = name;
     this.roles = new HashSet<>();
   }
 
-  public Group(String name, Set<Role> roles) {
+  private Group(String name, Set<Role> roles) {
     this.name = name;
     this.roles = roles;
   }
@@ -40,7 +40,15 @@ public class Group {
 
   public List<Group> asSeparatedGroupByRole() {
     return roles.stream()
-            .map(role -> new Group(name, new HashSet<>(Collections.singletonList(role))))
+            .map(role -> Group.from(name, new HashSet<>(Collections.singletonList(role))))
             .collect(Collectors.toList());
+  }
+
+  public static Group from(String name) {
+    return new Group(name);
+  }
+
+  public static Group from(String name, Set<Role> roles) {
+    return new Group(name, roles);
   }
 }

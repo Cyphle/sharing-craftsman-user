@@ -4,10 +4,10 @@ public class UserGroupDTO {
   private String username;
   private String group;
 
-  public UserGroupDTO() {
+  private UserGroupDTO() {
   }
 
-  public UserGroupDTO(String username, String group) {
+  private UserGroupDTO(String username, String group) {
     this.username = username;
     this.group = group;
   }
@@ -18,5 +18,9 @@ public class UserGroupDTO {
 
   public String getGroup() {
     return group;
+  }
+
+  public static UserGroupDTO from(String username, String group) {
+    return new UserGroupDTO(username, group);
   }
 }

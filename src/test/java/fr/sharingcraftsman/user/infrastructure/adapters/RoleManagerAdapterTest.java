@@ -1,9 +1,10 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import com.google.common.collect.Sets;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
-import fr.sharingcraftsman.user.infrastructure.models.GroupRole;
-import fr.sharingcraftsman.user.infrastructure.repositories.GroupRoleRepository;
+import fr.sharingcraftsman.user.infrastructure.models.AuthorizationEntity;
+import fr.sharingcraftsman.user.infrastructure.repositories.AuthorizationJpaRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,57 +21,51 @@ import static org.mockito.Mockito.verify;
 public class RoleManagerAdapterTest {
   private RoleManagerAdapter roleManagerAdapter;
   @Mock
-  private GroupRoleRepository groupRoleRepository;
+  private AuthorizationJpaRepository authorizationJpaRepository;
 
   @Before
   public void setUp() throws Exception {
-    roleManagerAdapter = new RoleManagerAdapter(groupRoleRepository);
+    roleManagerAdapter = new RoleManagerAdapter(authorizationJpaRepository);
   }
 
   @Test
   public void should_get_roles_of_given_group() throws Exception {
-    given(groupRoleRepository.findByGroup("USERS")).willReturn(Collections.singletonList(new GroupRole("USERS", "ROLE_USER")));
+    given(authorizationJpaRepository.findByGroup("USERS")).willReturn(Collections.singletonList(AuthorizationEntity.from("USERS", "ROLE_USER")));
 
     List<Role> roles = roleManagerAdapter.getRolesOf("USERS");
 
-    List<Role> expectedRoles = Collections.singletonList(new Role("ROLE_USER"));
-    assertThat(roles).isEqualTo(expectedRoles);
+    assertThat(roles).isEqualTo(Collections.singletonList(Role.from("ROLE_USER")));
   }
 
   @Test
   public void should_get_all_roles_with_groups() throws Exception {
-    List<GroupRole> roles = Arrays.asList(
-            new GroupRole("USERS", "ROLE_USER"),
-            new GroupRole("ADMINS", "ROLE_ADMIN"),
-            new GroupRole("ADMINS", "ROLE_USER")
-    );
-    given(groupRoleRepository.findAll()).willReturn(roles);
+    given(authorizationJpaRepository.findAll()).willReturn(Arrays.asList(
+            AuthorizationEntity.from("USERS", "ROLE_USER"),
+            AuthorizationEntity.from("ADMINS", "ROLE_ADMIN"),
+            AuthorizationEntity.from("ADMINS", "ROLE_USER")
+    ));
 
     Set<Group> fetchedRoles = roleManagerAdapter.getAllRolesWithTheirGroups();
 
-    Group users = new Group("USERS");
-    users.addRole(new Role("ROLE_USER"));
-    Group admins = new Group("ADMINS");
-    admins.addRoles(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
     assertThat(fetchedRoles).containsExactlyInAnyOrder(
-            users,
-            admins
+            Group.from("USERS", Sets.newHashSet(Role.from("ROLE_USER"))),
+            Group.from("ADMINS", Sets.newHashSet(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")))
     );
   }
 
   @Test
   public void should_create_new_group() throws Exception {
-    roleManagerAdapter.createNewGroupsWithRole(Collections.singletonList(new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT"))))));
+    roleManagerAdapter.createNewGroupsWithRole(Collections.singletonList(Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_ROOT"))))));
 
-    verify(groupRoleRepository).save(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
+    verify(authorizationJpaRepository).save(AuthorizationEntity.from("SUPER_ADMIN", "ROLE_ROOT"));
   }
 
   @Test
   public void should_delete_group() throws Exception {
-    given(groupRoleRepository.findFromGroupNameAndRole("SUPER_ADMIN", "ROLE_ROOT")).willReturn(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
+    given(authorizationJpaRepository.findFromGroupNameAndRole("SUPER_ADMIN", "ROLE_ROOT")).willReturn(AuthorizationEntity.from("SUPER_ADMIN", "ROLE_ROOT"));
 
-    roleManagerAdapter.removeRoleFromGroup(new Group("SUPER_ADMIN", new HashSet<>(Collections.singletonList(new Role("ROLE_ROOT")))));
+    roleManagerAdapter.removeRoleFromGroup(Group.from("SUPER_ADMIN", new HashSet<>(Collections.singletonList(Role.from("ROLE_ROOT")))));
 
-    verify(groupRoleRepository).delete(new GroupRole("SUPER_ADMIN", "ROLE_ROOT"));
+    verify(authorizationJpaRepository).delete(AuthorizationEntity.from("SUPER_ADMIN", "ROLE_ROOT"));
   }
 }

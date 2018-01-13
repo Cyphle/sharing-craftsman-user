@@ -10,7 +10,7 @@ import java.util.Date;
 public class DateTimeService implements DateService {
   @Override
   public Date nowInDate() {
-    return Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
+    return DateConverter.fromLocalDateTimeToDate(LocalDateTime.now());
   }
 
   @Override

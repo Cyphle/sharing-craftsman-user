@@ -1,7 +1,6 @@
 # Keep the connection alive if idle for a long time (needed in production)
 spring:
   profiles:
-#    active: dev
     active: ${SPRING_ACTIVE_PROFILE}
 
 status:

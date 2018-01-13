@@ -1,6 +1,5 @@
 package fr.sharingcraftsman.user.acceptance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -8,11 +7,13 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.user.acceptance.config.SpringAcceptanceTestConfig;
 import fr.sharingcraftsman.user.acceptance.dsl.*;
-import fr.sharingcraftsman.user.api.models.ClientDTO;
-import fr.sharingcraftsman.user.infrastructure.models.GroupRole;
-import fr.sharingcraftsman.user.infrastructure.models.UserGroup;
-import fr.sharingcraftsman.user.infrastructure.repositories.GroupRoleRepository;
-import fr.sharingcraftsman.user.infrastructure.repositories.UserGroupRepository;
+import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.infrastructure.models.AuthorizationEntity;
+import fr.sharingcraftsman.user.infrastructure.models.UserAuthorizationEntity;
+import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
+import fr.sharingcraftsman.user.infrastructure.repositories.AuthorizationJpaRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserAuthorizationJpaRepository;
+import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
 import fr.sharingcraftsman.user.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -28,9 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class AdminStepsDef extends SpringAcceptanceTestConfig {
   @Autowired
-  private GroupRoleRepository groupRoleRepository;
+  private AuthorizationJpaRepository authorizationJpaRepository;
   @Autowired
-  private UserGroupRepository userGroupRepository;
+  private UserAuthorizationJpaRepository userAuthorizationJpaRepository;
 
   @Before
   public void setUp() {
@@ -43,7 +44,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
 
   @Given("^The client <(.*)> is registered$")
   public void createClient(String clientName) throws Exception {
-    ClientDTO client = new ClientDTO();
+    ClientDsl client = new ClientDsl();
     client.setName(clientName);
 
     this.mvc
@@ -55,7 +56,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
 
   @And("^An admin group is created with admin role$")
   public void createAdminGroup() {
-    groupRoleRepository.save(new GroupRole("ADMINS", "ROLE_ADMIN"));
+    authorizationJpaRepository.save(AuthorizationEntity.from("ADMINS", "ROLE_ADMIN"));
   }
 
   @And("^I have registered an admin account with username <(.*)> and password <(.*)>$")
@@ -71,7 +72,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
             .andExpect(status().isOk())
             .andReturn();
 
-    userGroupRepository.save(new UserGroup(username, "ADMINS"));
+    userAuthorizationJpaRepository.save(UserAuthorizationEntity.from(username, "ADMINS"));
   }
 
   @And("^I am connected with my account <(.*)> and password <(.*)>$")

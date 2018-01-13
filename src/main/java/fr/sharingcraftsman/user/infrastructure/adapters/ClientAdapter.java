@@ -1,45 +1,46 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import fr.sharingcraftsman.user.domain.client.AbstractClient;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.client.ClientStock;
-import fr.sharingcraftsman.user.infrastructure.models.OAuthClient;
-import fr.sharingcraftsman.user.infrastructure.pivots.ClientPivot;
-import fr.sharingcraftsman.user.infrastructure.repositories.ClientRepository;
+import fr.sharingcraftsman.user.domain.client.UnknownClient;
+import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
+import fr.sharingcraftsman.user.infrastructure.models.ClientEntity;
+import fr.sharingcraftsman.user.infrastructure.repositories.ClientJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClientAdapter implements ClientStock {
-  private ClientRepository clientRepository;
+public class ClientAdapter implements ClientRepository {
+  private ClientJpaRepository clientJpaRepository;
 
   @Autowired
-  public ClientAdapter(ClientRepository clientRepository) {
-    this.clientRepository = clientRepository;
+  public ClientAdapter(ClientJpaRepository clientJpaRepository) {
+    this.clientJpaRepository = clientJpaRepository;
   }
 
   @Override
-  public Client findClient(Client client) {
-    OAuthClient foundClient = clientRepository.findByNameAndSecret(client.getName(), client.getSecret());
+  public AbstractClient findClient(Client client) {
+    ClientEntity foundClient = clientJpaRepository.findByNameAndSecret(client.getName(), client.getSecret());
 
     if (foundClient == null)
-      return Client.unkownClient();
+      return UnknownClient.get();
 
-    return Client.knownClient(foundClient.getName(), foundClient.getSecret());
+    return Client.from(foundClient.getName(), foundClient.getSecret());
   }
 
   @Override
-  public Client findClientByName(Client client) {
-    OAuthClient foundClient = clientRepository.findByName(client.getName());
+  public AbstractClient findClientByName(Client client) {
+    ClientEntity foundClient = clientJpaRepository.findByName(client.getName());
 
     if (foundClient == null)
-      return Client.unkownClient();
+      return UnknownClient.get();
 
-    return Client.knownClient(foundClient.getName(), foundClient.getSecret());
+    return Client.from(foundClient.getName(), foundClient.getSecret());
   }
 
   @Override
   public Client createClient(Client client) {
-    OAuthClient OAuthClient = ClientPivot.fromDomainToInfra(client);
-    return ClientPivot.fromInfraToDomain(clientRepository.save(OAuthClient));
+    ClientEntity clientEntity = ClientEntity.fromDomainToInfra(client);
+    return ClientEntity.fromInfraToDomain(clientJpaRepository.save(clientEntity));
   }
 }
