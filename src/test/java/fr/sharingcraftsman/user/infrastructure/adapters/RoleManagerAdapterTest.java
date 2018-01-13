@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.infrastructure.adapters;
 
+import com.google.common.collect.Sets;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.infrastructure.models.AuthorizationEntity;
@@ -33,28 +34,22 @@ public class RoleManagerAdapterTest {
 
     List<Role> roles = roleManagerAdapter.getRolesOf("USERS");
 
-    List<Role> expectedRoles = Collections.singletonList(Role.from("ROLE_USER"));
-    assertThat(roles).isEqualTo(expectedRoles);
+    assertThat(roles).isEqualTo(Collections.singletonList(Role.from("ROLE_USER")));
   }
 
   @Test
   public void should_get_all_roles_with_groups() throws Exception {
-    List<AuthorizationEntity> roles = Arrays.asList(
+    given(authorizationJpaRepository.findAll()).willReturn(Arrays.asList(
             AuthorizationEntity.from("USERS", "ROLE_USER"),
             AuthorizationEntity.from("ADMINS", "ROLE_ADMIN"),
             AuthorizationEntity.from("ADMINS", "ROLE_USER")
-    );
-    given(authorizationJpaRepository.findAll()).willReturn(roles);
+    ));
 
     Set<Group> fetchedRoles = roleManagerAdapter.getAllRolesWithTheirGroups();
 
-    Group users = Group.from("USERS");
-    users.addRole(Role.from("ROLE_USER"));
-    Group admins = Group.from("ADMINS");
-    admins.addRoles(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
     assertThat(fetchedRoles).containsExactlyInAnyOrder(
-            users,
-            admins
+            Group.from("USERS", Sets.newHashSet(Role.from("ROLE_USER"))),
+            Group.from("ADMINS", Sets.newHashSet(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")))
     );
   }
 

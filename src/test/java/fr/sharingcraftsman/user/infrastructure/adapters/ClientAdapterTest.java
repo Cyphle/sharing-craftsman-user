@@ -45,9 +45,8 @@ public class ClientAdapterTest {
   @Test
   public void should_create_new_client() throws Exception {
     given(clientJpaRepository.save(any(ClientEntity.class))).willReturn(ClientEntity.from("sharingcraftsman", "secret"));
-    Client client = Client.from("sharingcraftsman", "secret");
 
-    clientAdapter.createClient(client);
+    clientAdapter.createClient(Client.from("sharingcraftsman", "secret"));
 
     verify(clientJpaRepository).save(ClientEntity.from("sharingcraftsman", "secret"));
   }
