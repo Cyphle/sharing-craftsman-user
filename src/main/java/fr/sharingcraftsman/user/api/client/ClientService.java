@@ -21,12 +21,14 @@ public class ClientService {
     clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
   }
 
-  public ResponseEntity register(ClientDTO ClientDTO) {
+  public ResponseEntity register(ClientDTO clientDTO) {
+    log.info("[ClientService::logout] register: " + clientDTO.getName());
+
     try {
-      log.info("Registering new client: " + ClientDTO.getName());
-      clientOrganisation.createNewClient(ClientDTO.fromApiToDomain(ClientDTO));
+      log.info("Registering new client: " + clientDTO.getName());
+      clientOrganisation.createNewClient(clientDTO.fromApiToDomain(clientDTO));
     } catch (ClientException e) {
-      log.warn("Client already exists: " + ClientDTO.getName());
+      log.warn("Client already exists: " + clientDTO.getName());
       return ResponseEntity
               .badRequest()
               .body(e.getMessage());

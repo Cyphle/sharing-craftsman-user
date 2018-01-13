@@ -38,6 +38,8 @@ public class AuthorizationVerifierService {
   }
 
   public ResponseEntity isUnauthorizedAdmin(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    log.info("[AuthorizationVerifierService::isUnauthorizedAdmin] Client: " + clientDTO.getName() + ", User: " + tokenDTO.getUsername());
+
     if (isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
@@ -66,13 +68,15 @@ public class AuthorizationVerifierService {
                 .getRoles()
                 .stream()
                 .noneMatch(role -> role.getName().contains("ADMIN"))) {
+          log.warn("Unauthorized: " + tokenDTO.getUsername());
           return HttpStatus.UNAUTHORIZED;
         }
       } else {
+        log.warn("Unauthorized: " + tokenDTO.getUsername());
         return HttpStatus.UNAUTHORIZED;
       }
     } catch (CredentialsException e) {
-      log.warn("Error with getting authorizations " + tokenDTO.getUsername() + ": " + e.getMessage());
+      log.warn("Error: " + tokenDTO.getUsername() + ": " + e.getMessage());
       return HttpStatus.BAD_REQUEST;
     }
     return HttpStatus.OK;

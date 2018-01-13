@@ -58,6 +58,8 @@ public class UserService {
   }
 
   ResponseEntity getChangePasswordToken(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    log.info("[UserService::getChangePasswordToken] Client: " + clientDTO.getName() + ", User: " + tokenDTO.getUsername());
+
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
@@ -74,6 +76,8 @@ public class UserService {
   }
 
   ResponseEntity changePassword(ClientDTO clientDTO, TokenDTO tokenDTO, ChangePasswordDTO changePasswordDTO) {
+    log.info("[UserService::changePassword] Client: " + clientDTO.getName() + ", User: " + tokenDTO.getUsername());
+
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
@@ -91,6 +95,8 @@ public class UserService {
   }
 
   ResponseEntity registerUser(ClientDTO clientDTO, LoginDTO loginDTO) {
+    log.info("[UserService::registerUser] Client: " + clientDTO.getName() + ", User: " + loginDTO.getUsername());
+
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
@@ -105,6 +111,8 @@ public class UserService {
   }
 
   ResponseEntity getLostPasswordToken(ClientDTO clientDTO, String username) {
+    log.info("[UserService::getChangePasswordToken] Client: " + clientDTO.getName() + ", User: " + username);
+
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
@@ -119,6 +127,8 @@ public class UserService {
   }
 
   ResponseEntity updateProfile(ClientDTO clientDTO, TokenDTO tokenDTO, ProfileDTO profileDTO) {
+    log.info("[UserService::updateProfile] Client: " + clientDTO.getName() + ", User: " + tokenDTO.getUsername());
+
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
@@ -130,7 +140,7 @@ public class UserService {
       AbstractProfile updatedAbstractProfile = userOrganisation.updateProfile(ProfileDTO.fromApiToDomain(tokenDTO.getUsername(), profileDTO));
       return ResponseEntity.ok(ProfileDTO.fromDomainToApi((Profile) updatedAbstractProfile));
      } catch (ProfileValidationException e) {
-      log.warn("Validation errors with update profile:" + tokenDTO.getUsername() + ": " + e.getMessage());
+      log.warn("Validation errors: " + e.getMessage());
       return ResponseEntity
               .badRequest()
               .body(e.getErrors());

@@ -46,6 +46,8 @@ public class UserAdminService {
   }
 
   ResponseEntity getAllUsers(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    log.info("[UserAdminService::getAllUsers] Client: " + clientDTO.getName() + ", Token: " + tokenDTO.getUsername());
+
     ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
@@ -54,6 +56,8 @@ public class UserAdminService {
   }
 
   ResponseEntity addNewUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
+    log.info("[UserAdminService::addNewUser] Client: " + clientDTO.getName() + ", Token: " + tokenDTO.getUsername() + ", User: " + user.getUsername());
+
     ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
@@ -67,6 +71,8 @@ public class UserAdminService {
   }
 
   ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
+    log.info("[UserAdminService::updateUser] Client: " + clientDTO.getName() + ", Token: " + tokenDTO.getUsername() + ", User: " + user.getUsername());
+
     ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
@@ -79,6 +85,8 @@ public class UserAdminService {
   }
 
   ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
+    log.info("[UserAdminService::updateUser] Client: " + clientDTO.getName() + ", Token: " + tokenDTO.getUsername() + ", User: " + usernameToDelete);
+
     ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 

@@ -30,6 +30,8 @@ public class AuthorizationAdminService {
   }
 
   ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    log.info("[AuthorizationAdminService::getGroups] Client: " + clientDTO.getName() + ", Token: " + tokenDTO.getUsername());
+
     ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
@@ -38,6 +40,8 @@ public class AuthorizationAdminService {
   }
 
   ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
+    log.info("[AuthorizationAdminService::createNewGroupWithRoles] Client: " + clientDTO.getName() + ", Token: " + tokenDTO.getUsername() + ", Group: " + groupDTO.getName());
+
     ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
@@ -46,6 +50,8 @@ public class AuthorizationAdminService {
   }
 
   ResponseEntity removeRoleFromGroup(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
+    log.info("AuthorizationAdminService::removeRoleFromGroup] Client: " + clientDTO.getName() + ", Token: " + tokenDTO.getUsername() + ", Group: " + groupDTO.getName());
+
     ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 

@@ -39,6 +39,8 @@ public class AuthenticationService {
   }
 
   public ResponseEntity login(ClientDTO clientDTO, LoginDTO loginDTO) {
+    log.info("[AuthenticationService::login] Client: " + clientDTO.getName() + ", User: " + loginDTO.getUsername());
+
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
@@ -54,6 +56,8 @@ public class AuthenticationService {
   }
 
   ResponseEntity checkToken(ClientDTO clientDTO, TokenDTO token) {
+    log.info("[AuthenticationService::checkToken] Client: " + clientDTO.getName() + ", User: " + token.getUsername());
+
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
@@ -71,6 +75,8 @@ public class AuthenticationService {
   }
 
   ResponseEntity logout(ClientDTO clientDTO, TokenDTO token) {
+    log.info("[AuthenticationService::logout] Client: " + clientDTO.getName() + ", User: " + token.getUsername());
+
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
@@ -88,6 +94,8 @@ public class AuthenticationService {
   }
 
   public ResponseEntity refreshToken(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    log.info("[AuthenticationService::refreshToken] Client: " + clientDTO.getName() + ", User: " + tokenDTO.getUsername());
+
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {

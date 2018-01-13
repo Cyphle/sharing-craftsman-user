@@ -44,6 +44,8 @@ public class AuthorizationService {
   }
 
   ResponseEntity getAuthorizations(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    log.info("[AuthorizationService::getAuthorizations] Client: " + clientDTO.getName() + ", User: " + tokenDTO.getUsername());
+
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
