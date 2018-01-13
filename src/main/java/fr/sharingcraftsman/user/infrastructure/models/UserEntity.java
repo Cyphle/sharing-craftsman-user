@@ -192,6 +192,13 @@ public class UserEntity {
     return new UserEntity(username, password);
   }
 
+  public static UserEntity from(String username, String password, Date creationDate, Date lastUpdateDate) {
+    UserEntity userEntity = new UserEntity(username, password);
+    userEntity.setCreationDate(creationDate);
+    userEntity.setLastUpdateDate(lastUpdateDate);
+    return userEntity;
+  }
+
   public static UserEntity from(String username, String firstname, String lastname, String email, String website, String github, String linkedin) {
     return new UserEntity(username, firstname, lastname, email, website, github, linkedin);
   }

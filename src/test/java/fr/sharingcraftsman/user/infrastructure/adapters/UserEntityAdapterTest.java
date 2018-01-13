@@ -41,14 +41,9 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_save_user_in_repository() throws Exception {
-    AbstractUser user = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
+    userAdapter.createNewUser((User) User.from(Credentials.buildWithEncryption("john@doe.fr", "password")));
 
-    userAdapter.createNewUser((User) user);
-
-    UserEntity expectedUserEntity = UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
-    expectedUserEntity.setCreationDate(dateService.nowInDate());
-    expectedUserEntity.setLastUpdateDate(dateService.nowInDate());
-    verify(userJpaRepository).save(expectedUserEntity);
+    verify(userJpaRepository).save(UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", dateService.nowInDate(), dateService.nowInDate()));
   }
 
   @Test
@@ -57,8 +52,7 @@ public class UserEntityAdapterTest {
 
     AbstractUser user = userAdapter.findUserFromUsername(Username.from("john@doe.fr"));
 
-    User expected = User.from(Credentials.buildWithEncryption("john@doe.fr", "password"));
-    assertThat((User) user).isEqualTo(expected);
+    assertThat((User) user).isEqualTo(User.from(Credentials.buildWithEncryption("john@doe.fr", "password")));
   }
 
   @Test
@@ -74,49 +68,50 @@ public class UserEntityAdapterTest {
   public void should_update_user_with_new_password() throws Exception {
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    User user = User.from("john@doe.fr", "newpassword");
-    userAdapter.updateUserPassword(user);
+    userAdapter.updateUserPassword(User.from("john@doe.fr", "newpassword"));
 
-    UserEntity userEntity = UserEntity.from("john@doe.fr", "newpassword");
-    verify(userJpaRepository).save(userEntity);
+    verify(userJpaRepository).save(UserEntity.from("john@doe.fr", "newpassword"));
   }
 
   @Test
   public void should_find_profile_from_username() throws Exception {
-    UserEntity userEntity = UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
-    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe"));
 
     AbstractProfile foundAbstractProfile = userAdapter.findProfileOf(Username.from("john@doe.fr"));
 
-    Profile expectedProfile = Profile.from(
+    assertThat((Profile) foundAbstractProfile).isEqualTo(Profile.from(
             Username.from("john@doe.fr"),
             Name.of("John"),
             Name.of("Doe"),
             Email.from("john@doe.fr"),
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
-            Link.to("linkedin.com/johndoe"));
-    assertThat((Profile) foundAbstractProfile).isEqualTo(expectedProfile);
+            Link.to("linkedin.com/johndoe")));
     verify(userJpaRepository).findByUsername("john@doe.fr");
   }
 
   @Test
   public void should_save_new_profile() throws Exception {
-    UserEntity userEntity = UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
-    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
-    given(userJpaRepository.save(any(UserEntity.class))).willReturn(userEntity);
-    Profile profile = Profile.from(
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe"));
+    given(userJpaRepository.save(any(UserEntity.class))).willReturn(UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe"));
+
+    AbstractProfile foundAbstractProfile = userAdapter.updateProfileOf(Profile.from(
             Username.from("john@doe.fr"),
             Name.of("John"),
             Name.of("Doe"),
             Email.from("john@doe.fr"),
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
-            Link.to("linkedin.com/johndoe"));
+            Link.to("linkedin.com/johndoe")));
 
-    AbstractProfile foundAbstractProfile = userAdapter.updateProfileOf(profile);
-
-    assertThat((Profile) foundAbstractProfile).isEqualTo(profile);
+    assertThat((Profile) foundAbstractProfile).isEqualTo(Profile.from(
+            Username.from("john@doe.fr"),
+            Name.of("John"),
+            Name.of("Doe"),
+            Email.from("john@doe.fr"),
+            Link.to("www.johndoe.fr"),
+            Link.to("github.com/johndoe"),
+            Link.to("linkedin.com/johndoe")));
     verify(userJpaRepository).findByUsername("john@doe.fr");
   }
 }

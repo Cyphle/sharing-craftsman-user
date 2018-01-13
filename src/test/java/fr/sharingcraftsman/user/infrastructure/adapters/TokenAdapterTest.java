@@ -11,6 +11,7 @@ import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.infrastructure.models.AccessTokenEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.AccessTokenJpaRepository;
+import fr.sharingcraftsman.user.utils.TokenGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,15 +61,23 @@ public class TokenAdapterTest {
 
   @Test
   public void should_create_token_for_user() throws Exception {
-    given(accessTokenJpaRepository.save(any(AccessTokenEntity.class))).willReturn(AccessTokenEntity.from("client", "john@doe.fr", generateToken("clientjohn@doe.fr"), generateToken("clientjohn@doe.fr"), DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
+    given(accessTokenJpaRepository.save(any(AccessTokenEntity.class))).willReturn(
+            AccessTokenEntity.from(
+                    "client",
+                    "john@doe.fr",
+                    TokenGenerator.generateToken("clientjohn@doe.fr"),
+                    TokenGenerator.generateToken("clientjohn@doe.fr"),
+                    DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))
+            )
+    );
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
 
     AccessToken createdToken = tokenAdapter.createNewToken(
             client,
             user,
             AccessToken.from(
-                    generateToken(client.getName() + user.getUsernameContent()),
-                    generateToken(client.getName() + user.getUsernameContent()),
+                    TokenGenerator.generateToken(client.getName() + user.getUsernameContent()),
+                    TokenGenerator.generateToken(client.getName() + user.getUsernameContent()),
                     dateService.getDayAt(8)
             )
     );
@@ -119,11 +128,5 @@ public class TokenAdapterTest {
     assertThat(foundAbstractToken.isValid()).isFalse();
   }
 
-  private String generateToken(String seed) {
-    SecureRandom random = new SecureRandom(seed.getBytes());
-    byte bytes[] = new byte[96];
-    random.nextBytes(bytes);
-    Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
-    return encoder.encodeToString(bytes);
-  }
+
 }
