@@ -37,20 +37,20 @@ public class AuthorizationVerifierService {
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
   }
 
-  public ResponseEntity isUnauthorized(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (isAuthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+  public ResponseEntity isUnauthorizedAdmin(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    if (isUnauthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
     return null;
   }
 
-  private boolean isAuthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (!clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
-      log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
-      return true;
+  private boolean isUnauthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
+    if (clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
+      return false;
     }
-    return false;
+    log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
+    return true;
   }
 
   private HttpStatus isAdmin(TokenDTO tokenDTO) {

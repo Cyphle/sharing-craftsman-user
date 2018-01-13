@@ -32,7 +32,7 @@ public class AuthorizationAdminService {
   }
 
   ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     Set<GroupDTO> groups = GroupDTO.groupFromDomainToApi(authorizationManager.getAllRolesWithTheirGroups());
@@ -40,7 +40,7 @@ public class AuthorizationAdminService {
   }
 
   ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
-    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     authorizationManager.createNewGroupWithRoles(GroupDTO.fromApiToDomain(groupDTO));
@@ -48,7 +48,7 @@ public class AuthorizationAdminService {
   }
 
   ResponseEntity removeRoleFromGroup(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
-    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     authorizationManager.removeRoleFromGroup(GroupDTO.fromApiToDomain(groupDTO));

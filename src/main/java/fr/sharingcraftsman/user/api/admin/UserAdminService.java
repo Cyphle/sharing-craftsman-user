@@ -3,6 +3,7 @@ package fr.sharingcraftsman.user.api.admin;
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.authorization.AuthorizationsDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.domain.admin.AdministrationImpl;
 import fr.sharingcraftsman.user.domain.admin.UserInfo;
 import fr.sharingcraftsman.user.domain.admin.ports.AdminUserRepository;
@@ -10,15 +11,15 @@ import fr.sharingcraftsman.user.domain.admin.ports.Administration;
 import fr.sharingcraftsman.user.domain.authorization.Authorization;
 import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
-import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
-import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.PasswordException;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
-import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,22 +28,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserAdminService extends AbstractAdminService {
+public class UserAdminService {
+  protected final Logger log = LoggerFactory.getLogger(this.getClass());
   private Administration userOrganisation;
+  private AuthorizationManager authorizationManager;
+  private AuthorizationVerifierService authorizationVerifierService;
 
   @Autowired
   public UserAdminService(
-          ClientRepository clientRepository,
           UserAuthorizationRepository userAuthorizationRepository,
           AuthorizationRepository authorizationRepository,
-          AdminUserRepository adminUserRepository) {
-    clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
+          AdminUserRepository adminUserRepository,
+          AuthorizationVerifierService authorizationVerifierService) {
     userOrganisation = new AdministrationImpl(adminUserRepository);
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    this.authorizationVerifierService = authorizationVerifierService;
   }
 
   ResponseEntity getAllUsers(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     List<UserInfo> fetchedUsers = userOrganisation.getAllUsers();
@@ -74,7 +78,7 @@ public class UserAdminService extends AbstractAdminService {
   }
 
   ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
-    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     try {
@@ -91,7 +95,7 @@ public class UserAdminService extends AbstractAdminService {
   }
 
   ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
-    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     try {
@@ -107,7 +111,7 @@ public class UserAdminService extends AbstractAdminService {
   }
 
   ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
-    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     try {

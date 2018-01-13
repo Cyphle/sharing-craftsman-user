@@ -2,32 +2,37 @@ package fr.sharingcraftsman.user.api.admin;
 
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
-import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
-import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
-import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserAuthorizationAdminService extends AbstractAdminService {
+public class UserAuthorizationAdminService {
+  protected final Logger log = LoggerFactory.getLogger(this.getClass());
+  private AuthorizationManager authorizationManager;
+  private AuthorizationVerifierService authorizationVerifierService;
+
   @Autowired
   public UserAuthorizationAdminService(
-          ClientRepository clientRepository,
           UserAuthorizationRepository userAuthorizationRepository,
-          AuthorizationRepository authorizationRepository) {
-    clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
+          AuthorizationRepository authorizationRepository,
+          AuthorizationVerifierService authorizationVerifierService) {
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    this.authorizationVerifierService = authorizationVerifierService;
   }
 
   ResponseEntity addGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
-    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     try {
@@ -42,7 +47,7 @@ public class UserAuthorizationAdminService extends AbstractAdminService {
   }
 
   ResponseEntity removeGroupToUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserGroupDTO userGroupDTO) {
-    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     try {

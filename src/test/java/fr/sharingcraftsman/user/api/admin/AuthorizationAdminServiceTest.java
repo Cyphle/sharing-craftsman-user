@@ -9,8 +9,6 @@ import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
-import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +49,7 @@ public class AuthorizationAdminServiceTest {
 
   @Test
   public void should_get_groups_and_roles() throws Exception {
-    given(authorizationVerifierService.isUnauthorized(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
+    given(authorizationVerifierService.isUnauthorizedAdmin(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
 
     Group users = Group.from("USERS");
     users.addRole(Role.from("ROLE_USER"));
@@ -76,7 +74,7 @@ public class AuthorizationAdminServiceTest {
 
   @Test
   public void should_create_new_group_with_roles() throws Exception {
-    given(authorizationVerifierService.isUnauthorized(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
+    given(authorizationVerifierService.isUnauthorizedAdmin(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
 
     Set<RoleDTO> roles = new HashSet<>();
     roles.add(RoleDTO.from("ROLE_ROOT"));
@@ -91,7 +89,7 @@ public class AuthorizationAdminServiceTest {
 
   @Test
   public void should_remove_role_from_group() throws Exception {
-    given(authorizationVerifierService.isUnauthorized(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
+    given(authorizationVerifierService.isUnauthorizedAdmin(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
 
     Set<RoleDTO> roles = new HashSet<>();
     roles.add(RoleDTO.from("ROLE_ROOT"));
