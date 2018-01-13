@@ -36,6 +36,8 @@ userEntry='user_database_user'
 passwordEntry='user_database_password'
 portEntry='user_database_port'
 databaseNameEntry='user_database_name'
+uploadPathEntry='user_upload_path'
+toInitializeEntry='user_toinitialize'
 
 # Length of data to get
 profileLength=$((${#infos[0]} - ${#profileEntry} - 5))
@@ -44,6 +46,8 @@ userLength=$((${#infos[2]} - ${#userEntry} - 5))
 passwordLength=$((${#infos[3]} - ${#passwordEntry} - 5))
 portLength=$((${#infos[4]} - ${#portEntry} - 5))
 databaseNameLength=$((${#infos[5]} - ${#databaseNameEntry} - 5))
+uploadPathLength=$((${#infos[6]} - ${#uploadPathEntry} - 5))
+toInitializeLength=$((${#infos[7]} - ${#toInitializeEntry} - 5))
 
 # Parsed infos
 profile=${infos[0]:${#profileEntry} + 3:profileLength}
@@ -52,6 +56,8 @@ user=${infos[2]:${#userEntry} + 3:userLength}
 password=${infos[3]:${#passwordEntry} + 3:passwordLength}
 port=${infos[4]:${#portEntry} + 3:portLength}
 database=${infos[5]:${#databaseNameEntry} + 3:databaseNameLength}
+uploadPath=${infos[5]:${#uploadPathEntry} + 3:uploadPathLength}
+toInitialize=${infos[5]:${#toInitializeEntry} + 3:toInitializeLength}
 
 # Replace
 sed -i -e "s/<PROFILE>/${profile}/g" $target
@@ -60,6 +66,8 @@ sed -i -e "s/<DB_USER>/${user}/g" $target
 sed -i -e "s/<DB_PASSWORD>/${password}/g" $target
 sed -i -e "s/<DB_PORT>/${port}/g" $target
 sed -i -e "s/<DB_NAME>/${database}/g" $target
+sed -i -e "s/<UPLOAD_PATH>/${uploadPath}/g" $target
+sed -i -e "s/<TO_INITIALIZE>/${toInitialize}/g" $target
 rm $target-e
 
 docker-compose up -d

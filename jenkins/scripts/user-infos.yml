@@ -6,3 +6,6 @@ user:
     password: root
     port: 3306
     name: sharingcraftsmanuser
+  upload:
+    path: /home/user
+  toinitialize: true
