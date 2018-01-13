@@ -55,17 +55,19 @@ public class AdministrationTest {
 
     List<UserInfo> fetchedUserInfos = organisation.getAllUsers();
 
-    User userOne = User.from("john@doe.fr", "password");
-    Profile profileOne = Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"));
-    TechnicalUserDetails technicalDetailsOne = TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 29, 12, 0));
-    User userTwo = User.from("foo@bar.fr", "password");
-    Profile profileTwo = Profile.from(Username.from("foo@bar.fr"), Name.of("Foo"), Name.of("Bar"), Email.from("foo@bar.fr"), Link.to("foobar.fr"), Link.to("github.com/foobar"), Link.to("linkedin.com/foobar"));
-    TechnicalUserDetails technicalDetailsTwo = TechnicalUserDetails.from(Username.from("foo@bar.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 29, 12, 0));
-    List<UserInfo> expectedUserInfos = Arrays.asList(UserInfo.from(userOne, profileOne, technicalDetailsOne), UserInfo.from(userTwo, profileTwo, technicalDetailsTwo));
     verify(userRepository).getAllUsers();
     verify(userRepository).getAllProfiles();
     verify(userRepository).getAllTechnicalUserDetails();
-    assertThat(fetchedUserInfos).isEqualTo(expectedUserInfos);
+    assertThat(fetchedUserInfos).isEqualTo(Arrays.asList(
+            UserInfo.from(
+                    User.from("john@doe.fr", "password"),
+                    Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
+                    TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 29, 12, 0))),
+            UserInfo.from(
+                    User.from("foo@bar.fr", "password"),
+                    Profile.from(Username.from("foo@bar.fr"), Name.of("Foo"), Name.of("Bar"), Email.from("foo@bar.fr"), Link.to("foobar.fr"), Link.to("github.com/foobar"), Link.to("linkedin.com/foobar")),
+                    TechnicalUserDetails.from(Username.from("foo@bar.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 29, 12, 0)))
+    ));
   }
 
   @Test
@@ -80,8 +82,9 @@ public class AdministrationTest {
 
   @Test
   public void should_throw_unknown_user_exception_if_user_not_found() throws Exception {
+    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(new UnknownUser());
+
     try {
-      given(userRepository.findUserFromUsername(any(Username.class))).willReturn(new UnknownUser());
       organisation.deleteUser(Username.from("hello@world.fr"));
       fail("Should have throw user exception when not found");
     } catch (UserException e) {
@@ -91,46 +94,41 @@ public class AdministrationTest {
 
   @Test
   public void should_update_user() throws Exception {
-    UserInfo foundUser = UserInfo.from(
+    given(userRepository.findUserInfoFromUsername(Username.from("admin@toto.fr"))).willReturn(UserInfo.from(
             User.from("admin@toto.fr", "password"),
             Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("new@email.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto")),
             TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
-    );
-    given(userRepository.findUserInfoFromUsername(foundUser.getUsername())).willReturn(foundUser);
+    ));
 
-    UserInfo userToUpdate = UserInfo.from(
+    organisation.updateUser(UserInfo.from(
             User.from("admin@toto.fr", "password"),
             Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("new@email.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto")),
             TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
-    );
-    organisation.updateUser(userToUpdate);
+    ));
 
-    UserInfo expectedUser = UserInfo.from(
+    verify(userRepository).findUserInfoFromUsername(Username.from("admin@toto.fr"));
+    verify(userRepository).updateUser(UserInfo.from(
             User.from("admin@toto.fr", "T49xWf/l7gatvfVwethwDw=="),
             Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("new@email.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto")),
             TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
-    );
-    verify(userRepository).findUserInfoFromUsername(expectedUser.getUsername());
-    verify(userRepository).updateUser(expectedUser);
+    ));
   }
 
   @Test
   public void should_create_user() throws Exception {
     given(userRepository.findUserInfoFromUsername(any(Username.class))).willReturn(new UnknownUserInfo());
 
-    UserInfo userToCreate = UserInfo.from(
+    organisation.createUser(UserInfo.from(
             User.from("admin@toto.fr", "password"),
             Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("new@email.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto")),
             TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
-    );
-    organisation.createUser(userToCreate);
+    ));
 
-    UserInfo expectedUser = UserInfo.from(
+    verify(userRepository).findUserInfoFromUsername(Username.from("admin@toto.fr"));
+    verify(userRepository).createUser(UserInfo.from(
             User.from("admin@toto.fr", "T49xWf/l7gatvfVwethwDw=="),
             Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("new@email.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto")),
             TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
-    );
-    verify(userRepository).findUserInfoFromUsername(expectedUser.getUsername());
-    verify(userRepository).createUser(expectedUser);
+    ));
   }
 }
