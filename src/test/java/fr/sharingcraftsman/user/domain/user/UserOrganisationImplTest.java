@@ -106,7 +106,7 @@ public class UserOrganisationImplTest {
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
     ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
-    userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
+    userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), changePasswordInfo);
 
     User updatedUser = User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A==");
     verify(userRepository).updateUserPassword(updatedUser);
@@ -118,7 +118,7 @@ public class UserOrganisationImplTest {
       given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(new UnknownUser());
       ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
-      userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
+      userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), changePasswordInfo);
       fail("Should throw unkown user exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown user");
@@ -133,7 +133,7 @@ public class UserOrganisationImplTest {
       given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(ChangePasswordToken.from(user, "bbb", LocalDateTime.of(2019, Month.MARCH, 10, 0, 0)));
       ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
-      userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
+      userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), changePasswordInfo);
       fail("Should throw invalid change password token exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");
@@ -153,7 +153,7 @@ public class UserOrganisationImplTest {
       );
       ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
 
-      userOrganisationImpl.changePassword(credentials.getUsername(), changePasswordInfo);
+      userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), changePasswordInfo);
       fail("Should throw invalid change password token exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");

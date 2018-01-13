@@ -50,7 +50,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
   }
 
   @Override
-  public void addGroup(Username username, Groups groupToAdd) {
+  public void addGroupToUser(Username username, Groups groupToAdd) {
     List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
     if (doesNotAlreadyHaveGroup(groupToAdd, groups)) {
       userAuthorizationRepository.addGroupToUser(username, groupToAdd);

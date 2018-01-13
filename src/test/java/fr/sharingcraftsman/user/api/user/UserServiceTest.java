@@ -3,6 +3,7 @@ package fr.sharingcraftsman.user.api.user;
 import fr.sharingcraftsman.user.api.authentication.LoginDTO;
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
@@ -12,9 +13,10 @@ import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepositor
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.client.UnknownClient;
-import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
-import fr.sharingcraftsman.user.domain.common.*;
+import fr.sharingcraftsman.user.domain.common.Email;
+import fr.sharingcraftsman.user.domain.common.Link;
+import fr.sharingcraftsman.user.domain.common.Name;
+import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.ChangePasswordToken;
 import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.UnknownUser;
@@ -43,7 +45,7 @@ public class UserServiceTest {
   @Mock
   private UserRepository userRepository;
   @Mock
-  private ClientRepository clientRepository;
+  private AuthorizationVerifierService authorizationVerifierService;
   @Mock
   private DateService dateService;
   @Mock
@@ -65,8 +67,9 @@ public class UserServiceTest {
     given(dateService.nowInDate()).willReturn(DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0)));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 27, 12, 0));
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "clietnsercret"));
-    userService = new UserService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, changePasswordTokenRepository, dateService);
+    given(authorizationVerifierService.isUnauthorizedClient(any(ClientDTO.class))).willReturn(false);
+
+    userService = new UserService(userRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, changePasswordTokenRepository, dateService, authorizationVerifierService);
     clientDTO = ClientDTO.from("secret", "clientsecret");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     tokenDTO = TokenDTO.from("john@doe.fr", "aaa");
@@ -119,7 +122,7 @@ public class UserServiceTest {
 
   @Test
   public void should_get_unknown_client_response_when_client_is_not_known() throws Exception {
-    given(clientRepository.findClient(any(Client.class))).willReturn(UnknownClient.get());
+    given(authorizationVerifierService.isUnauthorizedClient(any(ClientDTO.class))).willReturn(true);
     LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password");
 
     ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
@@ -136,7 +139,7 @@ public class UserServiceTest {
     given(changePasswordTokenRepository.createChangePasswordTokenFor(any(ChangePasswordToken.class))).willReturn(token);
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
 
-    ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
+    ResponseEntity response = userService.getChangePasswordToken(clientDTO, tokenDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isEqualTo(ChangePasswordTokenDTO.from("aaa"));
@@ -147,7 +150,7 @@ public class UserServiceTest {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(new InvalidToken());
     TokenDTO tokenDTO = TokenDTO.from("john@doe.fr", "aaa");
 
-    ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
+    ResponseEntity response = userService.getChangePasswordToken(clientDTO, tokenDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
@@ -188,7 +191,7 @@ public class UserServiceTest {
     given(changePasswordTokenRepository.createChangePasswordTokenFor(any(ChangePasswordToken.class))).willReturn(token);
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
 
-    ResponseEntity response = userService.generateLostPasswordToken(clientDTO, "john@doe.fr");
+    ResponseEntity response = userService.getLostPasswordToken(clientDTO, "john@doe.fr");
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

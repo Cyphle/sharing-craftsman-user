@@ -36,13 +36,10 @@ public class UserAuthorizationAdminService {
     if (isUnauthorized != null) return isUnauthorized;
 
     try {
-      authorizationManager.addGroup(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
+      authorizationManager.addGroupToUser(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
       return ResponseEntity.ok().build();
     } catch (UsernameException e) {
-      log.warn("Error: " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
+      return logAndSendBadRequest(e);
     }
   }
 
@@ -54,10 +51,14 @@ public class UserAuthorizationAdminService {
       authorizationManager.removeGroup(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
       return ResponseEntity.ok().build();
     } catch (UsernameException e) {
-      log.warn("Error: " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
+      return logAndSendBadRequest(e);
     }
+  }
+
+  private ResponseEntity logAndSendBadRequest(UsernameException e) {
+    log.warn("Error: " + e.getMessage());
+    return ResponseEntity
+            .badRequest()
+            .body(e.getMessage());
   }
 }

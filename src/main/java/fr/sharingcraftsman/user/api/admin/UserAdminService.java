@@ -49,6 +49,48 @@ public class UserAdminService {
     ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
+    List<UserInfoDTO> users = fromUserInfoToUserInfoDTO();
+    return ResponseEntity.ok(users);
+  }
+
+  ResponseEntity addNewUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
+
+    try {
+      userOrganisation.createUser(UserInfoDTO.fromApiToDomain(user));
+      authorizationManager.addGroupToUser(Username.from(user.getUsername()), Groups.USERS);
+      return ResponseEntity.ok().build();
+    } catch (UserException | UsernameException | PasswordException e) {
+      return logAndSendBadRequest(e);
+    }
+  }
+
+  ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
+
+    try {
+      userOrganisation.updateUser(UserInfoDTO.fromApiToDomain(user));
+      return ResponseEntity.ok().build();
+    } catch (UserException | PasswordException | UsernameException e) {
+      return logAndSendBadRequest(e);
+    }
+  }
+
+  ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
+    if (isUnauthorized != null) return isUnauthorized;
+
+    try {
+      userOrganisation.deleteUser(Username.from(usernameToDelete));
+      return ResponseEntity.ok().build();
+    } catch (UsernameException | UserException e) {
+      return logAndSendBadRequest(e);
+    }
+  }
+
+  private List<UserInfoDTO> fromUserInfoToUserInfoDTO() {
     List<UserInfo> fetchedUsers = userOrganisation.getAllUsers();
     List<UserInfoDTO> users = fetchedUsers.stream()
             .map(user -> UserInfoDTO.from(
@@ -73,55 +115,13 @@ public class UserAdminService {
         e.printStackTrace();
       }
     });
-
-    return ResponseEntity.ok(users);
+    return users;
   }
 
-  ResponseEntity addUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
-    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
-    if (isUnauthorized != null) return isUnauthorized;
-
-    try {
-      UserInfo userInfo = UserInfoDTO.fromApiToDomain(user);
-      userOrganisation.createUser(userInfo);
-      authorizationManager.addGroup(Username.from(user.getUsername()), Groups.USERS);
-      return ResponseEntity.ok().build();
-    } catch (UserException | UsernameException | PasswordException e) {
-      log.warn("Error:" + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
-    }
-  }
-
-  ResponseEntity updateUser(ClientDTO clientDTO, TokenDTO tokenDTO, UserInfoDTO user) {
-    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
-    if (isUnauthorized != null) return isUnauthorized;
-
-    try {
-      UserInfo userInfo = UserInfoDTO.fromApiToDomain(user);
-      userOrganisation.updateUser(userInfo);
-      return ResponseEntity.ok().build();
-    } catch (UserException | PasswordException | UsernameException e) {
-      log.warn("Error while updating user " + user.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
-    }
-  }
-
-  ResponseEntity deleteUser(ClientDTO clientDTO, TokenDTO tokenDTO, String usernameToDelete) {
-    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorizedAdmin(clientDTO, tokenDTO);
-    if (isUnauthorized != null) return isUnauthorized;
-
-    try {
-      userOrganisation.deleteUser(Username.from(usernameToDelete));
-      return ResponseEntity.ok().build();
-    } catch (UsernameException | UserException e) {
-      log.warn("Error while deleting user " + usernameToDelete + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
-    }
+  private ResponseEntity logAndSendBadRequest(Exception e) {
+    log.warn("Error: " + e.getMessage());
+    return ResponseEntity
+            .badRequest()
+            .body(e.getMessage());
   }
 }

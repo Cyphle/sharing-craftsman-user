@@ -34,7 +34,7 @@ public class UserController {
                                                    @RequestHeader("access-token") String accessToken) {
     ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
-    return userService.requestChangePassword(clientDTO, tokenDTO);
+    return userService.getChangePasswordToken(clientDTO, tokenDTO);
   }
 
   @ApiOperation(value = "Endpoint to generate token when lost password", response = ResponseEntity.class)
@@ -47,7 +47,7 @@ public class UserController {
                                             @RequestHeader("secret") String secret,
                                             @RequestHeader("username") String username) {
     ClientDTO clientDTO = ClientDTO.from(client, secret);
-    return userService.generateLostPasswordToken(clientDTO, username);
+    return userService.getLostPasswordToken(clientDTO, username);
   }
 
   @ApiOperation(value = "Post information to create a new client", response = ResponseEntity.class)

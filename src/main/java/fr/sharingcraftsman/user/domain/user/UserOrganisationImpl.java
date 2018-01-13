@@ -67,7 +67,7 @@ public class UserOrganisationImpl implements UserOrganisation {
   }
 
   @Override
-  public void changePassword(Username username, ChangePasswordInfo changePasswordInfo) throws UserException, CredentialsException {
+  public void changePasswordOfUser(Username username, ChangePasswordInfo changePasswordInfo) throws UserException, CredentialsException {
     Credentials userCredentials = Credentials.buildWithEncryption(username, changePasswordInfo.getOldPassword());
     AbstractUser abstractUser = userRepository.findUserFromCredentials(userCredentials);
 

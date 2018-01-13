@@ -15,7 +15,7 @@ public interface UserOrganisation {
 
   ChangePasswordToken createChangePasswordTokenFor(Username username) throws UnknownUserException, CredentialsException;
 
-  void changePassword(Username username, ChangePasswordInfo changePasswordInfo) throws UserException, CredentialsException;
+  void changePasswordOfUser(Username username, ChangePasswordInfo changePasswordInfo) throws UserException, CredentialsException;
 
   AbstractProfile updateProfile(AbstractProfile abstractProfile) throws UserException;
 }

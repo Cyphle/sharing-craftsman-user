@@ -63,7 +63,7 @@ public class UserControllerTest {
 
   @Test
   public void should_request_for_a_token_to_change_password() throws Exception {
-    given(userService.requestChangePassword(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
+    given(userService.getChangePasswordToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(get("/users/request-change-password")
             .header("client", "client")
@@ -105,7 +105,7 @@ public class UserControllerTest {
 
   @Test
   public void should_generate_token_when_lost_password() throws Exception {
-    given(userService.requestChangePassword(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
+    given(userService.getChangePasswordToken(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(get("/users/lost-password")
             .header("client", "client")

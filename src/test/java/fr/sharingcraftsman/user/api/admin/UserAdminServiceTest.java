@@ -164,7 +164,7 @@ public class UserAdminServiceTest {
 
     given(adminUserRepository.findUserInfoFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUserInfo());
 
-    userAdminService.addUser(clientDTO, tokenDTO, user);
+    userAdminService.addNewUser(clientDTO, tokenDTO, user);
 
     UserInfo newUser = UserInfo.from(
             User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="),

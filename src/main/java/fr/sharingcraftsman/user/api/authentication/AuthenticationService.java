@@ -3,6 +3,7 @@ package fr.sharingcraftsman.user.api.authentication;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.common.DateService;
+import fr.sharingcraftsman.user.domain.authentication.AbstractToken;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authentication.AuthenticationManagerImpl;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
@@ -42,18 +43,13 @@ public class AuthenticationService {
 
     try {
       log.info("UserEntity " + loginDTO.getUsername() + " is logging");
-      Credentials credentials = LoginDTO.fromApiToDomain(loginDTO);
-      Client client = ClientDTO.fromApiToDomain(clientDTO);
-      TokenDTO token = TokenDTO.fromDomainToApi((AccessToken) authenticationManager.login(client, credentials), credentials.getUsername());
+
+      AbstractToken accessToken = authenticationManager.login(ClientDTO.fromApiToDomain(clientDTO), LoginDTO.fromApiToDomain(loginDTO));
+      TokenDTO token = TokenDTO.fromDomainToApi((AccessToken) accessToken, Username.from(loginDTO.getUsername()));
       return ResponseEntity.ok(token);
-    } catch (UnknownUserException e) {
-      log.warn("Unauthorized user: " + loginDTO.getUsername() + ": " + e.getMessage());
-      return new ResponseEntity<>("Unauthorized user", HttpStatus.UNAUTHORIZED);
     } catch (CredentialsException | UserException e) {
-      log.warn("Error with loginDTO " + loginDTO.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
+      log.warn("Error: " + e.getMessage());
+      return new ResponseEntity<>("Unauthorized user", HttpStatus.UNAUTHORIZED);
     }
   }
 
@@ -62,18 +58,15 @@ public class AuthenticationService {
 
     try {
       log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
-      Client client = Client.from(clientDTO.getName(), clientDTO.getSecret());
 
-      if (authenticationManager.isTokenValid(client, Username.from(token.getUsername()), TokenDTO.fromApiToDomain(token))) {
+      boolean isTokenValid = authenticationManager.isTokenValid(Client.from(clientDTO.getName(), clientDTO.getSecret()), Username.from(token.getUsername()), TokenDTO.fromApiToDomain(token));
+      if (isTokenValid) {
         return ResponseEntity.ok().build();
       } else {
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
       }
     } catch (CredentialsException e) {
-      log.warn("Error with check token " + token.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
+      return logAndSendBadRequest(e);
     }
   }
 
@@ -82,14 +75,15 @@ public class AuthenticationService {
 
     try {
       log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
-      Client client = Client.from(clientDTO.getName(), "");
-      authenticationManager.logout(client, Username.from(token.getUsername()), TokenDTO.fromApiToDomain(token));
+
+      authenticationManager.logout(
+              Client.from(clientDTO.getName(), ""),
+              Username.from(token.getUsername()),
+              TokenDTO.fromApiToDomain(token)
+      );
       return ResponseEntity.ok().build();
     } catch (CredentialsException e) {
-      log.warn("Error with log out " + token.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
+      return logAndSendBadRequest(e);
     }
   }
 
@@ -99,6 +93,7 @@ public class AuthenticationService {
     try {
       Username username = Username.from(tokenDTO.getUsername());
       Client client = Client.from(clientDTO.getName(), "");
+
       if (authenticationManager.isRefreshTokenValid(client, username, TokenDTO.fromApiToDomain(tokenDTO))) {
         authenticationManager.deleteToken(client, username, TokenDTO.fromApiToDomain(tokenDTO));
         TokenDTO token = TokenDTO.fromDomainToApi((AccessToken) authenticationManager.createNewToken(client, username), username);
@@ -107,10 +102,14 @@ public class AuthenticationService {
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
       }
     } catch (CredentialsException | UserException e) {
-      log.warn("Error with get new token from refresh token " + tokenDTO.getUsername() + ": " + e.getMessage());
-      return ResponseEntity
-              .badRequest()
-              .body(e.getMessage());
+      return logAndSendBadRequest(e);
     }
+  }
+
+  private ResponseEntity logAndSendBadRequest(Exception e) {
+    log.warn("Error: " + e.getMessage());
+    return ResponseEntity
+            .badRequest()
+            .body(e.getMessage());
   }
 }

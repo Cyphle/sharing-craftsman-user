@@ -49,7 +49,7 @@ public class UserAdminController {
                                 @RequestBody UserInfoDTO user) {
     ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
-    return userAdminService.addUser(clientDTO, tokenDTO, user);
+    return userAdminService.addNewUser(clientDTO, tokenDTO, user);
   }
 
   @ApiOperation(value = "Endpoint to update informations of user", response = ResponseEntity.class)

@@ -53,7 +53,7 @@ public class AuthorizationEntityAuthorizationManagerTest {
 
   @Test
   public void should_add_given_group_to_user() throws Exception {
-    authorizationManager.addGroup(username, Groups.USERS);
+    authorizationManager.addGroupToUser(username, Groups.USERS);
 
     verify(userAuthorizationRepository).addGroupToUser(username, Groups.USERS);
   }
@@ -62,7 +62,7 @@ public class AuthorizationEntityAuthorizationManagerTest {
   public void should_not_add_group_if_user_already_has_the_group() throws Exception {
     given(userAuthorizationRepository.findGroupsOf(username)).willReturn(Collections.singletonList(Group.from("USERS")));
 
-    authorizationManager.addGroup(username, Groups.USERS);
+    authorizationManager.addGroupToUser(username, Groups.USERS);
 
     verify(userAuthorizationRepository, never()).addGroupToUser(any(Username.class), any(Groups.class));
   }

@@ -14,7 +14,7 @@ public interface AuthorizationManager {
 
   void createNewGroupWithRoles(Group group);
 
-  void addGroup(Username username, Groups groupToAdd);
+  void addGroupToUser(Username username, Groups groupToAdd);
 
   void removeGroup(Username username, Groups groupToRemove);
 
