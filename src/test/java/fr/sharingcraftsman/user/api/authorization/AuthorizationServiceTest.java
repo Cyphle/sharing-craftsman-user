@@ -50,23 +50,20 @@ public class AuthorizationServiceTest {
 
   private ClientDTO clientDTO;
   private TokenDTO token;
-  private AccessToken validToken;
   private AuthorizationService authorizationService;
 
   @Before
   public void setUp() throws Exception {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
+    AccessToken validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
+    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
     given(authorizationVerifierService.isUnauthorizedClient(any(ClientDTO.class))).willReturn(false);
 
     authorizationService = new AuthorizationService(userRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService, authorizationVerifierService);
 
     clientDTO = ClientDTO.from("client", "secret");
-
     token = TokenDTO.from("john@doe.fr", "aaa");
-    validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
-
-    given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
   }
 
   @Test
@@ -77,11 +74,10 @@ public class AuthorizationServiceTest {
 
     ResponseEntity response = authorizationService.getAuthorizations(clientDTO, token);
 
-    AuthorizationsDTO expectedAuthorizations = AuthorizationsDTO.from(Sets.newHashSet(
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isEqualTo(AuthorizationsDTO.from(Sets.newHashSet(
             GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER"))),
             GroupDTO.from("ADMINS", Sets.newHashSet(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN")))
-    ));
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(expectedAuthorizations);
+    )));
   }
 }
