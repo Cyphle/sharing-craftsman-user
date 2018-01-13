@@ -54,9 +54,7 @@ public class AuthenticationServiceTest {
     authenticationService = new AuthenticationService(userRepository, accessTokenRepository, dateService, authorizationVerifierService);
     clientDTO = ClientDTO.from("client", "secret");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
-
     token = TokenDTO.from("john@doe.fr", "aaa");
-
     user = User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
   }
 
@@ -66,8 +64,7 @@ public class AuthenticationServiceTest {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(validToken);
 
-    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password", true);
-    ResponseEntity response = authenticationService.login(clientDTO, loginDTO);
+    ResponseEntity response = authenticationService.login(clientDTO, LoginDTO.from("john@doe.fr", "password", true));
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
@@ -118,9 +115,8 @@ public class AuthenticationServiceTest {
     given(accessTokenRepository.createNewToken(any(Client.class), any(User.class), any(AccessToken.class))).willReturn(validToken);
     given(accessTokenRepository.findTokenFromRefreshToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    TokenDTO refreshToken = TokenDTO.from("john@doe.fr", "", "bbb");
 
-    ResponseEntity response = authenticationService.refreshToken(clientDTO, refreshToken);
+    ResponseEntity response = authenticationService.refreshToken(clientDTO, TokenDTO.from("john@doe.fr", "", "bbb"));
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isEqualTo(TokenDTO.from("john@doe.fr", "aaa", "bbb", 1514631600000L));
