@@ -44,26 +44,25 @@ public class UserOrganisationImpl implements UserOrganisation {
 
   @Override
   public void createNewUser(Credentials credentials) throws UserException, CredentialsException {
-    if (userExists(credentials.getUsername()))
+    if (doesUserExists(credentials.getUsername()))
       throw new AlreadyExistingUserException("User already exists with username: " + credentials.getUsernameContent());
 
-    Credentials encryptedCredentials = Credentials.buildWithEncryption(credentials.getUsernameContent(), credentials.getPasswordContent());
-    User newUser = User.from(encryptedCredentials);
-    userRepository.createNewUser(newUser);
+    userRepository.createNewUser(User.from(credentials.getEncryptedVersion()));
   }
 
   @Override
   public ChangePasswordToken createChangePasswordTokenFor(Username username) throws UnknownUserException, CredentialsException {
-    if (!userExists(username))
+    if (!doesUserExists(username))
       throw new UnknownUserException("Unknown user");
 
     changePasswordTokenRepository.deleteChangePasswordTokenOf(username);
-    ChangePasswordToken changePasswordToken = ChangePasswordToken.from(
-            User.from(username),
-            crypter.encrypt(username.getUsername()),
-            dateService.getDayAt(1)
+    return changePasswordTokenRepository.createChangePasswordTokenFor(
+            ChangePasswordToken.from(
+                    User.from(username),
+                    crypter.encrypt(username.getUsername()),
+                    dateService.getDayAt(1)
+            )
     );
-    return changePasswordTokenRepository.createChangePasswordTokenFor(changePasswordToken);
   }
 
   @Override
@@ -74,8 +73,7 @@ public class UserOrganisationImpl implements UserOrganisation {
     if (!abstractUser.isKnown())
       throw new UnknownUserException("Unknown user");
 
-    ChangePasswordToken token = changePasswordTokenRepository.findByUsername(username);
-    checkChangePasswordTokenValidity(changePasswordInfo, token);
+    checkChangePasswordTokenValidity(changePasswordInfo, changePasswordTokenRepository.findByUsername(username));
 
     ((User) abstractUser).setPassword(changePasswordInfo.getNewPassword().getEncryptedVersion());
     userRepository.updateUserPassword((User) abstractUser);
@@ -102,7 +100,7 @@ public class UserOrganisationImpl implements UserOrganisation {
       throw new InvalidChangePasswordTokenException("Invalid token to change password");
   }
 
-  private boolean userExists(Username username) {
+  private boolean doesUserExists(Username username) {
     return userRepository.findUserFromUsername(username).isKnown();
   }
 }
