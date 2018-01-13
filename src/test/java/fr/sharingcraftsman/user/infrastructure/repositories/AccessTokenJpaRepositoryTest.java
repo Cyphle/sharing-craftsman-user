@@ -15,8 +15,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZoneId;
-import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {UserApplication.class})
 @DataJpaTest
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class AccessAbstractTokenJpaRepositoryTest {
+public class AccessTokenJpaRepositoryTest {
   @Autowired
   private TestEntityManager entityManager;
 

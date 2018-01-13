@@ -6,17 +6,15 @@ import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AuthenticationManagerImpl;
-import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
-import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
+import fr.sharingcraftsman.user.domain.authorization.UserAuthorizationManagerImpl;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
-import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.common.UsernameException;
 import fr.sharingcraftsman.user.domain.user.AbstractProfile;
@@ -41,7 +39,7 @@ public class UserService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
   private final AuthenticationManager authenticationManager;
   private UserOrganisation userOrganisation;
-  private AuthorizationManager authorizationManager;
+  private UserAuthorizationManager userAuthorizationManager;
   private AuthorizationVerifierService authorizationVerifierService;
 
   @Autowired
@@ -55,7 +53,7 @@ public class UserService {
           AuthorizationVerifierService authorizationVerifierService) {
     userOrganisation = new UserOrganisationImpl(userRepository, changePasswordTokenRepository, dateService);
     authenticationManager = new AuthenticationManagerImpl(userRepository, accessTokenRepository, dateService);
-    authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    userAuthorizationManager = new UserAuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
     this.authorizationVerifierService = authorizationVerifierService;
   }
 
@@ -99,7 +97,7 @@ public class UserService {
       log.info("UserEntity is registering with username:" + loginDTO.getUsername());
 
       userOrganisation.createNewUser(LoginDTO.fromApiToDomain(loginDTO));
-      authorizationManager.addGroupToUser(Username.from(loginDTO.getUsername()), Groups.USERS);
+      userAuthorizationManager.addGroupToUser(Username.from(loginDTO.getUsername()), Groups.USERS);
       return ResponseEntity.ok().build();
     } catch (CredentialsException | UserException e) {
       return logAndSendBadRequest(e);

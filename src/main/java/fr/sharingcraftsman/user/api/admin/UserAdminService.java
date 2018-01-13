@@ -9,9 +9,9 @@ import fr.sharingcraftsman.user.domain.admin.UserInfo;
 import fr.sharingcraftsman.user.domain.admin.ports.AdminUserRepository;
 import fr.sharingcraftsman.user.domain.admin.ports.Administration;
 import fr.sharingcraftsman.user.domain.authorization.Authorization;
-import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
+import fr.sharingcraftsman.user.domain.authorization.UserAuthorizationManagerImpl;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
-import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.common.PasswordException;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class UserAdminService {
   protected final Logger log = LoggerFactory.getLogger(this.getClass());
   private Administration userOrganisation;
-  private AuthorizationManager authorizationManager;
+  private UserAuthorizationManager userAuthorizationManager;
   private AuthorizationVerifierService authorizationVerifierService;
 
   @Autowired
@@ -41,7 +41,7 @@ public class UserAdminService {
           AdminUserRepository adminUserRepository,
           AuthorizationVerifierService authorizationVerifierService) {
     userOrganisation = new AdministrationImpl(adminUserRepository);
-    authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    userAuthorizationManager = new UserAuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
     this.authorizationVerifierService = authorizationVerifierService;
   }
 
@@ -59,7 +59,7 @@ public class UserAdminService {
 
     try {
       userOrganisation.createUser(UserInfoDTO.fromApiToDomain(user));
-      authorizationManager.addGroupToUser(Username.from(user.getUsername()), Groups.USERS);
+      userAuthorizationManager.addGroupToUser(Username.from(user.getUsername()), Groups.USERS);
       return ResponseEntity.ok().build();
     } catch (UserException | UsernameException | PasswordException e) {
       return logAndSendBadRequest(e);
@@ -109,7 +109,7 @@ public class UserAdminService {
             .collect(Collectors.toList());
     users.forEach(user -> {
       try {
-        Authorization authorization = authorizationManager.getAuthorizationsOf(Username.from(user.getUsername()));
+        Authorization authorization = userAuthorizationManager.getAuthorizationsOf(Username.from(user.getUsername()));
         user.setAuthorizations(AuthorizationsDTO.fromDomainToApi(authorization));
       } catch (UsernameException e) {
         e.printStackTrace();

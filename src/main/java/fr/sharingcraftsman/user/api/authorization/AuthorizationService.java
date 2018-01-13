@@ -8,8 +8,8 @@ import fr.sharingcraftsman.user.domain.authentication.AuthenticationManagerImpl;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.authentication.ports.AuthenticationManager;
 import fr.sharingcraftsman.user.domain.authorization.Authorization;
-import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
-import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
+import fr.sharingcraftsman.user.domain.authorization.UserAuthorizationManagerImpl;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 public class AuthorizationService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
   private final AuthenticationManager authenticationManager;
-  private AuthorizationManager authorizationManager;
+  private UserAuthorizationManager userAuthorizationManager;
   private AuthorizationVerifierService authorizationVerifierService;
 
   @Autowired
@@ -39,7 +39,7 @@ public class AuthorizationService {
           DateService dateService,
           AuthorizationVerifierService authorizationVerifierService) {
     authenticationManager = new AuthenticationManagerImpl(userRepository, accessTokenRepository, dateService);
-    authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    userAuthorizationManager = new UserAuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
     this.authorizationVerifierService = authorizationVerifierService;
   }
 
@@ -52,7 +52,7 @@ public class AuthorizationService {
       if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
-      Authorization authorization = authorizationManager.getAuthorizationsOf(Username.from(tokenDTO.getUsername()));
+      Authorization authorization = userAuthorizationManager.getAuthorizationsOf(Username.from(tokenDTO.getUsername()));
       return ResponseEntity.ok(AuthorizationsDTO.fromDomainToApi(authorization));
     } catch (UsernameException e) {
       log.warn("Error: " + e.getMessage());

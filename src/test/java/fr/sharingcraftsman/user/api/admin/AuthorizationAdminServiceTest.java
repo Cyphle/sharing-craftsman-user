@@ -44,7 +44,7 @@ public class AuthorizationAdminServiceTest {
   public void setUp() throws Exception {
     clientDTO = ClientDTO.from("client", "secret");
     tokenDTO = TokenDTO.from("admin@toto.fr", "aaa");
-    authorizationAdminService = new AuthorizationAdminService(userAuthorizationRepository, authorizationRepository, authorizationVerifierService);
+    authorizationAdminService = new AuthorizationAdminService(authorizationRepository, authorizationVerifierService);
   }
 
   @Test

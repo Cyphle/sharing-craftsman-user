@@ -3,9 +3,9 @@ package fr.sharingcraftsman.user.api.admin;
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
-import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
+import fr.sharingcraftsman.user.domain.authorization.UserAuthorizationManagerImpl;
 import fr.sharingcraftsman.user.domain.authorization.Groups;
-import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserAuthorizationAdminService {
   protected final Logger log = LoggerFactory.getLogger(this.getClass());
-  private AuthorizationManager authorizationManager;
+  private UserAuthorizationManager userAuthorizationManager;
   private AuthorizationVerifierService authorizationVerifierService;
 
   @Autowired
@@ -27,7 +27,7 @@ public class UserAuthorizationAdminService {
           UserAuthorizationRepository userAuthorizationRepository,
           AuthorizationRepository authorizationRepository,
           AuthorizationVerifierService authorizationVerifierService) {
-    authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    userAuthorizationManager = new UserAuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
     this.authorizationVerifierService = authorizationVerifierService;
   }
 
@@ -36,7 +36,7 @@ public class UserAuthorizationAdminService {
     if (isUnauthorized != null) return isUnauthorized;
 
     try {
-      authorizationManager.addGroupToUser(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
+      userAuthorizationManager.addGroupToUser(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
       return ResponseEntity.ok().build();
     } catch (UsernameException e) {
       return logAndSendBadRequest(e);
@@ -48,7 +48,7 @@ public class UserAuthorizationAdminService {
     if (isUnauthorized != null) return isUnauthorized;
 
     try {
-      authorizationManager.removeGroup(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
+      userAuthorizationManager.removeGroupFromUser(Username.from(userGroupDTO.getUsername()), Groups.valueOf(userGroupDTO.getGroup()));
       return ResponseEntity.ok().build();
     } catch (UsernameException e) {
       return logAndSendBadRequest(e);

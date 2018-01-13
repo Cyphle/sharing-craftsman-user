@@ -3,29 +3,18 @@ package fr.sharingcraftsman.user.domain.authorization;
 import com.google.common.collect.Lists;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
-import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
-import fr.sharingcraftsman.user.domain.common.Username;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AuthorizationManagerImpl implements AuthorizationManager {
-  private UserAuthorizationRepository userAuthorizationRepository;
   private AuthorizationRepository authorizationRepository;
 
-  public AuthorizationManagerImpl(UserAuthorizationRepository userAuthorizationRepository, AuthorizationRepository authorizationRepository) {
-    this.userAuthorizationRepository = userAuthorizationRepository;
+  public AuthorizationManagerImpl(AuthorizationRepository authorizationRepository) {
     this.authorizationRepository = authorizationRepository;
-  }
-
-  @Override
-  public Authorization getAuthorizationsOf(Username username) {
-    List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
-    for (Group group : groups) {
-      List<Role> roles = authorizationRepository.getRolesOf(group.getName());
-      group.addRoles(roles);
-    }
-    return Authorization.get(groups);
   }
 
   @Override
@@ -50,32 +39,8 @@ public class AuthorizationManagerImpl implements AuthorizationManager {
   }
 
   @Override
-  public void addGroupToUser(Username username, Groups groupToAdd) {
-    List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
-    if (doesNotAlreadyHaveGroup(groupToAdd, groups)) {
-      userAuthorizationRepository.addGroupToUser(username, groupToAdd);
-    }
-  }
-
-  @Override
-  public void removeGroup(Username username, Groups groupToRemove) {
-    List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
-    if (hasGivenGroup(groupToRemove, groups)) {
-      userAuthorizationRepository.removeGroupFromUser(username, groupToRemove);
-    }
-  }
-
-  @Override
   public void removeRoleFromGroup(Group group) {
     Group filteredGroup = Group.from(group.getName(), new HashSet<>(Collections.singletonList(Lists.newArrayList(group.getRoles()).get(0))));
     authorizationRepository.removeRoleFromGroup(filteredGroup);
-  }
-
-  private boolean hasGivenGroup(Groups groupToRemove, List<Group> groups) {
-    return groups.stream().anyMatch(group -> group.getName().equals(groupToRemove.name()));
-  }
-
-  private boolean doesNotAlreadyHaveGroup(Groups groupToAdd, List<Group> groups) {
-    return groups.stream().noneMatch(group -> group.getName().equals(groupToAdd.name()));
   }
 }

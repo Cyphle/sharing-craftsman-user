@@ -4,9 +4,9 @@ import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.authorization.Authorization;
-import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
+import fr.sharingcraftsman.user.domain.authorization.UserAuthorizationManagerImpl;
 import fr.sharingcraftsman.user.domain.authorization.Group;
-import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
+import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
@@ -27,14 +27,14 @@ import java.util.Optional;
 public class AuthorizationVerifierService {
   protected final Logger log = LoggerFactory.getLogger(this.getClass());
   private ClientOrganisation clientOrganisation;
-  private AuthorizationManager authorizationManager;
+  private UserAuthorizationManager userAuthorizationManager;
 
   @Autowired
   public AuthorizationVerifierService(ClientRepository clientRepository,
                                       UserAuthorizationRepository userAuthorizationRepository,
                                       AuthorizationRepository authorizationRepository) {
     clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
-    authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    userAuthorizationManager = new UserAuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
   }
 
   public ResponseEntity isUnauthorizedAdmin(ClientDTO clientDTO, TokenDTO tokenDTO) {
@@ -55,7 +55,7 @@ public class AuthorizationVerifierService {
 
   private HttpStatus isAdmin(TokenDTO tokenDTO) {
     try {
-      Authorization requesterAuthorization = authorizationManager.getAuthorizationsOf(Username.from(tokenDTO.getUsername()));
+      Authorization requesterAuthorization = userAuthorizationManager.getAuthorizationsOf(Username.from(tokenDTO.getUsername()));
 
       Optional<Group> adminGroup = requesterAuthorization.getGroups()
               .stream()

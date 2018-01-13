@@ -7,7 +7,6 @@ import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
-import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +23,9 @@ public class AuthorizationAdminService {
 
   @Autowired
   public AuthorizationAdminService(
-          UserAuthorizationRepository userAuthorizationRepository,
           AuthorizationRepository authorizationRepository,
           AuthorizationVerifierService authorizationVerifierService) {
-    authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    authorizationManager = new AuthorizationManagerImpl(authorizationRepository);
     this.authorizationVerifierService = authorizationVerifierService;
   }
 
