@@ -39,9 +39,7 @@ public class UserEntityRepositoryTest {
 
     UserEntity expectedUserEntity = UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     expectedUserEntity.setId(1);
-    assertThat(Lists.newArrayList(userJpaRepository.findAll())).containsExactly(
-            expectedUserEntity
-    );
+    assertThat(Lists.newArrayList(userJpaRepository.findAll())).containsExactly(expectedUserEntity);
   }
 
   @Test
