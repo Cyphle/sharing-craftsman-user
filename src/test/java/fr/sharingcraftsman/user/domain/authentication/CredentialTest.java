@@ -18,7 +18,7 @@ public class CredentialTest {
   @Test
   public void should_throw_username_exception_when_username_is_empty() throws Exception {
     try {
-      Credentials credentials = Credentials.buildWithEncryption("", "john@doe.fr");
+      Credentials.buildWithEncryption("", "john@doe.fr");
       fail("Should have thrown a UsernameException");
     } catch (CredentialsException e) {
       assertThat(e.getMessage()).isEqualTo("Username cannot be empty");
@@ -28,7 +28,7 @@ public class CredentialTest {
   @Test
   public void should_throw_password_exception_when_password_is_empty() throws Exception {
     try {
-      Credentials credentials = Credentials.buildWithEncryption("john@doe.fr", "");
+      Credentials.buildWithEncryption("john@doe.fr", "");
       fail("Should have throws a PasswordException");
     } catch (CredentialsException e) {
       assertThat(e.getMessage()).isEqualTo("Password cannot be empty");
