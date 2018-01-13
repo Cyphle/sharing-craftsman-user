@@ -39,8 +39,7 @@ public class ChangePasswordTokenAdapterTest {
 
     changePasswordTokenAdapter.deleteChangePasswordTokenOf(Username.from("john@doe.fr"));
 
-    ChangePasswordTokenEntity token = ChangePasswordTokenEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date());
-    verify(changePasswordTokenJpaRepository).delete(token);
+    verify(changePasswordTokenJpaRepository).delete(ChangePasswordTokenEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date()));
   }
 
   @Test
@@ -48,14 +47,12 @@ public class ChangePasswordTokenAdapterTest {
     given(userRepository.findByUsername(any(String.class))).willReturn(UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
     given(changePasswordTokenJpaRepository.save(any(ChangePasswordTokenEntity.class))).willReturn(ChangePasswordTokenEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date()));
 
-    ChangePasswordToken changePasswordToken = ChangePasswordToken.from(
+    changePasswordTokenAdapter.createChangePasswordTokenFor(ChangePasswordToken.from(
             User.from("john@doe.fr", "aaa"),
             "aaa",
             LocalDateTime.of(2017, 12, 25, 12, 0)
-    );
-    changePasswordTokenAdapter.createChangePasswordTokenFor(changePasswordToken);
+    ));
 
-    ChangePasswordTokenEntity token = ChangePasswordTokenEntity.from("john@doe.fr", "aaa", new Date());
-    verify(changePasswordTokenJpaRepository).save(token);
+    verify(changePasswordTokenJpaRepository).save(ChangePasswordTokenEntity.from("john@doe.fr", "aaa", new Date()));
   }
 }
