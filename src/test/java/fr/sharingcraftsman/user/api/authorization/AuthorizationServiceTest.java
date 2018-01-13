@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.api.authorization;
 
+import com.google.common.collect.Sets;
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -75,13 +77,10 @@ public class AuthorizationServiceTest {
 
     ResponseEntity response = authorizationService.getAuthorizations(clientDTO, token);
 
-    GroupDTO groupUser = GroupDTO.from("USERS");
-    groupUser.addRoles(Collections.singletonList(RoleDTO.from("ROLE_USER")));
-    GroupDTO groupAdmin = GroupDTO.from("ADMINS");
-    groupAdmin.addRoles(Arrays.asList(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN")));
-    AuthorizationsDTO expectedAuthorizations = new AuthorizationsDTO();
-    expectedAuthorizations.addGroup(groupUser);
-    expectedAuthorizations.addGroup(groupAdmin);
+    AuthorizationsDTO expectedAuthorizations = AuthorizationsDTO.from(Sets.newHashSet(
+            GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER"))),
+            GroupDTO.from("ADMINS", Sets.newHashSet(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN")))
+    ));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isEqualTo(expectedAuthorizations);
   }

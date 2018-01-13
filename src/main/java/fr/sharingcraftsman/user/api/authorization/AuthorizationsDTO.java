@@ -14,8 +14,12 @@ import java.util.stream.Collectors;
 public class AuthorizationsDTO {
   private Set<GroupDTO> groups;
 
-  public AuthorizationsDTO() {
+  private AuthorizationsDTO() {
     this.groups = new HashSet<>();
+  }
+
+  private AuthorizationsDTO(HashSet<GroupDTO> groups) {
+    this.groups = groups;
   }
 
   public Set<GroupDTO> getGroups() {
@@ -28,6 +32,10 @@ public class AuthorizationsDTO {
 
   public void addGroup(GroupDTO groupDTO) {
     groups.add(groupDTO);
+  }
+
+  public static AuthorizationsDTO from(HashSet<GroupDTO> groups) {
+    return new AuthorizationsDTO(groups);
   }
 
   public static AuthorizationsDTO fromDomainToApi(Authorization authorization) {

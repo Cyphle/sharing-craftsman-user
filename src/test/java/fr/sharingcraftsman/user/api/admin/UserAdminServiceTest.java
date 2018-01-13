@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.api.admin;
 
+import com.google.common.collect.Sets;
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.authorization.AuthorizationsDTO;
 import fr.sharingcraftsman.user.api.authorization.GroupDTO;
@@ -65,17 +66,15 @@ public class UserAdminServiceTest {
   public void setUp() throws Exception {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 30, 12, 0));
 
-    GroupDTO group = GroupDTO.from("USERS");
-    group.addRole(RoleDTO.from("ROLE_USER"));
-    AuthorizationsDTO authorization = new AuthorizationsDTO();
-    authorization.addGroup(group);
+    GroupDTO group = GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER")));
+    AuthorizationsDTO authorization = AuthorizationsDTO.from(Sets.newHashSet(group));
+
     user = UserInfoDTO.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
     user.setPassword("password");
 
-    GroupDTO adminGroup = GroupDTO.from("ADMINS");
-    adminGroup.addRoles(Arrays.asList(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN")));
-    AuthorizationsDTO adminAuthorization = new AuthorizationsDTO();
-    adminAuthorization.addGroup(adminGroup);
+    GroupDTO adminGroup = GroupDTO.from("ADMINS", Sets.newHashSet(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN")));
+    AuthorizationsDTO adminAuthorization = AuthorizationsDTO.from(Sets.newHashSet(adminGroup));
+
     admin = UserInfoDTO.from("admin@toto.fr", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", adminAuthorization, true, 1514631600000L, 1514631600000L);
     admin.setPassword("password");
 
@@ -142,10 +141,9 @@ public class UserAdminServiceTest {
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
     ));
 
-    GroupDTO group = GroupDTO.from("USERS");
-    group.addRole(RoleDTO.from("ROLE_USER"));
-    AuthorizationsDTO authorization = new AuthorizationsDTO();
-    authorization.addGroup(group);
+    GroupDTO group = GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER")));
+    AuthorizationsDTO authorization = AuthorizationsDTO.from(Sets.newHashSet(group));
+
     UserInfoDTO userToUpdate = UserInfoDTO.from("john@doe.fr", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
     userToUpdate.setPassword("password");
     userAdminService.updateUser(clientDTO, tokenDTO, userToUpdate);

@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.api.authorization;
 
+import com.google.common.collect.Sets;
 import fr.sharingcraftsman.user.UserApplication;
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
@@ -48,10 +49,9 @@ public class AuthorizationControllerTest {
 
   @Test
   public void should_get_authorizations_in_groups_and_roles() throws Exception {
-    GroupDTO group = GroupDTO.from("USERS");
-    group.addRole(RoleDTO.from("ROLE_USER"));
-    AuthorizationsDTO authorization = new AuthorizationsDTO();
-    authorization.addGroup(group);
+    GroupDTO group = GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER")));
+    AuthorizationsDTO authorization = AuthorizationsDTO.from(Sets.newHashSet(group));
+
     given(authorizationService.getAuthorizations(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(authorization));
 
     MvcResult mvcResult = this.mvc.perform(get("/roles")
