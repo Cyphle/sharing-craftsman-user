@@ -25,7 +25,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserOrganisationImplTest {
+public class UserOrganisationTest {
   @Mock
   private UserRepository userRepository;
   @Mock
@@ -39,28 +39,27 @@ public class UserOrganisationImplTest {
   @Before
   public void setUp() throws Exception {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
-    credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
+
     userOrganisationImpl = new UserOrganisationImpl(userRepository, changePasswordTokenRepository, dateService);
+
+    credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
   }
 
   @Test
   public void should_save_user_when_registering() throws Exception {
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(new UnknownUser());
-    Credentials credentials = Credentials.build("john@doe.fr", "password");
 
-    userOrganisationImpl.createNewUser(credentials);
+    userOrganisationImpl.createNewUser(Credentials.build("john@doe.fr", "password"));
 
-    User updatedUser = User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
-    verify(userRepository).createNewUser(updatedUser);
+    verify(userRepository).createNewUser(User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
   }
 
   @Test
   public void should_throw_user_exception_if_user_already_exists() throws Exception {
-    try {
-      given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from(Username.from("john@doe.fr")));
-      Credentials credentials = Credentials.buildWithEncryption("john@doe.fr", "password");
+    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from(Username.from("john@doe.fr")));
 
-      userOrganisationImpl.createNewUser(credentials);
+    try {
+      userOrganisationImpl.createNewUser(Credentials.buildWithEncryption("john@doe.fr", "password"));
       fail("Should throw UserException");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("User already exists with username: john@doe.fr");
@@ -69,14 +68,12 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_delete_change_request_token_and_create_change_request_token() throws Exception {
-    User user = User.from("john@doe.fr",  "password");
-    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
+    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from("john@doe.fr",  "password"));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
-    Username username = Username.from("john@doe.fr");
 
-    userOrganisationImpl.createChangePasswordTokenFor(username);
+    userOrganisationImpl.createChangePasswordTokenFor(Username.from("john@doe.fr"));
 
-    verify(changePasswordTokenRepository).deleteChangePasswordTokenOf(username);
+    verify(changePasswordTokenRepository).deleteChangePasswordTokenOf(Username.from("john@doe.fr"));
     verify(changePasswordTokenRepository).createChangePasswordTokenFor(any(ChangePasswordToken.class));
   }
 
@@ -86,8 +83,7 @@ public class UserOrganisationImplTest {
     given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUser());
 
     try {
-      Username username = Username.from("john@doe.fr");
-      userOrganisationImpl.createChangePasswordTokenFor(username);
+      userOrganisationImpl.createChangePasswordTokenFor(Username.from("john@doe.fr"));
       fail("Should have throw unknown user exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown user");
@@ -96,29 +92,26 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_change_password_with_new_password() throws Exception {
-    User user = User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(
-            ChangePasswordToken.from(user,
+            ChangePasswordToken.from(
+                    User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="),
                     "aaa",
                     LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0)
             )
     );
-    given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
-    ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
+    given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), changePasswordInfo);
+    userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), ChangePasswordInfo.from("aaa", "password", "newpassword"));
 
-    User updatedUser = User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A==");
-    verify(userRepository).updateUserPassword(updatedUser);
+    verify(userRepository).updateUserPassword(User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A=="));
   }
 
   @Test
   public void should_throw_unknown_user_exception_if_user_is_not_known() throws Exception {
-    try {
-      given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(new UnknownUser());
-      ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
+    given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(new UnknownUser());
 
-      userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), changePasswordInfo);
+    try {
+      userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), ChangePasswordInfo.from("aaa", "password", "newpassword"));
       fail("Should throw unkown user exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown user");
@@ -127,13 +120,14 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_throw_invalid_change_password_token_exception_if_token_is_not_valid() throws Exception {
-    try {
-      given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(User.from(credentials));
-      User user = User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A==");
-      given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(ChangePasswordToken.from(user, "bbb", LocalDateTime.of(2019, Month.MARCH, 10, 0, 0)));
-      ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
+    given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(User.from(credentials));
+    given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(ChangePasswordToken.from(
+            User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A=="),
+            "bbb",
+            LocalDateTime.of(2019, Month.MARCH, 10, 0, 0)));
 
-      userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), changePasswordInfo);
+    try {
+      userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), ChangePasswordInfo.from("aaa", "password", "newpassword"));
       fail("Should throw invalid change password token exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");
@@ -142,18 +136,17 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_throw_invalid_change_password_token_exception_if_token_is_expired() throws Exception {
-    try {
-      User user = User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A==");
-      given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
-      given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(
-              ChangePasswordToken.from(user,
-                      "aaa",
-                      LocalDateTime.of(2017, 12, 10, 12, 0)
-              )
-      );
-      ChangePasswordInfo changePasswordInfo = ChangePasswordInfo.from("aaa", "password", "newpassword");
+    given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A=="));
+    given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(
+            ChangePasswordToken.from(
+                    User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A=="),
+                    "aaa",
+                    LocalDateTime.of(2017, 12, 10, 12, 0)
+            )
+    );
 
-      userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), changePasswordInfo);
+    try {
+      userOrganisationImpl.changePasswordOfUser(credentials.getUsername(), ChangePasswordInfo.from("aaa", "password", "newpassword"));
       fail("Should throw invalid change password token exception");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid token to change password");
@@ -163,43 +156,47 @@ public class UserOrganisationImplTest {
   @Test
   public void should_update_profile_of_user() throws Exception {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
-    Profile profileToUpdate = Profile.from(
+    given(userRepository.updateProfileOf(any(Profile.class))).willReturn(Profile.from(
             Username.from("john@doe.fr"),
             Name.of("John"),
             Name.of("Doe"),
             Email.from("john@doe.fr"),
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
-            Link.to("linkedin.com/johndoe"));
-    given(userRepository.updateProfileOf(any(Profile.class))).willReturn(profileToUpdate);
+            Link.to("linkedin.com/johndoe")));
 
-    AbstractProfile abstractProfile = userOrganisationImpl.updateProfile(profileToUpdate);
-
-    Profile expectedProfile = Profile.from(
+    AbstractProfile abstractProfile = userOrganisationImpl.updateProfile(Profile.from(
             Username.from("john@doe.fr"),
             Name.of("John"),
             Name.of("Doe"),
             Email.from("john@doe.fr"),
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
-            Link.to("linkedin.com/johndoe"));
-    assertThat(abstractProfile).isEqualTo(expectedProfile);
+            Link.to("linkedin.com/johndoe")));
+
+    assertThat(abstractProfile).isEqualTo(Profile.from(
+            Username.from("john@doe.fr"),
+            Name.of("John"),
+            Name.of("Doe"),
+            Email.from("john@doe.fr"),
+            Link.to("www.johndoe.fr"),
+            Link.to("github.com/johndoe"),
+            Link.to("linkedin.com/johndoe")));
   }
 
   @Test
   public void should_throw_profile_exception_if_email_is_invalid_when_updating_profile() throws Exception {
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
+
     try {
-      given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
-      AbstractProfile abstractProfileToUpdate = Profile.from(
+      userOrganisationImpl.updateProfile(Profile.from(
               Username.from("john@doe.fr"),
               Name.of("John"),
               Name.of("Doe"),
               Email.from("john"),
               Link.to("www.johndoe.fr"),
               Link.to("github.com/johndoe"),
-              Link.to("linkedin.com/johndoe"));
-
-      userOrganisationImpl.updateProfile(abstractProfileToUpdate);
+              Link.to("linkedin.com/johndoe")));
       fail("Should have throw a baseProfile exception when email is invalid");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid profile");
@@ -208,18 +205,17 @@ public class UserOrganisationImplTest {
 
   @Test
   public void should_throw_user_exception_if_profile_is_not_known() throws Exception {
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(new UnknownProfile());
+
     try {
-      given(userRepository.findProfileOf(any(Username.class))).willReturn(new UnknownProfile());
-      AbstractProfile abstractProfileToUpdate = Profile.from(
+      userOrganisationImpl.updateProfile(Profile.from(
               Username.from("john@doe.fr"),
               Name.of("John"),
               Name.of("Doe"),
               Email.from("john@doe.fr"),
               Link.to("www.johndoe.fr"),
               Link.to("github.com/johndoe"),
-              Link.to("linkedin.com/johndoe"));
-
-      userOrganisationImpl.updateProfile(abstractProfileToUpdate);
+              Link.to("linkedin.com/johndoe")));
       fail("Should have throw a user exception when email is invalid");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown user");
@@ -247,9 +243,8 @@ public class UserOrganisationImplTest {
   @Test
   public void should_return_empty_email_if_no_email_is_found() throws Exception {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("johndoe"), null, null, null, null, null, null));
-    Username badCredentials = Username.from("johndoe");
 
-    Email email = userOrganisationImpl.findEmailOf(badCredentials);
+    Email email = userOrganisationImpl.findEmailOf(Username.from("johndoe"));
 
     assertThat(email.isValid()).isFalse();
   }
