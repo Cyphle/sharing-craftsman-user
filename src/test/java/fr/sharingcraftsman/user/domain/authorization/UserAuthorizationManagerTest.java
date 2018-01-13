@@ -1,5 +1,6 @@
 package fr.sharingcraftsman.user.domain.authorization;
 
+import com.google.common.collect.Sets;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
@@ -41,12 +42,7 @@ public class UserAuthorizationManagerTest {
 
     Authorization authorization = userAuthorizationManager.getAuthorizationsOf(username);
 
-    Role role = Role.from("ROLE_USER");
-    Group group = Group.from("USERS");
-    group.addRole(role);
-    Authorization expectedAuthorization = Authorization.get();
-    expectedAuthorization.addGroup(group);
-    assertThat(authorization).isEqualTo(expectedAuthorization);
+    assertThat(authorization).isEqualTo(Authorization.from(Collections.singletonList(Group.from("USERS", Sets.newHashSet(Role.from("ROLE_USER"))))));
   }
 
   @Test

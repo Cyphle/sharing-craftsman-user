@@ -24,7 +24,7 @@ public class AuthorizationController {
     this.authorizationService = authorizationService;
   }
 
-  @ApiOperation(value = "Endpoint to get groups and roles", response = AuthorizationsDTO.class)
+  @ApiOperation(value = "Endpoint to from groups and roles", response = AuthorizationsDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")

@@ -20,7 +20,7 @@ public class UserAuthorizationManagerImpl implements UserAuthorizationManager {
   public Authorization getAuthorizationsOf(Username username) {
     List<Group> groups = userAuthorizationRepository.findGroupsOf(username);
     groups.forEach(group -> group.addRoles(authorizationRepository.getRolesOf(group.getName())));
-    return Authorization.get(groups);
+    return Authorization.from(groups);
   }
 
   @Override

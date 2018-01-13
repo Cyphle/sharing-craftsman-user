@@ -22,7 +22,7 @@ public class UserAuthorizationAdminController {
     this.userAuthorizationAdminService = userAuthorizationAdminService;
   }
 
-  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to from groups", response = GroupDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -38,7 +38,7 @@ public class UserAuthorizationAdminController {
     return userAuthorizationAdminService.addGroupToUser(clientDTO, tokenDTO, userGroupDTO);
   }
 
-  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to from groups", response = GroupDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")

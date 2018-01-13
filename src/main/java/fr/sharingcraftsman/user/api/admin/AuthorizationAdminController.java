@@ -22,7 +22,7 @@ public class AuthorizationAdminController {
     this.authorizationAdminService = authorizationAdminService;
   }
 
-  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to from groups", response = GroupDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -37,7 +37,7 @@ public class AuthorizationAdminController {
     return authorizationAdminService.getGroups(clientDTO, tokenDTO);
   }
 
-  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to from groups", response = GroupDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
@@ -53,7 +53,7 @@ public class AuthorizationAdminController {
     return authorizationAdminService.createNewGroupWithRoles(clientDTO, tokenDTO, groupDTO);
   }
 
-  @ApiOperation(value = "Endpoint to get groups", response = GroupDTO.class)
+  @ApiOperation(value = "Endpoint to from groups", response = GroupDTO.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")

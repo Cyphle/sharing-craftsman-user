@@ -21,7 +21,7 @@ public class UserAdminController {
     this.userAdminService = userAdminService;
   }
 
-  @ApiOperation(value = "Endpoint to get users", response = ResponseEntity.class)
+  @ApiOperation(value = "Endpoint to from users", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")

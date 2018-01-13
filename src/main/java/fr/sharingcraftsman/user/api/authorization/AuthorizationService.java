@@ -47,7 +47,7 @@ public class AuthorizationService {
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
-      log.info("Request to get authotizations of:" + tokenDTO.getUsername());
+      log.info("Request to from authotizations of:" + tokenDTO.getUsername());
 
       if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
