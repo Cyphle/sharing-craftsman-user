@@ -30,7 +30,7 @@ public class AuthenticationController {
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return authenticationService.checkToken(clientDTO, tokenDTO);
   }
@@ -45,7 +45,7 @@ public class AuthenticationController {
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return authenticationService.logout(clientDTO, tokenDTO);
   }
@@ -60,7 +60,7 @@ public class AuthenticationController {
                                      @RequestHeader("secret") String secret,
                                      @RequestHeader("username") String username,
                                      @RequestHeader("refresh-token") String refreshToken) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, "", refreshToken);
     return authenticationService.refreshToken(clientDTO, tokenDTO);
   }
@@ -74,7 +74,7 @@ public class AuthenticationController {
   public ResponseEntity logIn(@RequestHeader("client") String client,
                               @RequestHeader("secret") String secret,
                               @RequestBody LoginDTO loginDTO) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     return authenticationService.login(clientDTO, loginDTO);
   }
 }

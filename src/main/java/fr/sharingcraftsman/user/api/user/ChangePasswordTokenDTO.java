@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 public class ChangePasswordTokenDTO {
   private String token;
 
-  public ChangePasswordTokenDTO(String token) {
+  private ChangePasswordTokenDTO(String token) {
     this.token = token;
   }
 
@@ -17,6 +17,10 @@ public class ChangePasswordTokenDTO {
 
   public void setToken(String token) {
     this.token = token;
+  }
+
+  public static ChangePasswordTokenDTO from(String token) {
+    return new ChangePasswordTokenDTO(token);
   }
 
   public static ChangePasswordTokenDTO fromDomainToApi(ChangePasswordToken changePasswordToken) {

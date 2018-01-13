@@ -16,10 +16,10 @@ public class ProfileDTO {
   private String github;
   private String linkedin;
 
-  public ProfileDTO() {
+  private ProfileDTO() {
   }
 
-  public ProfileDTO(String firstname, String lastname, String email, String website, String github, String linkedin) {
+  private ProfileDTO(String firstname, String lastname, String email, String website, String github, String linkedin) {
     this.lastname = lastname;
     this.firstname = firstname;
     this.email = email;
@@ -76,6 +76,10 @@ public class ProfileDTO {
     this.linkedin = linkedin;
   }
 
+  public static ProfileDTO from(String firstname, String lastname, String email, String website, String github, String linkedin) {
+    return new ProfileDTO(firstname, lastname, email, website, github, linkedin);
+  }
+
   public static AbstractProfile fromApiToDomain(String username, ProfileDTO profileDTO) throws UsernameException {
     return Profile.from(
             Username.from(username),
@@ -88,7 +92,7 @@ public class ProfileDTO {
   }
 
   public static ProfileDTO fromDomainToApi(Profile profile) {
-    return new ProfileDTO(
+    return ProfileDTO.from(
             profile.getFirstnameContent(),
             profile.getLastnameContent(),
             profile.getEmailContent(),

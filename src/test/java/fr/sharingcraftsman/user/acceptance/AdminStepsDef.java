@@ -44,7 +44,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
 
   @Given("^The client <(.*)> is registered$")
   public void createClient(String clientName) throws Exception {
-    ClientDTO client = new ClientDTO();
+    ClientDsl client = new ClientDsl();
     client.setName(clientName);
 
     this.mvc

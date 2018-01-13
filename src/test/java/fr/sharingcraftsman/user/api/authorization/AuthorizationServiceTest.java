@@ -56,7 +56,7 @@ public class AuthorizationServiceTest {
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     authorizationService = new AuthorizationService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService);
 
-    clientDTO = new ClientDTO("client", "secret");
+    clientDTO = ClientDTO.from("client", "secret");
     given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "secret"));
 
     token = TokenDTO.from("john@doe.fr", "aaa");
@@ -73,10 +73,10 @@ public class AuthorizationServiceTest {
 
     ResponseEntity response = authorizationService.getAuthorizations(clientDTO, token);
 
-    GroupDTO groupUser = new GroupDTO("USERS");
-    groupUser.addRoles(Collections.singletonList(new RoleDTO("ROLE_USER")));
-    GroupDTO groupAdmin = new GroupDTO("ADMINS");
-    groupAdmin.addRoles(Arrays.asList(new RoleDTO("ROLE_USER"), new RoleDTO("ROLE_ADMIN")));
+    GroupDTO groupUser = GroupDTO.from("USERS");
+    groupUser.addRoles(Collections.singletonList(RoleDTO.from("ROLE_USER")));
+    GroupDTO groupAdmin = GroupDTO.from("ADMINS");
+    groupAdmin.addRoles(Arrays.asList(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN")));
     AuthorizationsDTO expectedAuthorizations = new AuthorizationsDTO();
     expectedAuthorizations.addGroup(groupUser);
     expectedAuthorizations.addGroup(groupAdmin);

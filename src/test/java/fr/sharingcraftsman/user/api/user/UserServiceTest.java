@@ -67,7 +67,7 @@ public class UserServiceTest {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 26, 12, 0));
     given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "clietnsercret"));
     userService = new UserService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, changePasswordTokenRepository, dateService);
-    clientDTO = new ClientDTO("secret", "clientsecret");
+    clientDTO = ClientDTO.from("secret", "clientsecret");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
     tokenDTO = TokenDTO.from("john@doe.fr", "aaa");
   }
@@ -139,7 +139,7 @@ public class UserServiceTest {
     ResponseEntity response = userService.requestChangePassword(clientDTO, tokenDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(new ChangePasswordTokenDTO("aaa"));
+    assertThat(response.getBody()).isEqualTo(ChangePasswordTokenDTO.from("aaa"));
   }
 
   @Test
@@ -159,10 +159,7 @@ public class UserServiceTest {
     given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
     given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2018, Month.MARCH, 10, 0, 0)));
 
-    ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO();
-    changePasswordDTO.setOldPassword("password");
-    changePasswordDTO.setNewPassword("newpassword");
-    changePasswordDTO.setChangePasswordToken("aaa");
+    ChangePasswordDTO changePasswordDTO = ChangePasswordDTO.from("aaa", "password", "newpassword");
     ResponseEntity response = userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -175,7 +172,7 @@ public class UserServiceTest {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(profile);
     given(userRepository.updateProfileOf(any(Profile.class))).willReturn(profile);
 
-    ProfileDTO profileDTO = new ProfileDTO("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
+    ProfileDTO profileDTO = ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
 
     ResponseEntity response = userService.updateProfile(clientDTO, tokenDTO, profileDTO);
 

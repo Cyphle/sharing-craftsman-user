@@ -44,8 +44,7 @@ public class ClientControllerTest {
 
   @Test
   public void should_register_client() throws Exception {
-    ClientDTO client = new ClientDTO();
-    client.setName("sharingcraftsman");
+    ClientDTO client = ClientDTO.from("sharingcraftsman");
     given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(post("/clients/register")
@@ -56,8 +55,7 @@ public class ClientControllerTest {
 
   @Test
   public void should_return_unauthorized_if_client_name_is_not_correct() throws Exception {
-    ClientDTO client = new ClientDTO();
-    client.setName("toto");
+    ClientDTO client = ClientDTO.from("toto");
     given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(post("/clients/register")

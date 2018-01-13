@@ -16,16 +16,16 @@ public class GroupDTO {
   private Set<RoleDTO> roles;
   private String name;
 
-  public GroupDTO() {
+  private GroupDTO() {
     this.roles = new HashSet<>();
   }
 
-  public GroupDTO(String name) {
+  private GroupDTO(String name) {
     this.name = name;
     this.roles = new HashSet<>();
   }
 
-  public GroupDTO(String name, Set<RoleDTO> roles) {
+  private GroupDTO(String name, Set<RoleDTO> roles) {
     this.name = name;
     this.roles = roles;
   }
@@ -50,9 +50,17 @@ public class GroupDTO {
     roles.add(role);
   }
 
+  public static GroupDTO from(String name) {
+    return new GroupDTO(name);
+  }
+
+  public static GroupDTO from(String name, Set<RoleDTO> roles) {
+    return new GroupDTO(name, roles);
+  }
+
   public static Set<GroupDTO> groupFromDomainToApi(Set<Group> groups) {
     return groups.stream()
-            .map(group -> new GroupDTO(group.getName(), RoleDTO.roleFromDomainToApi(group.getRoles())))
+            .map(group -> GroupDTO.from(group.getName(), RoleDTO.roleFromDomainToApi(group.getRoles())))
             .collect(Collectors.toSet());
   }
 
@@ -62,7 +70,7 @@ public class GroupDTO {
             groupDTO
                     .getRoles()
                     .stream()
-                    .map(role -> Role.from(role.getRole()))
+                    .map(role -> Role.from(role.getName()))
                     .collect(Collectors.toList())
     );
     return group;

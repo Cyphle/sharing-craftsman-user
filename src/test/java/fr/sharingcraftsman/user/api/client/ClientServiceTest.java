@@ -31,8 +31,7 @@ public class ClientServiceTest {
   public void should_register_new_client() throws Exception {
     given(clientRepository.findClientByName(any(Client.class))).willReturn(UnknownClient.get());
     given(clientRepository.createClient(any(Client.class))).willReturn(Client.from("sharingcraftsman", "secret"));
-    ClientDTO client = new ClientDTO();
-    client.setName("sharingcraftsman");
+    ClientDTO client = ClientDTO.from("sharingcraftsman");
 
     ResponseEntity response = clientService.register(client);
 

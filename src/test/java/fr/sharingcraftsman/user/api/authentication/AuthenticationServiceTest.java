@@ -52,7 +52,7 @@ public class AuthenticationServiceTest {
     given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "secret"));
 
     authenticationService = new AuthenticationService(userRepository, accessTokenRepository, clientRepository, dateService);
-    clientDTO = new ClientDTO("client", "secret");
+    clientDTO = ClientDTO.from("client", "secret");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
 
     token = TokenDTO.from("john@doe.fr", "aaa");

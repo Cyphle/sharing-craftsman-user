@@ -6,10 +6,14 @@ public class ClientDTO {
   private String name;
   private String secret;
 
-  public ClientDTO() {
+  private ClientDTO() {
   }
 
-  public ClientDTO(String name, String secret) {
+  private ClientDTO(String name) {
+    this.name = name;
+  }
+
+  private ClientDTO(String name, String secret) {
     this.name = name;
     this.secret = secret;
   }
@@ -28,6 +32,14 @@ public class ClientDTO {
 
   public void setSecret(String secret) {
     this.secret = secret;
+  }
+
+  public static ClientDTO from(String name) {
+    return new ClientDTO(name);
+  }
+
+  public static ClientDTO from(String name, String secret) {
+    return new ClientDTO(name, secret);
   }
 
   public static Client fromApiToDomain(ClientDTO clientDTO) {

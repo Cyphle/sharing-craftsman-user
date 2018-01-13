@@ -45,7 +45,7 @@ public class AuthorizationAdminServiceTest {
   @Before
   public void setUp() throws Exception {
     given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "secret"));
-    clientDTO = new ClientDTO("client", "secret");
+    clientDTO = ClientDTO.from("client", "secret");
     tokenDTO = TokenDTO.from("admin@toto.fr", "aaa");
     authorizationAdminService = new AuthorizationAdminService(clientRepository, userAuthorizationRepository, authorizationRepository);
   }
@@ -65,10 +65,10 @@ public class AuthorizationAdminServiceTest {
 
     ResponseEntity response = authorizationAdminService.getGroups(clientDTO, tokenDTO);
 
-    GroupDTO groupUser = new GroupDTO("USERS");
-    groupUser.addRoles(Collections.singletonList(new RoleDTO("ROLE_USER")));
-    GroupDTO groupAdmin = new GroupDTO("ADMINS");
-    groupAdmin.addRoles(Arrays.asList(new RoleDTO("ROLE_USER"), new RoleDTO("ROLE_ADMIN")));
+    GroupDTO groupUser = GroupDTO.from("USERS");
+    groupUser.addRoles(Collections.singletonList(RoleDTO.from("ROLE_USER")));
+    GroupDTO groupAdmin = GroupDTO.from("ADMINS");
+    groupAdmin.addRoles(Arrays.asList(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN")));
     Set<GroupDTO> groupsDTO = new HashSet<>();
     groupsDTO.add(groupUser);
     groupsDTO.add(groupAdmin);
@@ -80,10 +80,10 @@ public class AuthorizationAdminServiceTest {
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
     Set<RoleDTO> roles = new HashSet<>();
-    roles.add(new RoleDTO("ROLE_ROOT"));
-    roles.add(new RoleDTO("ROLE_ADMIN"));
-    roles.add(new RoleDTO("ROLE_USER"));
-    GroupDTO newGroup = new GroupDTO("SUPER_ADMINS", roles);
+    roles.add(RoleDTO.from("ROLE_ROOT"));
+    roles.add(RoleDTO.from("ROLE_ADMIN"));
+    roles.add(RoleDTO.from("ROLE_USER"));
+    GroupDTO newGroup = GroupDTO.from("SUPER_ADMINS", roles);
 
     ResponseEntity response = authorizationAdminService.createNewGroupWithRoles(clientDTO, tokenDTO, newGroup);
 
@@ -95,10 +95,10 @@ public class AuthorizationAdminServiceTest {
     given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
     given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
     Set<RoleDTO> roles = new HashSet<>();
-    roles.add(new RoleDTO("ROLE_ROOT"));
-    roles.add(new RoleDTO("ROLE_ADMIN"));
-    roles.add(new RoleDTO("ROLE_USER"));
-    GroupDTO newGroup = new GroupDTO("SUPER_ADMINS", roles);
+    roles.add(RoleDTO.from("ROLE_ROOT"));
+    roles.add(RoleDTO.from("ROLE_ADMIN"));
+    roles.add(RoleDTO.from("ROLE_USER"));
+    GroupDTO newGroup = GroupDTO.from("SUPER_ADMINS", roles);
 
     ResponseEntity response = authorizationAdminService.removeRoleFromGroup(clientDTO, tokenDTO, newGroup);
 

@@ -48,8 +48,8 @@ public class AuthorizationControllerTest {
 
   @Test
   public void should_get_authorizations_in_groups_and_roles() throws Exception {
-    GroupDTO group = new GroupDTO("USERS");
-    group.addRole(new RoleDTO("ROLE_USER"));
+    GroupDTO group = GroupDTO.from("USERS");
+    group.addRole(RoleDTO.from("ROLE_USER"));
     AuthorizationsDTO authorization = new AuthorizationsDTO();
     authorization.addGroup(group);
     given(authorizationService.getAuthorizations(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(authorization));
@@ -63,8 +63,8 @@ public class AuthorizationControllerTest {
             .andReturn();
 
     AuthorizationsDTO authorizationsDTO = Mapper.fromJsonStringToObject(mvcResult.getResponse().getContentAsString(), AuthorizationsDTO.class);
-    GroupDTO expectedGroup = new GroupDTO("USERS");
-    expectedGroup.addRole(new RoleDTO("ROLE_USER"));
+    GroupDTO expectedGroup = GroupDTO.from("USERS");
+    expectedGroup.addRole(RoleDTO.from("ROLE_USER"));
     assertThat(authorizationsDTO.getGroups()).contains(expectedGroup);
   }
 }

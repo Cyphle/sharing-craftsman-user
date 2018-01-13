@@ -31,7 +31,7 @@ public class UserAdminController {
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userAdminService.getAllUsers(clientDTO, tokenDTO);
   }
@@ -47,7 +47,7 @@ public class UserAdminController {
                                 @RequestHeader("username") String username,
                                 @RequestHeader("access-token") String accessToken,
                                 @RequestBody UserInfoDTO user) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userAdminService.addUser(clientDTO, tokenDTO, user);
   }
@@ -63,7 +63,7 @@ public class UserAdminController {
                                    @RequestHeader("username") String username,
                                    @RequestHeader("access-token") String accessToken,
                                    @RequestBody UserInfoDTO user) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userAdminService.updateUser(clientDTO, tokenDTO, user);
   }
@@ -79,7 +79,7 @@ public class UserAdminController {
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken,
                                @PathVariable String usernameToDelete) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userAdminService.deleteUser(clientDTO, tokenDTO, usernameToDelete);
   }

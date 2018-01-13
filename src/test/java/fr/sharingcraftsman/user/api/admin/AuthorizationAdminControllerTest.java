@@ -51,10 +51,10 @@ public class AuthorizationAdminControllerTest {
 
   @Test
   public void should_get_groups() throws Exception {
-    GroupDTO groupUser = new GroupDTO("USERS");
-    groupUser.addRoles(Collections.singletonList(new RoleDTO("ROLE_USER")));
-    GroupDTO groupAdmin = new GroupDTO("ADMINS");
-    groupAdmin.addRoles(Arrays.asList(new RoleDTO("ROLE_USER"), new RoleDTO("ROLE_ADMIN")));
+    GroupDTO groupUser = GroupDTO.from("USERS");
+    groupUser.addRoles(Collections.singletonList(RoleDTO.from("ROLE_USER")));
+    GroupDTO groupAdmin = GroupDTO.from("ADMINS");
+    groupAdmin.addRoles(Arrays.asList(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN")));
     List<GroupDTO> groups = Arrays.asList(groupUser, groupAdmin);
     given(authorizationAdminService.getGroups(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(groups));
 
@@ -69,10 +69,10 @@ public class AuthorizationAdminControllerTest {
   @Test
   public void should_add_new_group_with_roles() throws Exception {
     Set<RoleDTO> roles = new HashSet<>();
-    roles.add(new RoleDTO("ROLE_ROOT"));
-    roles.add(new RoleDTO("ROLE_ADMIN"));
-    roles.add(new RoleDTO("ROLE_USER"));
-    GroupDTO newGroup = new GroupDTO("SUPER_ADMINS", roles);
+    roles.add(RoleDTO.from("ROLE_ROOT"));
+    roles.add(RoleDTO.from("ROLE_ADMIN"));
+    roles.add(RoleDTO.from("ROLE_USER"));
+    GroupDTO newGroup = GroupDTO.from("SUPER_ADMINS", roles);
 
     this.mvc.perform(post("/admin/roles/groups")
             .header("client", "client")
@@ -87,8 +87,8 @@ public class AuthorizationAdminControllerTest {
   @Test
   public void should_remove_role_from_group() throws Exception {
     Set<RoleDTO> roles = new HashSet<>();
-    roles.add(new RoleDTO("ROLE_USER"));
-    GroupDTO newGroup = new GroupDTO("SUPER_ADMINS", roles);
+    roles.add(RoleDTO.from("ROLE_USER"));
+    GroupDTO newGroup = GroupDTO.from("SUPER_ADMINS", roles);
 
     this.mvc.perform(delete("/admin/roles/groups")
             .header("client", "client")

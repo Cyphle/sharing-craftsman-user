@@ -51,8 +51,8 @@ public class UserAdminControllerTest {
             .webAppContextSetup(context)
             .build();
 
-    GroupDTO group = new GroupDTO("USERS");
-    group.addRole(new RoleDTO("ROLE_USER"));
+    GroupDTO group = GroupDTO.from("USERS");
+    group.addRole(RoleDTO.from("ROLE_USER"));
     AuthorizationsDTO authorization = new AuthorizationsDTO();
     authorization.addGroup(group);
     userDTO = UserInfoDTO.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);

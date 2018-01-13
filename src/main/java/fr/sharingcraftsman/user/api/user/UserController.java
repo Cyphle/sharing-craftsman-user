@@ -32,7 +32,7 @@ public class UserController {
                                                    @RequestHeader("secret") String secret,
                                                    @RequestHeader("username") String username,
                                                    @RequestHeader("access-token") String accessToken) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userService.requestChangePassword(clientDTO, tokenDTO);
   }
@@ -46,7 +46,7 @@ public class UserController {
   public ResponseEntity requestLostPassword(@RequestHeader("client") String client,
                                             @RequestHeader("secret") String secret,
                                             @RequestHeader("username") String username) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     return userService.generateLostPasswordToken(clientDTO, username);
   }
 
@@ -60,7 +60,7 @@ public class UserController {
   public ResponseEntity registerUser(@RequestHeader("client") String client,
                                      @RequestHeader("secret") String secret,
                                      @RequestBody LoginDTO loginDTO) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     return userService.registerUser(clientDTO, loginDTO);
   }
 
@@ -75,7 +75,7 @@ public class UserController {
                                        @RequestHeader("username") String username,
                                        @RequestHeader("access-token") String accessToken,
                                        @RequestBody ChangePasswordDTO changePasswordDTO) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
   }
@@ -91,7 +91,7 @@ public class UserController {
                                        @RequestHeader("username") String username,
                                        @RequestHeader("access-token") String accessToken,
                                        @RequestBody ProfileDTO profileDTO) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userService.updateProfile(clientDTO, tokenDTO, profileDTO);
   }

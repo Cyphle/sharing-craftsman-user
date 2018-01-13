@@ -5,10 +5,10 @@ import fr.sharingcraftsman.user.domain.common.Email;
 public class EmailDTO {
   private String email;
 
-  public EmailDTO() {
+  private EmailDTO() {
   }
 
-  public EmailDTO(String email) {
+  private EmailDTO(String email) {
     this.email = email;
   }
 

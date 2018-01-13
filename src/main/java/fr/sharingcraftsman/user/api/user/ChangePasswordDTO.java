@@ -8,7 +8,18 @@ public class ChangePasswordDTO {
   private String oldPassword;
   private String newPassword;
 
-  public ChangePasswordDTO() {
+  private ChangePasswordDTO() {
+  }
+
+  private ChangePasswordDTO(String oldPassword, String newPassword) {
+    this.oldPassword = oldPassword;
+    this.newPassword = newPassword;
+  }
+
+  private ChangePasswordDTO(String changePasswordToken, String oldPassword, String newPassword) {
+    this.changePasswordToken = changePasswordToken;
+    this.oldPassword = oldPassword;
+    this.newPassword = newPassword;
   }
 
   public String getChangePasswordToken() {
@@ -33,6 +44,14 @@ public class ChangePasswordDTO {
 
   public void setNewPassword(String newPassword) {
     this.newPassword = newPassword;
+  }
+
+  public static ChangePasswordDTO from(String oldPassword, String newPassword) {
+    return new ChangePasswordDTO(oldPassword, newPassword);
+  }
+
+  public static ChangePasswordDTO from(String changePasswordToken, String oldPassword, String newPassword) {
+    return new ChangePasswordDTO(changePasswordToken, oldPassword, newPassword);
   }
 
   public static ChangePasswordInfo fromApiToDomain(ChangePasswordDTO changePasswordDTO) throws PasswordException {

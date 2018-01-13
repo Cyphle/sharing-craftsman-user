@@ -32,7 +32,7 @@ public class AuthorizationAdminController {
                                 @RequestHeader("secret") String secret,
                                 @RequestHeader("username") String username,
                                 @RequestHeader("access-token") String accessToken) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return authorizationAdminService.getGroups(clientDTO, tokenDTO);
   }
@@ -48,7 +48,7 @@ public class AuthorizationAdminController {
                                     @RequestHeader("username") String username,
                                     @RequestHeader("access-token") String accessToken,
                                     @RequestBody GroupDTO groupDTO) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return authorizationAdminService.createNewGroupWithRoles(clientDTO, tokenDTO, groupDTO);
   }
@@ -64,7 +64,7 @@ public class AuthorizationAdminController {
                                     @RequestHeader("username") String username,
                                     @RequestHeader("access-token") String accessToken,
                                     @RequestBody GroupDTO groupDTO) {
-    ClientDTO clientDTO = new ClientDTO(client, secret);
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return authorizationAdminService.removeRoleFromGroup(clientDTO, tokenDTO, groupDTO);
   }

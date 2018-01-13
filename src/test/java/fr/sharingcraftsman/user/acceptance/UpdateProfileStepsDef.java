@@ -5,6 +5,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import fr.sharingcraftsman.user.acceptance.config.SpringAcceptanceTestConfig;
+import fr.sharingcraftsman.user.acceptance.dsl.ClientDsl;
 import fr.sharingcraftsman.user.acceptance.dsl.LoginDsl;
 import fr.sharingcraftsman.user.acceptance.dsl.ProfileDsl;
 import fr.sharingcraftsman.user.acceptance.dsl.TokenDsl;
@@ -31,7 +32,7 @@ public class UpdateProfileStepsDef extends SpringAcceptanceTestConfig {
               .build();
     }
 
-    ClientDTO client = new ClientDTO();
+    ClientDsl client = new ClientDsl();
     client.setName("sharingcraftsman");
     this.mvc
             .perform(post(getBaseUri() + "/clients/register")

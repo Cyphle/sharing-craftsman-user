@@ -125,7 +125,7 @@ public class UserService {
     try {
       ChangePasswordToken changePasswordToken = userOrganisation.createChangePasswordTokenFor(Username.from(username));
       Email email = userOrganisation.findEmailOf(Username.from(username));
-      ChangePasswordTokenForLostPasswordDTO changePasswordTokenForLostPassword = new ChangePasswordTokenForLostPasswordDTO(changePasswordToken, email);
+      ChangePasswordTokenForLostPasswordDTO changePasswordTokenForLostPassword = ChangePasswordTokenForLostPasswordDTO.from(changePasswordToken, email);
       return ResponseEntity.ok(changePasswordTokenForLostPassword);
     } catch (UserException | CredentialsException e) {
       log.warn("Error: " + e.getMessage());

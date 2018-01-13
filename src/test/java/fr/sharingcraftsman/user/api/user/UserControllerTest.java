@@ -77,9 +77,7 @@ public class UserControllerTest {
   public void should_change_password() throws Exception {
     given(userService.changePassword(any(ClientDTO.class), any(TokenDTO.class), any(ChangePasswordDTO.class))).willReturn(ResponseEntity.ok().build());
 
-    ChangePasswordDTO changePassword = new ChangePasswordDTO();
-    changePassword.setOldPassword("password");
-    changePassword.setNewPassword("newpassword");
+    ChangePasswordDTO changePassword = ChangePasswordDTO.from("password", "newpassword");
     this.mvc.perform(post("/users/change-password")
             .header("client", "client")
             .header("secret", "clientsecret")
@@ -92,7 +90,7 @@ public class UserControllerTest {
 
   @Test
   public void should_update_profile() throws Exception {
-    ProfileDTO profile = new ProfileDTO("John", "Doe", "john@doe.fr", "www.johndoe.fr", "http://github.com/Johndoe", "linkedin.com/johndoe");
+    ProfileDTO profile = ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "http://github.com/Johndoe", "linkedin.com/johndoe");
     given(userService.updateProfile(any(ClientDTO.class), any(TokenDTO.class), any(ProfileDTO.class))).willReturn(ResponseEntity.ok(profile));
 
     this.mvc.perform(post("/users/change-password")

@@ -33,11 +33,11 @@ public class AuthorizationsDTO {
   public static AuthorizationsDTO fromDomainToApi(Authorization authorization) {
     AuthorizationsDTO authorizationsDTO = new AuthorizationsDTO();
     for (Group group : authorization.getGroups()) {
-      GroupDTO groupDTO = new GroupDTO(group.getName());
+      GroupDTO groupDTO = GroupDTO.from(group.getName());
       groupDTO.addRoles(
               group.getRoles()
                       .stream()
-                      .map(role -> new RoleDTO(role.getName()))
+                      .map(role -> RoleDTO.from(role.getName()))
                       .collect(Collectors.toList())
       );
       authorizationsDTO.addGroup(groupDTO);

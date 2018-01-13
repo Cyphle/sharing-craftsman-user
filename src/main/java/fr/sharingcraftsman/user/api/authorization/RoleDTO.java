@@ -10,26 +10,30 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 @ToString
 public class RoleDTO {
-  private String role;
+  private String name;
 
-  public RoleDTO() {
+  private RoleDTO() {
   }
 
-  public RoleDTO(String role) {
-    this.role = role;
+  private RoleDTO(String name) {
+    this.name = name;
   }
 
-  public String getRole() {
-    return role;
+  public String getName() {
+    return name;
   }
 
-  public void setRole(String role) {
-    this.role = role;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public static Set<RoleDTO> roleFromDomainToApi(Set<Role> roles) {
+  public static RoleDTO from(String name) {
+    return new RoleDTO(name);
+  }
+
+  static Set<RoleDTO> roleFromDomainToApi(Set<Role> roles) {
     return roles.stream()
-            .map(role -> new RoleDTO(role.getName()))
+            .map(role -> RoleDTO.from(role.getName()))
             .collect(Collectors.toSet());
   }
 }
