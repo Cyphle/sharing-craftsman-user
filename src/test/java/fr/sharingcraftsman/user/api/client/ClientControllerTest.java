@@ -44,23 +44,21 @@ public class ClientControllerTest {
 
   @Test
   public void should_register_client() throws Exception {
-    ClientDTO client = ClientDTO.from("sharingcraftsman");
-    given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
+    given(clientService.register(ClientDTO.from("sharingcraftsman"))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(post("/clients/register")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(Mapper.fromObjectToJsonString(client)))
+            .content(Mapper.fromObjectToJsonString(ClientDTO.from("sharingcraftsman"))))
             .andExpect(status().isOk());
   }
 
   @Test
   public void should_return_unauthorized_if_client_name_is_not_correct() throws Exception {
-    ClientDTO client = ClientDTO.from("toto");
-    given(clientService.register(client)).willReturn(ResponseEntity.ok().build());
+    given(clientService.register(ClientDTO.from("toto"))).willReturn(ResponseEntity.ok().build());
 
     this.mvc.perform(post("/clients/register")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(Mapper.fromObjectToJsonString(client)))
+            .content(Mapper.fromObjectToJsonString(ClientDTO.from("toto"))))
             .andExpect(status().isUnauthorized());
   }
 }
