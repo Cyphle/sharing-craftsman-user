@@ -26,10 +26,10 @@ public class AccessTokenEntity {
   @Column(name = "expiration_date")
   private Date expirationDate;
 
-  public AccessTokenEntity() {
+  private AccessTokenEntity() {
   }
 
-  public AccessTokenEntity(String username, String client, String accessToken, String refreshToken, Date expirationDate) {
+  private AccessTokenEntity(String client, String username, String accessToken, String refreshToken, Date expirationDate) {
     this.username = username;
     this.client = client;
     this.accessToken = accessToken;
@@ -85,14 +85,12 @@ public class AccessTokenEntity {
     this.expirationDate = expirationDate;
   }
 
+  public static AccessTokenEntity from(String client, String username, String accessToken, String refreshToken, Date expirationDate) {
+    return new AccessTokenEntity(client, username, accessToken, refreshToken, expirationDate);
+  }
+
   public static AccessTokenEntity fromDomainToInfra(User user, Client client, AccessToken token) {
-    AccessTokenEntity accessTokenEntity = new AccessTokenEntity();
-    accessTokenEntity.setClient(client.getName());
-    accessTokenEntity.setUsername(user.getUsernameContent());
-    accessTokenEntity.setAccessToken(token.getAccessToken());
-    accessTokenEntity.setRefreshToken(token.getRefreshToken());
-    accessTokenEntity.setExpirationDate(DateConverter.fromLocalDateTimeToDate(token.getExpirationDate()));
-    return accessTokenEntity;
+    return AccessTokenEntity.from(client.getName(), user.getUsernameContent(), token.getAccessToken(), token.getRefreshToken(), DateConverter.fromLocalDateTimeToDate(token.getExpirationDate()));
   }
 
   public static AccessToken fromInfraToDomain(AccessTokenEntity accessTokenEntity) {

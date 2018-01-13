@@ -23,10 +23,10 @@ public class ChangePasswordTokenEntity {
   @Column(name = "change_password_expiration_date")
   private Date changePasswordExpirationDate;
 
-  public ChangePasswordTokenEntity() {
+  private ChangePasswordTokenEntity() {
   }
 
-  public ChangePasswordTokenEntity(String username, String changePasswordToken, Date changePasswordExpirationDate) {
+  private ChangePasswordTokenEntity(String username, String changePasswordToken, Date changePasswordExpirationDate) {
     this.username = username;
     this.changePasswordToken = changePasswordToken;
     this.changePasswordExpirationDate = changePasswordExpirationDate;
@@ -64,12 +64,16 @@ public class ChangePasswordTokenEntity {
     this.changePasswordExpirationDate = changePasswordExpirationDate;
   }
 
+  public static ChangePasswordTokenEntity from(String username, String changePasswordToken, Date changePasswordExpirationDate) {
+    return new ChangePasswordTokenEntity(username, changePasswordToken, changePasswordExpirationDate);
+  }
+
   public static ChangePasswordToken fromInfraToDomain(User user, ChangePasswordTokenEntity token) {
     return ChangePasswordToken.from(user, token.getChangePasswordToken(), DateConverter.fromDateToLocalDateTime(token.getChangePasswordExpirationDate()));
   }
 
   public static ChangePasswordTokenEntity fromDomainToInfra(ChangePasswordToken changePasswordToken) {
-    return new ChangePasswordTokenEntity(changePasswordToken.getUsername(), changePasswordToken.getToken(), DateConverter.fromLocalDateTimeToDate(changePasswordToken.getExpirationDate()));
+    return ChangePasswordTokenEntity.from(changePasswordToken.getUsername(), changePasswordToken.getToken(), DateConverter.fromLocalDateTimeToDate(changePasswordToken.getExpirationDate()));
   }
 
   @Override

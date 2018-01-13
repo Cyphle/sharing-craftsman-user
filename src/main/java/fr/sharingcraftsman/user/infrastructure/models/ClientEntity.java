@@ -25,10 +25,10 @@ public class ClientEntity {
   @Column(name = "last_update_date")
   private Date lastUpdateDate;
 
-  public ClientEntity() {
+  private ClientEntity() {
   }
 
-  public ClientEntity(String name, String secret) {
+  private ClientEntity(String name, String secret) {
     this.name = name;
     this.secret = secret;
   }
@@ -81,8 +81,12 @@ public class ClientEntity {
     this.lastUpdateDate = lastUpdateDate;
   }
 
+  public static ClientEntity from(String name, String secret) {
+    return new ClientEntity(name, secret);
+  }
+
   public static ClientEntity fromDomainToInfra(Client client) {
-    return new ClientEntity(client.getName(), client.getSecret());
+    return ClientEntity.from(client.getName(), client.getSecret());
   }
 
   public static Client fromInfraToDomain(ClientEntity clientEntity) {

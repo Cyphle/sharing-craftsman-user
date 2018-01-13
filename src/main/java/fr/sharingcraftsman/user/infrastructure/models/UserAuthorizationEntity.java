@@ -1,6 +1,5 @@
 package fr.sharingcraftsman.user.infrastructure.models;
 
-import com.google.common.collect.Lists;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -23,10 +22,10 @@ public class UserAuthorizationEntity {
   @Column(name = "access_group")
   private String group;
 
-  public UserAuthorizationEntity() {
+  private UserAuthorizationEntity() {
   }
 
-  public UserAuthorizationEntity(String username, String group) {
+  private UserAuthorizationEntity(String username, String group) {
     this.username = username;
     this.group = group;
   }
@@ -55,13 +54,13 @@ public class UserAuthorizationEntity {
     this.group = group;
   }
 
+  public static UserAuthorizationEntity from(String username, String group) {
+    return new UserAuthorizationEntity(username, group);
+  }
+
   public static List<Group> fromInfraToDomain(List<UserAuthorizationEntity> userAuthorizationEntities) {
     return userAuthorizationEntities.stream()
             .map(group -> Group.from(group.getGroup()))
             .collect(Collectors.toList());
-  }
-
-  public static AuthorizationEntity fromDomainToInfra(Group group) {
-    return new AuthorizationEntity(group.getName(), Lists.newArrayList(group.getRoles()).get(0).getName());
   }
 }

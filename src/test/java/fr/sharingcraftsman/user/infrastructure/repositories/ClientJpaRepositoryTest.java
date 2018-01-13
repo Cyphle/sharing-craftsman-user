@@ -27,7 +27,7 @@ public class ClientJpaRepositoryTest {
 
   @Before
   public void setUp() throws Exception {
-    entityManager.persist(new ClientEntity("client", "secret"));
+    entityManager.persist(ClientEntity.from("client", "secret"));
   }
 
   @Test

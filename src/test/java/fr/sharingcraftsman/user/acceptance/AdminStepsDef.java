@@ -56,7 +56,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
 
   @And("^An admin group is created with admin role$")
   public void createAdminGroup() {
-    authorizationJpaRepository.save(new AuthorizationEntity("ADMINS", "ROLE_ADMIN"));
+    authorizationJpaRepository.save(AuthorizationEntity.from("ADMINS", "ROLE_ADMIN"));
   }
 
   @And("^I have registered an admin account with username <(.*)> and password <(.*)>$")
@@ -72,7 +72,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
             .andExpect(status().isOk())
             .andReturn();
 
-    userAuthorizationJpaRepository.save(new UserAuthorizationEntity(username, "ADMINS"));
+    userAuthorizationJpaRepository.save(UserAuthorizationEntity.from(username, "ADMINS"));
   }
 
   @And("^I am connected with my account <(.*)> and password <(.*)>$")

@@ -35,18 +35,18 @@ public class ChangePasswordTokenAdapterTest {
 
   @Test
   public void should_delete_user_change_password_token() throws Exception {
-    given(changePasswordTokenJpaRepository.findByUsername("john@doe.fr")).willReturn(new ChangePasswordTokenEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date()));
+    given(changePasswordTokenJpaRepository.findByUsername("john@doe.fr")).willReturn(ChangePasswordTokenEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date()));
 
     changePasswordTokenAdapter.deleteChangePasswordTokenOf(Username.from("john@doe.fr"));
 
-    ChangePasswordTokenEntity token = new ChangePasswordTokenEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date());
+    ChangePasswordTokenEntity token = ChangePasswordTokenEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date());
     verify(changePasswordTokenJpaRepository).delete(token);
   }
 
   @Test
   public void should_create_change_password_token_with_change_password_token() throws Exception {
-    given(userRepository.findByUsername(any(String.class))).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
-    given(changePasswordTokenJpaRepository.save(any(ChangePasswordTokenEntity.class))).willReturn(new ChangePasswordTokenEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date()));
+    given(userRepository.findByUsername(any(String.class))).willReturn(UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(changePasswordTokenJpaRepository.save(any(ChangePasswordTokenEntity.class))).willReturn(ChangePasswordTokenEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", new Date()));
 
     ChangePasswordToken changePasswordToken = ChangePasswordToken.from(
             User.from("john@doe.fr", "aaa"),
@@ -55,7 +55,7 @@ public class ChangePasswordTokenAdapterTest {
     );
     changePasswordTokenAdapter.createChangePasswordTokenFor(changePasswordToken);
 
-    ChangePasswordTokenEntity token = new ChangePasswordTokenEntity("john@doe.fr", "aaa", new Date());
+    ChangePasswordTokenEntity token = ChangePasswordTokenEntity.from("john@doe.fr", "aaa", new Date());
     verify(changePasswordTokenJpaRepository).save(token);
   }
 }

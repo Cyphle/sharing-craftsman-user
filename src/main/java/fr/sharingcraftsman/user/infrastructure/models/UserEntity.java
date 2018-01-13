@@ -43,15 +43,15 @@ public class UserEntity {
   @Column(name = "last_update_date")
   private Date lastUpdateDate;
 
-  public UserEntity() {
+  private UserEntity() {
   }
 
-  public UserEntity(String username, String password) {
+  private UserEntity(String username, String password) {
     this.username = username;
     this.password = password;
   }
 
-  public UserEntity(String username, String firstname, String lastname, String email, String website, String github, String linkedin) {
+  private UserEntity(String username, String firstname, String lastname, String email, String website, String github, String linkedin) {
     this.username = username;
     this.firstname = firstname;
     this.lastname = lastname;
@@ -61,12 +61,12 @@ public class UserEntity {
     this.linkedin = linkedin;
   }
 
-  public UserEntity(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin) {
+  private UserEntity(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin) {
     this(username, firstname, lastname, email, website, github, linkedin);
     this.password = password;
   }
 
-  public UserEntity(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, Date creationDate, Date lastUpdateDate) {
+  private UserEntity(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, Date creationDate, Date lastUpdateDate) {
     this(username, password, firstname, lastname, email, website, github, linkedin);
     this.isActive = isActive;
     this.creationDate = creationDate;
@@ -188,8 +188,24 @@ public class UserEntity {
     linkedin = user.getLinkedin();
   }
 
+  public static UserEntity from(String username, String password) {
+    return new UserEntity(username, password);
+  }
+
+  public static UserEntity from(String username, String firstname, String lastname, String email, String website, String github, String linkedin) {
+    return new UserEntity(username, firstname, lastname, email, website, github, linkedin);
+  }
+
+  public static UserEntity from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin) {
+    return new UserEntity(username, password, firstname, lastname, email, website, github, linkedin);
+  }
+
+  public static UserEntity from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, Date creationDate, Date lastUpdateDate) {
+    return new UserEntity(username, password, firstname, lastname, email, website, github, linkedin, isActive, creationDate, lastUpdateDate);
+  }
+
   public static UserEntity fromDomainToInfra(User user) {
-    return new UserEntity(user.getUsernameContent(), user.getPasswordContent());
+    return UserEntity.from(user.getUsernameContent(), user.getPasswordContent());
   }
 
   public static User fromInfraToDomain(UserEntity userEntity) throws CredentialsException {
@@ -200,7 +216,7 @@ public class UserEntity {
   }
 
   public static UserEntity fromDomainToInfra(UserInfo user) {
-    return new UserEntity(
+    return UserEntity.from(
             user.getUsernameContent(),
             user.getPasswordContent(),
             user.getFirstname(),
@@ -232,7 +248,7 @@ public class UserEntity {
   }
 
   public static UserEntity fromDomainToInfraProfile(Profile profile) {
-    return new UserEntity(profile.getUsernameContent(), profile.getFirstnameContent(), profile.getLastnameContent(), profile.getEmailContent(), profile.getWebsiteContent(), profile.getGithubContent(), profile.getLinkedinContent());
+    return UserEntity.from(profile.getUsernameContent(), profile.getFirstnameContent(), profile.getLastnameContent(), profile.getEmailContent(), profile.getWebsiteContent(), profile.getGithubContent(), profile.getLinkedinContent());
   }
 
   @Override

@@ -32,7 +32,7 @@ public class GroupManagerAdapterTest {
 
   @Test
   public void should_get_groups_of_user_by_username() throws Exception {
-    given(userAuthorizationJpaRepository.findByUsername("john@doe.fr")).willReturn(Collections.singletonList(new UserAuthorizationEntity("john@doe.fr", "USERS")));
+    given(userAuthorizationJpaRepository.findByUsername("john@doe.fr")).willReturn(Collections.singletonList(UserAuthorizationEntity.from("john@doe.fr", "USERS")));
 
     List<Group> groups = groupManagerAdapter.findGroupsOf(Username.from("john@doe.fr"));
 
@@ -41,19 +41,19 @@ public class GroupManagerAdapterTest {
 
   @Test
   public void should_add_group_to_user() throws Exception {
-    given(userAuthorizationJpaRepository.save(any(UserAuthorizationEntity.class))).willReturn(new UserAuthorizationEntity("john@doe.fr", "USERS"));
+    given(userAuthorizationJpaRepository.save(any(UserAuthorizationEntity.class))).willReturn(UserAuthorizationEntity.from("john@doe.fr", "USERS"));
 
     groupManagerAdapter.addGroupToUser(Username.from("john@doe.fr"), Groups.USERS);
 
-    verify(userAuthorizationJpaRepository).save(new UserAuthorizationEntity("john@doe.fr", "USERS"));
+    verify(userAuthorizationJpaRepository).save(UserAuthorizationEntity.from("john@doe.fr", "USERS"));
   }
 
   @Test
   public void should_remove_group_from_user() throws Exception {
-    given(userAuthorizationJpaRepository.findByUsernameAndGroup("hello@world.fr", Groups.USERS.name())).willReturn(new UserAuthorizationEntity("hello@world.fr", Groups.USERS.name()));
+    given(userAuthorizationJpaRepository.findByUsernameAndGroup("hello@world.fr", Groups.USERS.name())).willReturn(UserAuthorizationEntity.from("hello@world.fr", Groups.USERS.name()));
 
     groupManagerAdapter.removeGroupFromUser(Username.from("hello@world.fr"), Groups.USERS);
 
-    verify(userAuthorizationJpaRepository).delete(new UserAuthorizationEntity("hello@world.fr", "USERS"));
+    verify(userAuthorizationJpaRepository).delete(UserAuthorizationEntity.from("hello@world.fr", "USERS"));
   }
 }

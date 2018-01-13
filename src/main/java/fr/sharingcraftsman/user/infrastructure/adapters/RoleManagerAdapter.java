@@ -5,7 +5,6 @@ import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.infrastructure.models.AuthorizationEntity;
-import fr.sharingcraftsman.user.infrastructure.models.UserAuthorizationEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.AuthorizationJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +33,7 @@ public class RoleManagerAdapter implements AuthorizationRepository {
 
   @Override
   public void createNewGroupsWithRole(List<Group> groups) {
-    groups.forEach(group -> authorizationJpaRepository.save(UserAuthorizationEntity.fromDomainToInfra(group)));
+    groups.forEach(group -> authorizationJpaRepository.save(AuthorizationEntity.fromDomainToInfra(group)));
   }
 
   @Override

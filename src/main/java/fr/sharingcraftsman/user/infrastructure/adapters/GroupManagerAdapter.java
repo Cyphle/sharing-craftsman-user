@@ -27,7 +27,7 @@ public class GroupManagerAdapter implements UserAuthorizationRepository {
 
   @Override
   public void addGroupToUser(Username username, Groups group) {
-    userAuthorizationJpaRepository.save(new UserAuthorizationEntity(username.getUsername(), group.name()));
+    userAuthorizationJpaRepository.save(UserAuthorizationEntity.from(username.getUsername(), group.name()));
   }
 
   @Override

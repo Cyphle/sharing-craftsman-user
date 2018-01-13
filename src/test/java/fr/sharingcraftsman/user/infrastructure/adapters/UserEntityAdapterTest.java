@@ -45,7 +45,7 @@ public class UserEntityAdapterTest {
 
     userAdapter.createNewUser((User) user);
 
-    UserEntity expectedUserEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
+    UserEntity expectedUserEntity = UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     expectedUserEntity.setCreationDate(dateService.nowInDate());
     expectedUserEntity.setLastUpdateDate(dateService.nowInDate());
     verify(userJpaRepository).save(expectedUserEntity);
@@ -53,7 +53,7 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_get_user_by_username() throws Exception {
-    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     AbstractUser user = userAdapter.findUserFromUsername(Username.from("john@doe.fr"));
 
@@ -63,7 +63,7 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_find_user_by_username_and_password() throws Exception {
-    given(userJpaRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userJpaRepository.findByUsernameAndPassword("john@doe.fr", "T49xWf/l7gatvfVwethwDw==")).willReturn(UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     AbstractUser user = userAdapter.findUserFromCredentials(Credentials.buildWithEncryption("john@doe.fr", "password"));
 
@@ -72,18 +72,18 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_update_user_with_new_password() throws Exception {
-    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     User user = User.from("john@doe.fr", "newpassword");
     userAdapter.updateUserPassword(user);
 
-    UserEntity userEntity = new UserEntity("john@doe.fr", "newpassword");
+    UserEntity userEntity = UserEntity.from("john@doe.fr", "newpassword");
     verify(userJpaRepository).save(userEntity);
   }
 
   @Test
   public void should_find_profile_from_username() throws Exception {
-    UserEntity userEntity = new UserEntity("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
+    UserEntity userEntity = UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
 
     AbstractProfile foundAbstractProfile = userAdapter.findProfileOf(Username.from("john@doe.fr"));
@@ -102,7 +102,7 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_save_new_profile() throws Exception {
-    UserEntity userEntity = new UserEntity("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
+    UserEntity userEntity = UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
     given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(userEntity);
     given(userJpaRepository.save(any(UserEntity.class))).willReturn(userEntity);
     Profile profile = Profile.from(

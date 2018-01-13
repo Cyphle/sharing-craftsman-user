@@ -28,7 +28,7 @@ public class ClientAdapterTest {
 
   @Test
   public void should_get_client() throws Exception {
-    given(clientJpaRepository.findByNameAndSecret("client", "secret")).willReturn(new ClientEntity("client", "secret"));
+    given(clientJpaRepository.findByNameAndSecret("client", "secret")).willReturn(ClientEntity.from("client", "secret"));
 
     AbstractClient foundClient = clientAdapter.findClient(Client.from("client", "secret"));
 
@@ -44,11 +44,11 @@ public class ClientAdapterTest {
 
   @Test
   public void should_create_new_client() throws Exception {
-    given(clientJpaRepository.save(any(ClientEntity.class))).willReturn(new ClientEntity("sharingcraftsman", "secret"));
+    given(clientJpaRepository.save(any(ClientEntity.class))).willReturn(ClientEntity.from("sharingcraftsman", "secret"));
     Client client = Client.from("sharingcraftsman", "secret");
 
     clientAdapter.createClient(client);
 
-    verify(clientJpaRepository).save(new ClientEntity("sharingcraftsman", "secret"));
+    verify(clientJpaRepository).save(ClientEntity.from("sharingcraftsman", "secret"));
   }
 }

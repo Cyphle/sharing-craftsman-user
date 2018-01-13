@@ -35,9 +35,9 @@ public class UserEntityRepositoryTest {
 
   @Test
   public void should_save_a_new_user() throws Exception {
-    userJpaRepository.save(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    userJpaRepository.save(UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
-    UserEntity expectedUserEntity = new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
+    UserEntity expectedUserEntity = UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
     expectedUserEntity.setId(1);
     assertThat(Lists.newArrayList(userJpaRepository.findAll())).containsExactly(
             expectedUserEntity
@@ -46,10 +46,10 @@ public class UserEntityRepositoryTest {
 
   @Test
   public void should_get_user_by_username() throws Exception {
-    entityManager.persist(new UserEntity("john@doe.fr", "password"));
-    entityManager.persist(new UserEntity("hello@world.fr", "toto"));
+    entityManager.persist(UserEntity.from("john@doe.fr", "password"));
+    entityManager.persist(UserEntity.from("hello@world.fr", "toto"));
 
-    UserEntity expectedUserEntity = new UserEntity("hello@world.fr", "toto");
+    UserEntity expectedUserEntity = UserEntity.from("hello@world.fr", "toto");
     expectedUserEntity.setId(2);
     assertThat(userJpaRepository.findByUsername("hello@world.fr")).isEqualTo(expectedUserEntity);
   }

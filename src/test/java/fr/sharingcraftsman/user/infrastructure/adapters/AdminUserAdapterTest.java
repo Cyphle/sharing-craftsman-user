@@ -42,7 +42,7 @@ public class AdminUserAdapterTest {
 
   @Before
   public void setUp() throws Exception {
-    UserEntity userOne = new UserEntity(
+    UserEntity userOne = UserEntity.from(
             "john@doe.fr",
             "password",
             "John",
@@ -54,7 +54,7 @@ public class AdminUserAdapterTest {
             true,
             DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0)),
             DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0)));
-    UserEntity userTwo = new UserEntity(
+    UserEntity userTwo = UserEntity.from(
             "foo@bar.fr",
             "password",
             "Foo",
@@ -74,7 +74,7 @@ public class AdminUserAdapterTest {
 
   @Test
   public void should_get_user_by_username() throws Exception {
-    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(new UserEntity("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
 
     AbstractUser user = adminUserAdapter.findUserFromUsername(Username.from("john@doe.fr"));
 
@@ -84,7 +84,7 @@ public class AdminUserAdapterTest {
 
   @Test
   public void should_get_user_by_username_in_admin_user_object() throws Exception {
-    UserEntity userEntity = new UserEntity("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    UserEntity userEntity = UserEntity.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
     userEntity.setActive(true);
     userEntity.setCreationDate(new Date());
     userEntity.setLastUpdateDate(new Date());
@@ -132,7 +132,7 @@ public class AdminUserAdapterTest {
 
   @Test
   public void should_update_user() throws Exception {
-    UserEntity userEntityToUpdate = new UserEntity("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    UserEntity userEntityToUpdate = UserEntity.from("admin@toto.fr", "password", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
     given(userJpaRepository.findByUsername("admin@toto.fr")).willReturn(userEntityToUpdate);
 
     UserInfo userToUpdate = UserInfo.from(
@@ -142,7 +142,7 @@ public class AdminUserAdapterTest {
     );
     adminUserAdapter.updateUser(userToUpdate);
 
-    UserEntity updatedUserEntity = new UserEntity("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    UserEntity updatedUserEntity = UserEntity.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
     updatedUserEntity.setActive(true);
     updatedUserEntity.setCreationDate(new Date());
     updatedUserEntity.setLastUpdateDate(new Date());
@@ -158,7 +158,7 @@ public class AdminUserAdapterTest {
     );
     adminUserAdapter.createUser(user);
 
-    UserEntity newUserEntity = new UserEntity("admin@toto.fr", "password","Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
+    UserEntity newUserEntity = UserEntity.from("admin@toto.fr", "password", "Admin", "Toto", "new@email.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto");
     verify(userJpaRepository).save(newUserEntity);
   }
 

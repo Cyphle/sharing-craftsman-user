@@ -33,13 +33,7 @@ public class AccessAbstractTokenJpaRepositoryTest {
 
   @Before
   public void setUp() throws Exception {
-    AccessTokenEntity accessTokenEntity = new AccessTokenEntity();
-    accessTokenEntity.setClient("client");
-    accessTokenEntity.setUsername("john@doe.fr");
-    accessTokenEntity.setAccessToken("aaa");
-    accessTokenEntity.setRefreshToken("bbb");
-    accessTokenEntity.setExpirationDate(DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0)));
-
+    AccessTokenEntity accessTokenEntity = AccessTokenEntity.from("client", "john@doe.fr", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0)));
     entityManager.persist(accessTokenEntity);
   }
 

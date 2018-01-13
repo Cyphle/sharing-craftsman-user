@@ -59,12 +59,7 @@ public class AbstractTokenAdapterTest {
 
   @Test
   public void should_create_token_for_user() throws Exception {
-    AccessTokenEntity accessTokenEntity = new AccessTokenEntity();
-    accessTokenEntity.setClient("client");
-    accessTokenEntity.setUsername("john@doe.fr");
-    accessTokenEntity.setAccessToken(generateToken("clientjohn@doe.fr"));
-    accessTokenEntity.setRefreshToken(generateToken("clientjohn@doe.fr"));
-    accessTokenEntity.setExpirationDate(DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0)));
+    AccessTokenEntity accessTokenEntity = AccessTokenEntity.from("client", "john@doe.fr", generateToken("clientjohn@doe.fr"), generateToken("clientjohn@doe.fr"), DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0)));
     given(accessTokenJpaRepository.save(any(AccessTokenEntity.class))).willReturn(accessTokenEntity);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     AccessToken token = AccessToken.from(
@@ -83,7 +78,7 @@ public class AbstractTokenAdapterTest {
 
   @Test
   public void should_return_a_valid_token_when_access_token_found() throws Exception {
-    given(accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(new AccessTokenEntity("john@doe.fr", "client", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
+    given(accessTokenJpaRepository.findByUsernameClientAndAccessToken("john@doe.fr", "client", "aaa")).willReturn(AccessTokenEntity.from("client", "john@doe.fr", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
 
     AbstractToken foundAbstractToken = tokenAdapter.findTokenFromAccessToken(client, credentials.getUsername(), token);
 
@@ -101,7 +96,7 @@ public class AbstractTokenAdapterTest {
 
   @Test
   public void should_return_a_valid_token_when_refresh_token_found() throws Exception {
-    given(accessTokenJpaRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(new AccessTokenEntity("john@doe.fr", "client", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
+    given(accessTokenJpaRepository.findByUsernameClientAndRefreshToken("john@doe.fr", "client", "bbb")).willReturn(AccessTokenEntity.from("client", "john@doe.fr", "aaa", "bbb", DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0))));
     AccessToken refreshToken = AccessToken.fromOnlyRefreshToken("bbb");
 
     AbstractToken foundAbstractToken = tokenAdapter.findTokenFromRefreshToken(client, credentials.getUsername(), refreshToken);
