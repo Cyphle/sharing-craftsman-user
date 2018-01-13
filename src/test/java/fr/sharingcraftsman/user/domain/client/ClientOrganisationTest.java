@@ -16,7 +16,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ClientOrganisationImplTest {
+public class ClientOrganisationTest {
   private ClientOrganisationImpl clientOrganisationImpl;
   @Mock
   private ClientRepository clientRepository;
@@ -50,9 +50,8 @@ public class ClientOrganisationImplTest {
   public void should_create_new_client() throws Exception {
     given(secretGenerator.generateSecret()).willReturn("secret");
     given(clientRepository.findClientByName(any(Client.class))).willReturn(UnknownClient.get());
-    Client client = Client.from("sharingcraftsman", "");
 
-    clientOrganisationImpl.createNewClient(client);
+    clientOrganisationImpl.createNewClient(Client.from("sharingcraftsman", ""));
 
     verify(clientRepository).createClient(Client.from("sharingcraftsman", "secret"));
   }
@@ -61,10 +60,9 @@ public class ClientOrganisationImplTest {
   public void should_throw_already_existing_client_if_client_already_exists() throws Exception {
     given(secretGenerator.generateSecret()).willReturn("secret");
     given(clientRepository.findClientByName(any(Client.class))).willReturn(Client.from("sharingcraftsman", "secret"));
-    Client client = Client.from("sharingcraftsman", "");
 
     try {
-      clientOrganisationImpl.createNewClient(client);
+      clientOrganisationImpl.createNewClient(Client.from("sharingcraftsman", ""));
       fail("Should throw already existing client exception");
     } catch (ClientException e) {
       assertThat(e.getMessage()).isEqualTo("Already existing client");
