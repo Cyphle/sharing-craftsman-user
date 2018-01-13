@@ -3,12 +3,13 @@ package fr.sharingcraftsman.user.api.admin;
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.authorization.GroupDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.domain.authorization.AuthorizationManagerImpl;
+import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationManager;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
-import fr.sharingcraftsman.user.domain.client.ClientOrganisationImpl;
-import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
-import fr.sharingcraftsman.user.domain.utils.SimpleSecretGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,18 +17,22 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class AuthorizationAdminService extends AbstractAdminService {
+public class AuthorizationAdminService {
+  protected final Logger log = LoggerFactory.getLogger(this.getClass());
+  private AuthorizationManager authorizationManager;
+  private AuthorizationVerifierService authorizationVerifierService;
+
   @Autowired
   public AuthorizationAdminService(
-          ClientRepository clientRepository,
           UserAuthorizationRepository userAuthorizationRepository,
-          AuthorizationRepository authorizationRepository) {
-    clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
+          AuthorizationRepository authorizationRepository,
+          AuthorizationVerifierService authorizationVerifierService) {
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    this.authorizationVerifierService = authorizationVerifierService;
   }
 
   ResponseEntity getGroups(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorized(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     Set<GroupDTO> groups = GroupDTO.groupFromDomainToApi(authorizationManager.getAllRolesWithTheirGroups());
@@ -35,7 +40,7 @@ public class AuthorizationAdminService extends AbstractAdminService {
   }
 
   ResponseEntity createNewGroupWithRoles(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
-    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorized(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     authorizationManager.createNewGroupWithRoles(GroupDTO.fromApiToDomain(groupDTO));
@@ -43,7 +48,7 @@ public class AuthorizationAdminService extends AbstractAdminService {
   }
 
   ResponseEntity removeRoleFromGroup(ClientDTO clientDTO, TokenDTO tokenDTO, GroupDTO groupDTO) {
-    ResponseEntity isUnauthorized = isUnauthorized(clientDTO, tokenDTO);
+    ResponseEntity isUnauthorized = authorizationVerifierService.isUnauthorized(clientDTO, tokenDTO);
     if (isUnauthorized != null) return isUnauthorized;
 
     authorizationManager.removeRoleFromGroup(GroupDTO.fromApiToDomain(groupDTO));

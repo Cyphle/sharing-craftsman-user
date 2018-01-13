@@ -4,13 +4,13 @@ import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.authorization.GroupDTO;
 import fr.sharingcraftsman.user.api.authorization.RoleDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.domain.authorization.Group;
 import fr.sharingcraftsman.user.domain.authorization.Role;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
 import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
-import fr.sharingcraftsman.user.domain.common.Username;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +35,7 @@ public class AuthorizationAdminServiceTest {
   @Mock
   private AuthorizationRepository authorizationRepository;
   @Mock
-  private ClientRepository clientRepository;
+  private AuthorizationVerifierService authorizationVerifierService;
 
   private AuthorizationAdminService authorizationAdminService;
 
@@ -44,16 +44,15 @@ public class AuthorizationAdminServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "secret"));
     clientDTO = ClientDTO.from("client", "secret");
     tokenDTO = TokenDTO.from("admin@toto.fr", "aaa");
-    authorizationAdminService = new AuthorizationAdminService(clientRepository, userAuthorizationRepository, authorizationRepository);
+    authorizationAdminService = new AuthorizationAdminService(userAuthorizationRepository, authorizationRepository, authorizationVerifierService);
   }
 
   @Test
   public void should_get_groups_and_roles() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
-    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
+    given(authorizationVerifierService.isUnauthorized(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
+
     Group users = Group.from("USERS");
     users.addRole(Role.from("ROLE_USER"));
     Group admins = Group.from("ADMINS");
@@ -77,8 +76,8 @@ public class AuthorizationAdminServiceTest {
 
   @Test
   public void should_create_new_group_with_roles() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
-    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
+    given(authorizationVerifierService.isUnauthorized(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
+
     Set<RoleDTO> roles = new HashSet<>();
     roles.add(RoleDTO.from("ROLE_ROOT"));
     roles.add(RoleDTO.from("ROLE_ADMIN"));
@@ -92,8 +91,8 @@ public class AuthorizationAdminServiceTest {
 
   @Test
   public void should_remove_role_from_group() throws Exception {
-    given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
-    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
+    given(authorizationVerifierService.isUnauthorized(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
+
     Set<RoleDTO> roles = new HashSet<>();
     roles.add(RoleDTO.from("ROLE_ROOT"));
     roles.add(RoleDTO.from("ROLE_ADMIN"));
