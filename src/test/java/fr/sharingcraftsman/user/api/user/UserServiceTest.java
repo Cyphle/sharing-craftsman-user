@@ -78,9 +78,8 @@ public class UserServiceTest {
   @Test
   public void should_register_user() throws Exception {
     given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUser());
-    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password");
 
-    ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
+    ResponseEntity response = userService.registerUser(clientDTO, LoginDTO.from("john@doe.fr", "password"));
 
     verify(userRepository).createNewUser(User.from(Credentials.buildWithEncryption("john@doe.fr", "password")));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -88,9 +87,7 @@ public class UserServiceTest {
 
   @Test
   public void should_get_invalid_credential_username_when_username_is_not_specified() throws Exception {
-    LoginDTO loginDTO = LoginDTO.from("", "password");
-
-    ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
+    ResponseEntity response = userService.registerUser(clientDTO, LoginDTO.from("", "password"));
 
     verify(userRepository, never()).createNewUser(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -99,9 +96,8 @@ public class UserServiceTest {
 
   @Test
   public void should_get_invalid_credential_password_when_username_is_not_specified() throws Exception {
-    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "");
 
-    ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
+    ResponseEntity response = userService.registerUser(clientDTO, LoginDTO.from("john@doe.fr", ""));
 
     verify(userRepository, never()).createNewUser(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -111,9 +107,8 @@ public class UserServiceTest {
   @Test
   public void should_get_user_already_exists_when_using_already_existing_username() throws Exception {
     given(userRepository.findUserFromUsername(Username.from("john@doe.fr"))).willReturn(User.from("john@doe.fr", "password"));
-    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password");
 
-    ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
+    ResponseEntity response = userService.registerUser(clientDTO, LoginDTO.from("john@doe.fr", "password"));
 
     verify(userRepository, never()).createNewUser(any(User.class));
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -123,9 +118,8 @@ public class UserServiceTest {
   @Test
   public void should_get_unknown_client_response_when_client_is_not_known() throws Exception {
     given(authorizationVerifierService.isUnauthorizedClient(any(ClientDTO.class))).willReturn(true);
-    LoginDTO loginDTO = LoginDTO.from("john@doe.fr", "password");
 
-    ResponseEntity response = userService.registerUser(clientDTO, loginDTO);
+    ResponseEntity response = userService.registerUser(clientDTO, LoginDTO.from("john@doe.fr", "password"));
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     assertThat(response.getBody()).isEqualTo("Unknown client");
@@ -133,10 +127,8 @@ public class UserServiceTest {
 
   @Test
   public void should_get_change_password_token_when_requesting_to_change_password() throws Exception {
-    User user = User.from("john@doe.fr", "password");
-    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
-    ChangePasswordToken token = ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
-    given(changePasswordTokenRepository.createChangePasswordTokenFor(any(ChangePasswordToken.class))).willReturn(token);
+    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from("john@doe.fr", "password"));
+    given(changePasswordTokenRepository.createChangePasswordTokenFor(any(ChangePasswordToken.class))).willReturn(ChangePasswordToken.from(User.from("john@doe.fr", "password"), "aaa", LocalDateTime.of(2017, 12, 25, 12, 0)));
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
 
     ResponseEntity response = userService.getChangePasswordToken(clientDTO, tokenDTO);
@@ -148,9 +140,8 @@ public class UserServiceTest {
   @Test
   public void should_get_unauthorized_if_access_token_is_invalid_when_requesting_password_change() throws Exception {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(new InvalidToken());
-    TokenDTO tokenDTO = TokenDTO.from("john@doe.fr", "aaa");
 
-    ResponseEntity response = userService.getChangePasswordToken(clientDTO, tokenDTO);
+    ResponseEntity response = userService.getChangePasswordToken(clientDTO, TokenDTO.from("john@doe.fr", "aaa"));
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
   }
@@ -158,12 +149,14 @@ public class UserServiceTest {
   @Test
   public void should_change_password_when_sending_new_password() throws Exception {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
-    User user = User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==");
-    given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(user);
-    given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2018, Month.MARCH, 10, 0, 0)));
+    given(userRepository.findUserFromCredentials(any(Credentials.class))).willReturn(User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="));
+    given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(ChangePasswordToken.from(User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="), "aaa", LocalDateTime.of(2018, Month.MARCH, 10, 0, 0)));
 
-    ChangePasswordDTO changePasswordDTO = ChangePasswordDTO.from("aaa", "password", "newpassword");
-    ResponseEntity response = userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
+    ResponseEntity response = userService.changePassword(
+            clientDTO,
+            tokenDTO,
+            ChangePasswordDTO.from("aaa", "password", "newpassword")
+    );
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
@@ -175,20 +168,20 @@ public class UserServiceTest {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(profile);
     given(userRepository.updateProfileOf(any(Profile.class))).willReturn(profile);
 
-    ProfileDTO profileDTO = ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe");
-
-    ResponseEntity response = userService.updateProfile(clientDTO, tokenDTO, profileDTO);
+    ResponseEntity response = userService.updateProfile(
+            clientDTO,
+            tokenDTO,
+            ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe")
+    );
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(profileDTO);
+    assertThat(response.getBody()).isEqualTo(ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe"));
   }
 
   @Test
   public void should_generate_token_when_lost_password() throws Exception {
-    User user = User.from("john@doe.fr", "password");
-    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(user);
-    ChangePasswordToken token = ChangePasswordToken.from(user, "aaa", LocalDateTime.of(2017, 12, 25, 12, 0));
-    given(changePasswordTokenRepository.createChangePasswordTokenFor(any(ChangePasswordToken.class))).willReturn(token);
+    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from("john@doe.fr", "password"));
+    given(changePasswordTokenRepository.createChangePasswordTokenFor(any(ChangePasswordToken.class))).willReturn(ChangePasswordToken.from(User.from("john@doe.fr", "password"), "aaa", LocalDateTime.of(2017, 12, 25, 12, 0)));
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
 
     ResponseEntity response = userService.getLostPasswordToken(clientDTO, "john@doe.fr");
