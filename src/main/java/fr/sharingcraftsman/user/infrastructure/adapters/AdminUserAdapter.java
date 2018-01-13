@@ -65,16 +65,7 @@ public class AdminUserAdapter implements AdminUserRepository {
   public List<User> getAllUsers() {
     return Lists.newArrayList(userRepository.findAll())
             .stream()
-            .map(user -> {
-                      try {
-                        return User.from(
-                                !user.getUsername().isEmpty() ? user.getUsername() : "EMPTYUSERNAME",
-                                user.getPassword() != null && !user.getPassword().isEmpty() ? user.getPassword() : "EMPTYPASSWORD");
-                      } catch (UsernameException | PasswordException e) {
-                        return null;
-                      }
-                    }
-            )
+            .map(this::fromInfraToDomain)
             .collect(Collectors.toList());
   }
 
@@ -82,19 +73,7 @@ public class AdminUserAdapter implements AdminUserRepository {
   public List<Profile> getAllProfiles() {
     return Lists.newArrayList(userRepository.findAll())
             .stream()
-            .map(profile -> {
-              try {
-                return Profile.from(
-                        !profile.getUsername().isEmpty() ? Username.from(profile.getUsername()) : null,
-                        Name.of(profile.getFirstname()),
-                        Name.of(profile.getLastname()),
-                        Email.from(profile.getEmail()),
-                        Link.to(profile.getWebsite()),
-                        Link.to(profile.getGithub()),
-                        Link.to(profile.getLinkedin())
-                );
-              } catch (UsernameException e) { return null; }
-            })
+            .map(this::fromInfraToDomainProfile)
             .collect(Collectors.toList());
   }
 
@@ -102,16 +81,7 @@ public class AdminUserAdapter implements AdminUserRepository {
   public List<TechnicalUserDetails> getAllTechnicalUserDetails() {
     return Lists.newArrayList(userRepository.findAll())
             .stream()
-            .map(detail -> {
-              try {
-                return TechnicalUserDetails.from(
-                        !detail.getUsername().isEmpty() ? Username.from(detail.getUsername()) : null,
-                        detail.isActive(),
-                        DateConverter.fromDateToLocalDateTime(detail.getCreationDate()),
-                        DateConverter.fromDateToLocalDateTime(detail.getLastUpdateDate())
-                );
-              } catch (UsernameException e) { return null; }
-            })
+            .map(this::fromInfraToDomainTechnicalUserDetails)
             .collect(Collectors.toList());
   }
 
@@ -120,8 +90,7 @@ public class AdminUserAdapter implements AdminUserRepository {
     UserEntity userEntityToCreate = UserEntity.fromDomainToInfra(user);
     userEntityToCreate.setCreationDate(dateService.nowInDate());
     userEntityToCreate.setLastUpdateDate(dateService.nowInDate());
-    UserEntity save = userRepository.save(userEntityToCreate);
-    String test = "toto";
+    userRepository.save(userEntityToCreate);
   }
 
   @Override
@@ -136,5 +105,29 @@ public class AdminUserAdapter implements AdminUserRepository {
   public void deleteUser(Username username) {
     UserEntity foundUserEntity = userRepository.findByUsername(username.getUsername());
     userRepository.delete(foundUserEntity);
+  }
+
+  private User fromInfraToDomain(UserEntity user) {
+    try {
+      return UserEntity.fromInfraToDomain(user);
+    } catch (CredentialsException e) {
+      return null;
+    }
+  }
+
+  private Profile fromInfraToDomainProfile(UserEntity profile) {
+    try {
+      return UserEntity.fromInfraToDomainProfile(profile);
+    } catch (UsernameException e) {
+      return null;
+    }
+  }
+
+  private TechnicalUserDetails fromInfraToDomainTechnicalUserDetails(UserEntity detail) {
+    try {
+      return TechnicalUserDetails.fromInfraToDomain(detail);
+    } catch (UsernameException e) {
+      return null;
+    }
   }
 }

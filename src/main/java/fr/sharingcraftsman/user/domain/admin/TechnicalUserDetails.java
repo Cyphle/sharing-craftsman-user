@@ -1,6 +1,9 @@
 package fr.sharingcraftsman.user.domain.admin;
 
+import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.domain.common.Username;
+import fr.sharingcraftsman.user.domain.common.UsernameException;
+import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
@@ -23,10 +26,6 @@ public class TechnicalUserDetails {
     return username;
   }
 
-  public static TechnicalUserDetails from(Username username, boolean isActive, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
-    return new TechnicalUserDetails(username, isActive, creationDate, lastUpdateDate);
-  }
-
   public boolean isActive() {
     return isActive;
   }
@@ -41,6 +40,19 @@ public class TechnicalUserDetails {
 
   public void updateFields(TechnicalUserDetails technicalUserDetails) {
     isActive = technicalUserDetails.isActive;
+  }
+
+  public static TechnicalUserDetails from(Username username, boolean isActive, LocalDateTime creationDate, LocalDateTime lastUpdateDate) {
+    return new TechnicalUserDetails(username, isActive, creationDate, lastUpdateDate);
+  }
+
+  public static TechnicalUserDetails fromInfraToDomain(UserEntity userEntity) throws UsernameException {
+    return TechnicalUserDetails.from(
+            Username.from(userEntity.getUsername()),
+            userEntity.isActive(),
+            DateConverter.fromDateToLocalDateTime(userEntity.getCreationDate()),
+            DateConverter.fromDateToLocalDateTime(userEntity.getLastUpdateDate())
+    );
   }
 
   @Override
