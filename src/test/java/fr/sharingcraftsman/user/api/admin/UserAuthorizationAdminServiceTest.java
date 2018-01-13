@@ -39,30 +39,33 @@ public class UserAuthorizationAdminServiceTest {
 
   @Before
   public void setUp() throws Exception {
+    given(authorizationVerifierService.isUnauthorizedAdmin(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 30, 12, 0));
 
     clientDTO = ClientDTO.from("client", "secret");
     tokenDTO = TokenDTO.from("admin@toto.fr", "aaa");
 
     userAuthorizationAdminService = new UserAuthorizationAdminService(userAuthorizationRepository, authorizationRepository, authorizationVerifierService);
-
-    given(authorizationVerifierService.isUnauthorizedAdmin(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
   }
 
   @Test
   public void should_add_group_to_user() throws Exception {
-    UserGroupDTO newGroupForUser = UserGroupDTO.from("hello@world", "USERS");
-
-    ResponseEntity response = userAuthorizationAdminService.addGroupToUser(clientDTO, tokenDTO, newGroupForUser);
+    ResponseEntity response = userAuthorizationAdminService.addGroupToUser(
+            clientDTO,
+            tokenDTO,
+            UserGroupDTO.from("hello@world", "USERS")
+    );
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 
   @Test
   public void should_remove_group_to_user() throws Exception {
-    UserGroupDTO newGroupForUser = UserGroupDTO.from("hello@world", "USERS");
-
-    ResponseEntity response = userAuthorizationAdminService.removeGroupToUser(clientDTO, tokenDTO, newGroupForUser);
+    ResponseEntity response = userAuthorizationAdminService.removeGroupToUser(
+            clientDTO,
+            tokenDTO,
+            UserGroupDTO.from("hello@world", "USERS")
+    );
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
