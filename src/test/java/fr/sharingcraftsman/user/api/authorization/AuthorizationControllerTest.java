@@ -49,10 +49,7 @@ public class AuthorizationControllerTest {
 
   @Test
   public void should_get_authorizations_in_groups_and_roles() throws Exception {
-    GroupDTO group = GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER")));
-    AuthorizationsDTO authorization = AuthorizationsDTO.from(Sets.newHashSet(group));
-
-    given(authorizationService.getAuthorizations(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(authorization));
+    given(authorizationService.getAuthorizations(any(ClientDTO.class), any(TokenDTO.class))).willReturn(ResponseEntity.ok(AuthorizationsDTO.from(Sets.newHashSet(GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER")))))));
 
     MvcResult mvcResult = this.mvc.perform(get("/roles")
             .header("client", "client")
@@ -63,8 +60,6 @@ public class AuthorizationControllerTest {
             .andReturn();
 
     AuthorizationsDTO authorizationsDTO = Mapper.fromJsonStringToObject(mvcResult.getResponse().getContentAsString(), AuthorizationsDTO.class);
-    GroupDTO expectedGroup = GroupDTO.from("USERS");
-    expectedGroup.addRole(RoleDTO.from("ROLE_USER"));
-    assertThat(authorizationsDTO.getGroups()).contains(expectedGroup);
+    assertThat(authorizationsDTO.getGroups()).contains(GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER"))));
   }
 }
