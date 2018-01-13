@@ -64,20 +64,40 @@ public class UserAdminServiceTest {
 
   @Before
   public void setUp() throws Exception {
+    given(userAuthorizationRepository.findGroupsOf(Username.from("john@doe.fr"))).willReturn(Collections.singletonList(Group.from("USERS")));
+    given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
+    given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
+    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 30, 12, 0));
+    given(authorizationVerifierService.isUnauthorizedAdmin(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
 
-    GroupDTO group = GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER")));
-    AuthorizationsDTO authorization = AuthorizationsDTO.from(Sets.newHashSet(group));
-
-    user = UserInfoDTO.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
-    user.setPassword("password");
-
-    GroupDTO adminGroup = GroupDTO.from("ADMINS", Sets.newHashSet(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN")));
-    AuthorizationsDTO adminAuthorization = AuthorizationsDTO.from(Sets.newHashSet(adminGroup));
-
-    admin = UserInfoDTO.from("admin@toto.fr", "Admin", "Toto", "admin@toto.fr", "www.admintoto.fr", "github.com/admintoto", "linkedin.com/admintoto", adminAuthorization, true, 1514631600000L, 1514631600000L);
-    admin.setPassword("password");
-
+    user = UserInfoDTO.from(
+            "john@doe.fr",
+            "password",
+            "John",
+            "Doe",
+            "john@doe.fr",
+            "www.johndoe.fr",
+            "github.com/johndoe",
+            "linkedin.com/johndoe",
+            AuthorizationsDTO.from(Sets.newHashSet(GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER"))))),
+            true,
+            1514631600000L,
+            1514631600000L
+    );
+    admin = UserInfoDTO.from(
+            "admin@toto.fr",
+            "password",
+            "Admin",
+            "Toto",
+            "admin@toto.fr",
+            "www.admintoto.fr",
+            "github.com/admintoto",
+            "linkedin.com/admintoto",
+            AuthorizationsDTO.from(Sets.newHashSet(GroupDTO.from("ADMINS", Sets.newHashSet(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN"))))),
+            true,
+            1514631600000L,
+            1514631600000L);
     clientDTO = ClientDTO.from("client", "secret");
     tokenDTO = TokenDTO.from("admin@toto.fr", "aaa");
 
@@ -98,10 +118,6 @@ public class UserAdminServiceTest {
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0)),
             TechnicalUserDetails.from(Username.from("admin@toto.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
     ));
-    given(userAuthorizationRepository.findGroupsOf(Username.from("john@doe.fr"))).willReturn(Collections.singletonList(Group.from("USERS")));
-    given(authorizationRepository.getRolesOf("USERS")).willReturn(Collections.singletonList(Role.from("ROLE_USER")));
-    given(userAuthorizationRepository.findGroupsOf(Username.from("admin@toto.fr"))).willReturn(Collections.singletonList(Group.from("ADMINS")));
-    given(authorizationRepository.getRolesOf("ADMINS")).willReturn(Arrays.asList(Role.from("ROLE_USER"), Role.from("ROLE_ADMIN")));
 
     ResponseEntity response = userAdminService.getAllUsers(clientDTO, tokenDTO);
 
@@ -120,8 +136,6 @@ public class UserAdminServiceTest {
 
   @Test
   public void should_delete_user() throws Exception {
-    given(authorizationVerifierService.isUnauthorizedAdmin(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
-
     Mockito.doNothing().when(adminUserRepository).deleteUser(any(Username.class));
     given(adminUserRepository.findUserFromUsername(Username.from("hello@world.fr"))).willReturn(User.from("hello@world.fr", "passwrdo"));
 
@@ -133,42 +147,48 @@ public class UserAdminServiceTest {
 
   @Test
   public void should_update_user() throws Exception {
-    given(authorizationVerifierService.isUnauthorizedAdmin(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
-
     given(adminUserRepository.findUserInfoFromUsername(Username.from("john@doe.fr"))).willReturn(UserInfo.from(
             User.from("john@doe.fr", "password"),
             Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
     ));
 
-    GroupDTO group = GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER")));
-    AuthorizationsDTO authorization = AuthorizationsDTO.from(Sets.newHashSet(group));
+    userAdminService.updateUser(
+            clientDTO,
+            tokenDTO,
+            UserInfoDTO.from(
+                    "john@doe.fr",
+                    "password",
+                    "John",
+                    "Doe",
+                    "new@email.fr",
+                    "www.johndoe.fr",
+                    "github.com/johndoe",
+                    "linkedin.com/johndoe",
+                    AuthorizationsDTO.from(Sets.newHashSet(GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER"))))),
+                    true,
+                    1514631600000L,
+                    1514631600000L
+            )
+    );
 
-    UserInfoDTO userToUpdate = UserInfoDTO.from("john@doe.fr", "John", "Doe", "new@email.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", authorization, true, 1514631600000L, 1514631600000L);
-    userToUpdate.setPassword("password");
-    userAdminService.updateUser(clientDTO, tokenDTO, userToUpdate);
-
-    UserInfo updatedUser = UserInfo.from(
+    verify(adminUserRepository).updateUser(UserInfo.from(
             User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="),
             Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("new@email.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
-    );
-    verify(adminUserRepository).updateUser(updatedUser);
+    ));
   }
 
   @Test
   public void should_create_a_new_user() throws Exception {
-    given(authorizationVerifierService.isUnauthorizedAdmin(any(ClientDTO.class), any(TokenDTO.class))).willReturn(null);
-
     given(adminUserRepository.findUserInfoFromUsername(Username.from("john@doe.fr"))).willReturn(new UnknownUserInfo());
 
     userAdminService.addNewUser(clientDTO, tokenDTO, user);
 
-    UserInfo newUser = UserInfo.from(
+    verify(adminUserRepository).createUser(UserInfo.from(
             User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="),
             Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
-    );
-    verify(adminUserRepository).createUser(newUser);
+    ));
   }
 }
