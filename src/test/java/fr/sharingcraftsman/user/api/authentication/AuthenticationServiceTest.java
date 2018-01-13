@@ -1,6 +1,7 @@
 package fr.sharingcraftsman.user.api.authentication;
 
 import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.common.DateConverter;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
@@ -8,7 +9,6 @@ import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.client.Client;
-import fr.sharingcraftsman.user.domain.client.ports.ClientRepository;
 import fr.sharingcraftsman.user.domain.common.Username;
 import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
@@ -33,7 +33,7 @@ public class AuthenticationServiceTest {
   @Mock
   private UserRepository userRepository;
   @Mock
-  private ClientRepository clientRepository;
+  private AuthorizationVerifierService authorizationVerifierService;
   @Mock
   private AccessTokenRepository accessTokenRepository;
   @Mock
@@ -49,9 +49,9 @@ public class AuthenticationServiceTest {
   public void setUp() throws Exception {
     given(dateService.nowInDate()).willReturn(DateConverter.fromLocalDateTimeToDate(LocalDateTime.of(2017, Month.DECEMBER, 24, 12, 0)));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 30, 12, 0));
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "secret"));
+    given(authorizationVerifierService.isUnauthorizedClient(any(ClientDTO.class))).willReturn(false);
 
-    authenticationService = new AuthenticationService(userRepository, accessTokenRepository, clientRepository, dateService);
+    authenticationService = new AuthenticationService(userRepository, accessTokenRepository, dateService, authorizationVerifierService);
     clientDTO = ClientDTO.from("client", "secret");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
 

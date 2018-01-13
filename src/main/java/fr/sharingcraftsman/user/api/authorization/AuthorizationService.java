@@ -2,6 +2,7 @@ package fr.sharingcraftsman.user.api.authorization;
 
 import fr.sharingcraftsman.user.api.client.ClientDTO;
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
+import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AuthenticationManagerImpl;
 import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
@@ -31,24 +32,24 @@ import org.springframework.stereotype.Service;
 public class AuthorizationService {
   private final Logger log = LoggerFactory.getLogger(this.getClass());
   private final AuthenticationManager authenticationManager;
-  private ClientOrganisation clientOrganisation;
   private AuthorizationManager authorizationManager;
+  private AuthorizationVerifierService authorizationVerifierService;
 
   @Autowired
   public AuthorizationService(
           UserRepository userRepository,
-          ClientRepository clientRepository,
           AccessTokenRepository accessTokenRepository,
           UserAuthorizationRepository userAuthorizationRepository,
           AuthorizationRepository authorizationRepository,
-          DateService dateService) {
-    clientOrganisation = new ClientOrganisationImpl(clientRepository, new SimpleSecretGenerator());
+          DateService dateService,
+          AuthorizationVerifierService authorizationVerifierService) {
     authenticationManager = new AuthenticationManagerImpl(userRepository, accessTokenRepository, dateService);
     authorizationManager = new AuthorizationManagerImpl(userAuthorizationRepository, authorizationRepository);
+    this.authorizationVerifierService = authorizationVerifierService;
   }
 
   ResponseEntity getAuthorizations(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+    if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
       log.info("Request to get authotizations of:" + tokenDTO.getUsername());
@@ -64,14 +65,6 @@ public class AuthorizationService {
               .badRequest()
               .body(e.getMessage());
     }
-  }
-
-  private boolean isUnauthorizedClient(ClientDTO clientDTO) {
-    if (clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
-      return false;
-    }
-    log.warn("Unauthorized client: " + clientDTO.getName());
-    return true;
   }
 
   private boolean verifyToken(ClientDTO clientDTO, TokenDTO tokenDTO) throws UsernameException {

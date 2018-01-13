@@ -38,18 +38,18 @@ public class AuthorizationVerifierService {
   }
 
   public ResponseEntity isUnauthorizedAdmin(ClientDTO clientDTO, TokenDTO tokenDTO) {
-    if (isUnauthorizedClient(clientDTO, tokenDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+    if (isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     HttpStatus isAdmin = isAdmin(tokenDTO);
     if (!isAdmin.equals(HttpStatus.OK)) return new ResponseEntity<>("Unauthorized user", isAdmin);
     return null;
   }
 
-  private boolean isUnauthorizedClient(ClientDTO clientDTO, TokenDTO tokenDTO) {
+  public boolean isUnauthorizedClient(ClientDTO clientDTO) {
     if (clientOrganisation.doesClientExist(ClientDTO.fromApiToDomain(clientDTO))) {
       return false;
     }
-    log.warn("UserEntity " + tokenDTO.getUsername() + " is trying to access restricted admin area with client: " + clientDTO.getName());
+    log.warn("Unauthorized client: " + clientDTO.getName());
     return true;
   }
 

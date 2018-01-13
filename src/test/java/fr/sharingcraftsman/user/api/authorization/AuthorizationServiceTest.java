@@ -2,6 +2,7 @@ package fr.sharingcraftsman.user.api.authorization;
 
 import fr.sharingcraftsman.user.api.authentication.TokenDTO;
 import fr.sharingcraftsman.user.api.client.ClientDTO;
+import fr.sharingcraftsman.user.api.common.AuthorizationVerifierService;
 import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
@@ -35,7 +36,7 @@ public class AuthorizationServiceTest {
   @Mock
   private UserRepository userRepository;
   @Mock
-  private ClientRepository clientRepository;
+  private AuthorizationVerifierService authorizationVerifierService;
   @Mock
   private AccessTokenRepository accessTokenRepository;
   @Mock
@@ -54,10 +55,11 @@ public class AuthorizationServiceTest {
   public void setUp() throws Exception {
     given(dateService.now()).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
     given(dateService.getDayAt(any(Integer.class))).willReturn(LocalDateTime.of(2017, Month.DECEMBER, 25, 12, 0));
-    authorizationService = new AuthorizationService(userRepository, clientRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService);
+    given(authorizationVerifierService.isUnauthorizedClient(any(ClientDTO.class))).willReturn(false);
+
+    authorizationService = new AuthorizationService(userRepository, accessTokenRepository, userAuthorizationRepository, authorizationRepository, dateService, authorizationVerifierService);
 
     clientDTO = ClientDTO.from("client", "secret");
-    given(clientRepository.findClient(any(Client.class))).willReturn(Client.from("client", "secret"));
 
     token = TokenDTO.from("john@doe.fr", "aaa");
     validToken = AccessToken.from("aaa", "bbb", dateService.getDayAt(8));
