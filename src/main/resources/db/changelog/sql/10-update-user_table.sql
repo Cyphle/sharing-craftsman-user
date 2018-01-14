@@ -1,0 +1,1 @@
+ALTER TABLE picture ADD COLUMN email longtext COLLATE utf8_unicode_ci;

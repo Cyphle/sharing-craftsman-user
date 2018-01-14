@@ -7,7 +7,10 @@ import fr.sharingcraftsman.user.domain.common.Email;
 import fr.sharingcraftsman.user.domain.common.Link;
 import fr.sharingcraftsman.user.domain.common.Name;
 import fr.sharingcraftsman.user.domain.common.Username;
-import fr.sharingcraftsman.user.domain.user.*;
+import fr.sharingcraftsman.user.domain.user.AbstractProfile;
+import fr.sharingcraftsman.user.domain.user.AbstractUser;
+import fr.sharingcraftsman.user.domain.user.Profile;
+import fr.sharingcraftsman.user.domain.user.User;
 import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 import fr.sharingcraftsman.user.infrastructure.models.UserEntity;
 import fr.sharingcraftsman.user.infrastructure.repositories.UserJpaRepository;
@@ -41,7 +44,7 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_save_user_in_repository() throws Exception {
-    userAdapter.createNewUser((User) User.from(Credentials.buildWithEncryption("john@doe.fr", "password")));
+    userAdapter.createNewUser(User.from(Credentials.buildWithEncryption("john@doe.fr", "password")));
 
     verify(userJpaRepository).save(UserEntity.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw==", dateService.nowInDate(), dateService.nowInDate()));
   }
@@ -75,7 +78,7 @@ public class UserEntityAdapterTest {
 
   @Test
   public void should_find_profile_from_username() throws Exception {
-    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe"));
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "picture.pjg"));
 
     AbstractProfile foundAbstractProfile = userAdapter.findProfileOf(Username.from("john@doe.fr"));
 
@@ -86,14 +89,16 @@ public class UserEntityAdapterTest {
             Email.from("john@doe.fr"),
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
-            Link.to("linkedin.com/johndoe")));
+            Link.to("linkedin.com/johndoe"),
+            Name.of("picture.pjg"))
+    );
     verify(userJpaRepository).findByUsername("john@doe.fr");
   }
 
   @Test
   public void should_save_new_profile() throws Exception {
-    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe"));
-    given(userJpaRepository.save(any(UserEntity.class))).willReturn(UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe"));
+    given(userJpaRepository.findByUsername("john@doe.fr")).willReturn(UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "picture.pjg"));
+    given(userJpaRepository.save(any(UserEntity.class))).willReturn(UserEntity.from("john@doe.fr", "John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "picture.jpg"));
 
     AbstractProfile foundAbstractProfile = userAdapter.updateProfileOf(Profile.from(
             Username.from("john@doe.fr"),
@@ -102,7 +107,9 @@ public class UserEntityAdapterTest {
             Email.from("john@doe.fr"),
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
-            Link.to("linkedin.com/johndoe")));
+            Link.to("linkedin.com/johndoe"),
+            Name.of("picture.jpg"))
+    );
 
     assertThat((Profile) foundAbstractProfile).isEqualTo(Profile.from(
             Username.from("john@doe.fr"),
@@ -111,7 +118,9 @@ public class UserEntityAdapterTest {
             Email.from("john@doe.fr"),
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
-            Link.to("linkedin.com/johndoe")));
+            Link.to("linkedin.com/johndoe"),
+            Name.of("picture.jpg"))
+    );
     verify(userJpaRepository).findByUsername("john@doe.fr");
   }
 }

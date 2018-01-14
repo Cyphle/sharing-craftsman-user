@@ -65,6 +65,10 @@ public class UserInfo extends AbstractUserInfo {
     return profile.getLinkedinContent();
   }
 
+  public String getPicture() {
+    return profile.getPictureContent();
+  }
+
   public boolean isActive() {
     return technicalUserDetails.isActive();
   }

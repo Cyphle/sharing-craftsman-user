@@ -74,7 +74,7 @@ public class UserAdminController {
           @ApiResponse(code = 401, message = "Unauthorized")
   })
   @RequestMapping(method = RequestMethod.DELETE, value = "/{usernameToDelete}")
-  public ResponseEntity verify(@RequestHeader("client") String client,
+  public ResponseEntity deleteUser(@RequestHeader("client") String client,
                                @RequestHeader("secret") String secret,
                                @RequestHeader("username") String username,
                                @RequestHeader("access-token") String accessToken,

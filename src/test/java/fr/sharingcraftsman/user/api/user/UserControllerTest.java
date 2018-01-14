@@ -89,7 +89,7 @@ public class UserControllerTest {
 
   @Test
   public void should_update_profile() throws Exception {
-    ProfileDTO profile = ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "http://github.com/Johndoe", "linkedin.com/johndoe");
+    ProfileDTO profile = ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "http://github.com/Johndoe", "linkedin.com/johndoe", "picture.jpg");
     given(userService.updateProfile(any(ClientDTO.class), any(TokenDTO.class), any(ProfileDTO.class))).willReturn(ResponseEntity.ok(profile));
 
     this.mvc.perform(post("/users/change-password")

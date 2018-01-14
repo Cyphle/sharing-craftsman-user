@@ -26,10 +26,10 @@ Feature: Admin functionalities
 
   Scenario: Create, delete, update users
     Given I create the following users
-      | Username    | Password | Firstname | Lastname | Email           | Website             | Github                 | Linkedin                 |
-      | john@doe.fr | password | John      | Doe      | john@doe.fr     | www.johndoe.fr      | github.com/johndoe     | linkedin.com/johndoe     |
-      | misterhello | password | Mister    | Hello    | mister@hello.fr | www.misterhello.com | github.com/misterhello | linkedin.com/misterhello |
-      | foo@bar.com | password | Foo       | Bar      | foo@bar.com     | www.foobar.de       | github.com/foobar      | linkedin.com/foobar      |
+      | Username    | Password | Firstname | Lastname | Email           | Website             | Github                 | Linkedin                 | Picture     |
+      | john@doe.fr | password | John      | Doe      | john@doe.fr     | www.johndoe.fr      | github.com/johndoe     | linkedin.com/johndoe     | picture.jpg |
+      | misterhello | password | Mister    | Hello    | mister@hello.fr | www.misterhello.com | github.com/misterhello | linkedin.com/misterhello | picutre.jpg |
+      | foo@bar.com | password | Foo       | Bar      | foo@bar.com     | www.foobar.de       | github.com/foobar      | linkedin.com/foobar      |             |
     And I create the following authorizations
       | Group | Role      |
       | USERS | ROLE_USER |
@@ -39,15 +39,15 @@ Feature: Admin functionalities
     And I delete user <misterhello>
     And I consult all users profiles
     Then I get the profiles
-      | Username    | Firstname | Lastname | Email              | Website        | Github             | Linkedin             | isActive | Authorizations  |
-      | john@doe.fr | John      | Doe      | johndoe@thebest.eu | www.johndoe.eu | github.com/johndoe | linkedin.com/johndoe | true     | USERS=ROLE_USER |
-      | foo@bar.com | Foo       | Bar      | foo@bar.com        | www.foobar.de  | github.com/foobar  | linkedin.com/foobar  | true     | USERS=ROLE_USER |
+      | Username    | Firstname | Lastname | Email              | Website        | Github             | Linkedin             | Picture     | isActive | Authorizations  |
+      | john@doe.fr | John      | Doe      | johndoe@thebest.eu | www.johndoe.eu | github.com/johndoe | linkedin.com/johndoe | picture.jpg | true     | USERS=ROLE_USER |
+      | foo@bar.com | Foo       | Bar      | foo@bar.com        | www.foobar.de  | github.com/foobar  | linkedin.com/foobar  |             | true     | USERS=ROLE_USER |
 
   Scenario: Change user authorizations
     Given I create the following users
-      | Username    | Firstname | Lastname | Email       | Website        | Github             | Linkedin             |
-      | john@doe.fr | John      | Doe      | john@doe.fr | www.johndoe.fr | github.com/johndoe | linkedin.com/johndoe |
-      | foo@bar.com | Foo       | Bar      | foo@bar.com | www.foobar.de  | github.com/foobar  | linkedin.com/foobar  |
+      | Username    | Firstname | Lastname | Email       | Website        | Github             | Linkedin             | Picture     |
+      | john@doe.fr | John      | Doe      | john@doe.fr | www.johndoe.fr | github.com/johndoe | linkedin.com/johndoe | picture.jpg |
+      | foo@bar.com | Foo       | Bar      | foo@bar.com | www.foobar.de  | github.com/foobar  | linkedin.com/foobar  | picture.jpg |
     And I create the following authorizations
       | Group  | Role      |
       | USERS  | ROLE_USER |
@@ -56,6 +56,6 @@ Feature: Admin functionalities
     And I remove authorization <USERS> to <foo@bar.com>
     And I consult all users profiles
     Then I get the profiles
-      | Username    | Firstname | Lastname | Email       | Website        | Github             | Linkedin             | isActive | Authorizations                              |
-      | john@doe.fr | John      | Doe      | john@doe.fr | www.johndoe.fr | github.com/johndoe | linkedin.com/johndoe | true     | USERS=ROLE_USER;ADMINS=ROLE_ADMIN,ROLE_USER |
-      | foo@bar.com | Foo       | Bar      | foo@bar.com | www.foobar.de  | github.com/foobar  | linkedin.com/foobar  | true     |                                             |
+      | Username    | Firstname | Lastname | Email       | Website        | Github             | Linkedin             | Picture     | isActive | Authorizations                              |
+      | john@doe.fr | John      | Doe      | john@doe.fr | www.johndoe.fr | github.com/johndoe | linkedin.com/johndoe | picture.jpg | true     | USERS=ROLE_USER;ADMINS=ROLE_ADMIN,ROLE_USER |
+      | foo@bar.com | Foo       | Bar      | foo@bar.com | www.foobar.de  | github.com/foobar  | linkedin.com/foobar  | picture.jpg | true     |                                             |

@@ -15,17 +15,19 @@ public class ProfileDTO {
   private String website;
   private String github;
   private String linkedin;
+  private String picture;
 
   private ProfileDTO() {
   }
 
-  private ProfileDTO(String firstname, String lastname, String email, String website, String github, String linkedin) {
+  private ProfileDTO(String firstname, String lastname, String email, String website, String github, String linkedin, String picture) {
     this.lastname = lastname;
     this.firstname = firstname;
     this.email = email;
     this.website = website;
     this.github = github;
     this.linkedin = linkedin;
+    this.picture = picture;
   }
 
   public String getLastname() {
@@ -76,19 +78,29 @@ public class ProfileDTO {
     this.linkedin = linkedin;
   }
 
-  public static ProfileDTO from(String firstname, String lastname, String email, String website, String github, String linkedin) {
-    return new ProfileDTO(firstname, lastname, email, website, github, linkedin);
+  public String getPicture() {
+    return picture;
+  }
+
+  public void setPicture(String picture) {
+    this.picture = picture;
+  }
+
+  public static ProfileDTO from(String firstname, String lastname, String email, String website, String github, String linkedin, String picture) {
+    return new ProfileDTO(firstname, lastname, email, website, github, linkedin, picture);
   }
 
   public static AbstractProfile fromApiToDomain(String username, ProfileDTO profileDTO) throws UsernameException {
     return Profile.from(
             Username.from(username),
-            Name.of(profileDTO.getFirstname()),
-            Name.of(profileDTO.getLastname()),
-            Email.from(profileDTO.getEmail()),
-            Link.to(profileDTO.getWebsite()),
-            Link.to(profileDTO.getGithub()),
-            Link.to(profileDTO.getLinkedin()));
+            Name.of(profileDTO.firstname),
+            Name.of(profileDTO.lastname),
+            Email.from(profileDTO.email),
+            Link.to(profileDTO.website),
+            Link.to(profileDTO.github),
+            Link.to(profileDTO.linkedin),
+            Name.of(profileDTO.picture)
+    );
   }
 
   public static ProfileDTO fromDomainToApi(Profile profile) {
@@ -98,7 +110,8 @@ public class ProfileDTO {
             profile.getEmailContent(),
             profile.getWebsiteContent(),
             profile.getGithubContent(),
-            profile.getLinkedinContent()
+            profile.getLinkedinContent(),
+            profile.getPictureContent()
     );
   }
 }

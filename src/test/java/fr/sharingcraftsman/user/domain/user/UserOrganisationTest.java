@@ -155,7 +155,7 @@ public class UserOrganisationTest {
 
   @Test
   public void should_update_profile_of_user() throws Exception {
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null, null));
     given(userRepository.updateProfileOf(any(Profile.class))).willReturn(Profile.from(
             Username.from("john@doe.fr"),
             Name.of("John"),
@@ -163,7 +163,9 @@ public class UserOrganisationTest {
             Email.from("john@doe.fr"),
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
-            Link.to("linkedin.com/johndoe")));
+            Link.to("linkedin.com/johndoe"),
+            Name.of("picture.jpg"))
+    );
 
     AbstractProfile abstractProfile = userOrganisationImpl.updateProfile(Profile.from(
             Username.from("john@doe.fr"),
@@ -172,7 +174,9 @@ public class UserOrganisationTest {
             Email.from("john@doe.fr"),
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
-            Link.to("linkedin.com/johndoe")));
+            Link.to("linkedin.com/johndoe"),
+            Name.of("picture.jpg"))
+    );
 
     assertThat(abstractProfile).isEqualTo(Profile.from(
             Username.from("john@doe.fr"),
@@ -181,12 +185,14 @@ public class UserOrganisationTest {
             Email.from("john@doe.fr"),
             Link.to("www.johndoe.fr"),
             Link.to("github.com/johndoe"),
-            Link.to("linkedin.com/johndoe")));
+            Link.to("linkedin.com/johndoe"),
+            Name.of("picture.jpg"))
+    );
   }
 
   @Test
   public void should_throw_profile_exception_if_email_is_invalid_when_updating_profile() throws Exception {
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null, null));
 
     try {
       userOrganisationImpl.updateProfile(Profile.from(
@@ -196,7 +202,9 @@ public class UserOrganisationTest {
               Email.from("john"),
               Link.to("www.johndoe.fr"),
               Link.to("github.com/johndoe"),
-              Link.to("linkedin.com/johndoe")));
+              Link.to("linkedin.com/johndoe"),
+              Name.of("picture.jpg"))
+      );
       fail("Should have throw a baseProfile exception when email is invalid");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Invalid profile");
@@ -215,7 +223,9 @@ public class UserOrganisationTest {
               Email.from("john@doe.fr"),
               Link.to("www.johndoe.fr"),
               Link.to("github.com/johndoe"),
-              Link.to("linkedin.com/johndoe")));
+              Link.to("linkedin.com/johndoe"),
+              Name.of("picture.jpg"))
+      );
       fail("Should have throw a user exception when email is invalid");
     } catch (UserException e) {
       assertThat(e.getMessage()).isEqualTo("Unknown user");
@@ -224,7 +234,7 @@ public class UserOrganisationTest {
 
   @Test
   public void should_find_email_of_user_if_email_is_present() throws Exception {
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, Email.from("johndoe@myapp.fr"), null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, Email.from("johndoe@myapp.fr"), null, null, null, null));
 
     Email email = userOrganisationImpl.findEmailOf(credentials.getUsername());
 
@@ -233,7 +243,7 @@ public class UserOrganisationTest {
 
   @Test
   public void should_find_email_if_email_is_not_present_but_username_if_an_email() throws Exception {
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null, null));
 
     Email email = userOrganisationImpl.findEmailOf(credentials.getUsername());
 
@@ -242,7 +252,7 @@ public class UserOrganisationTest {
 
   @Test
   public void should_return_empty_email_if_no_email_is_found() throws Exception {
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("johndoe"), null, null, null, null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("johndoe"), null, null, null, null, null, null, null));
 
     Email email = userOrganisationImpl.findEmailOf(Username.from("johndoe"));
 

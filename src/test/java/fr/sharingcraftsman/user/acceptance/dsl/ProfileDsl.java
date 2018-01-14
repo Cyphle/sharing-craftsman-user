@@ -12,17 +12,19 @@ public class ProfileDsl {
   private String website;
   private String github;
   private String linkedin;
+  private String picture;
 
   public ProfileDsl() {
   }
 
-  public ProfileDsl(String firstname, String lastname, String email, String website, String github, String linkedin) {
+  public ProfileDsl(String firstname, String lastname, String email, String website, String github, String linkedin, String picture) {
     this.firstname = firstname;
     this.lastname = lastname;
     this.email = email;
     this.website = website;
     this.github = github;
     this.linkedin = linkedin;
+    this.picture = picture;
   }
 
   public String getFirstname() {
@@ -47,5 +49,9 @@ public class ProfileDsl {
 
   public String getLinkedin() {
     return linkedin;
+  }
+
+  public String getPicture() {
+    return picture;
   }
 }

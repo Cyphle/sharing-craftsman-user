@@ -17,8 +17,9 @@ public class Profile extends AbstractProfile {
   private Link website;
   private Link github;
   private Link linkedin;
+  private Name picture;
 
-  private Profile(Username username, Name firstname, Name lastname, Email email, Link website, Link github, Link linkedin) {
+  private Profile(Username username, Name firstname, Name lastname, Email email, Link website, Link github, Link linkedin, Name picture) {
     this.username = username;
     this.firstname = firstname;
     this.lastname = lastname;
@@ -26,6 +27,7 @@ public class Profile extends AbstractProfile {
     this.website = website;
     this.github = github;
     this.linkedin = linkedin;
+    this.picture = picture;
   }
 
   public Username getUsername() {
@@ -64,6 +66,10 @@ public class Profile extends AbstractProfile {
     return linkedin.getLink();
   }
 
+  public String getPictureContent() {
+    return picture.getName();
+  }
+
   List<ValidationError> validate() {
     List<ValidationError> errors = new ArrayList<>();
 
@@ -73,15 +79,6 @@ public class Profile extends AbstractProfile {
     return errors;
   }
 
-  void updateFrom(Profile newProfile) {
-    firstname = newProfile.firstname;
-    lastname = newProfile.lastname;
-    email = newProfile.email;
-    website = newProfile.website;
-    github = newProfile.github;
-    linkedin = newProfile.linkedin;
-  }
-
   public void updateFields(Profile profile) {
     firstname = profile.firstname;
     lastname = profile.lastname;
@@ -89,6 +86,7 @@ public class Profile extends AbstractProfile {
     website = profile.website;
     github = profile.github;
     linkedin = profile.linkedin;
+    picture = profile.picture;
   }
 
   @Override
@@ -96,7 +94,7 @@ public class Profile extends AbstractProfile {
     return true;
   }
 
-  public static Profile from(Username username, Name firstname, Name lastname, Email email, Link website, Link github, Link linkedin) {
-    return new Profile(username, firstname, lastname, email, website, github, linkedin);
+  public static Profile from(Username username, Name firstname, Name lastname, Email email, Link website, Link github, Link linkedin, Name picture) {
+    return new Profile(username, firstname, lastname, email, website, github, linkedin, picture);
   }
 }

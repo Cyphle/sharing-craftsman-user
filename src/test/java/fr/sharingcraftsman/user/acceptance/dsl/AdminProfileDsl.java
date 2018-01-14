@@ -15,6 +15,7 @@ public class AdminProfileDsl {
   private String website;
   private String github;
   private String linkedin;
+  private String picture;
   private boolean isActive;
   private String authorizations;
 
@@ -72,6 +73,14 @@ public class AdminProfileDsl {
 
   public void setLinkedin(String linkedin) {
     this.linkedin = linkedin;
+  }
+
+  public String getPicture() {
+    return picture;
+  }
+
+  public void setPicture(String picture) {
+    this.picture = picture;
   }
 
   public boolean isActive() {

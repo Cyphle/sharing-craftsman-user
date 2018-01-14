@@ -38,6 +38,8 @@ public class UserEntity {
   private String linkedin;
   @Column(name = "is_active")
   private boolean isActive = true;
+  @Column(name = "picture")
+  private String picture;
   @Column(name = "creation_date")
   private Date creationDate;
   @Column(name = "last_update_date")
@@ -51,7 +53,15 @@ public class UserEntity {
     this.password = password;
   }
 
-  private UserEntity(String username, String firstname, String lastname, String email, String website, String github, String linkedin) {
+  private UserEntity(
+          String username,
+          String firstname,
+          String lastname,
+          String email,
+          String website,
+          String github,
+          String linkedin,
+          String picture) {
     this.username = username;
     this.firstname = firstname;
     this.lastname = lastname;
@@ -59,15 +69,37 @@ public class UserEntity {
     this.website = website;
     this.github = github;
     this.linkedin = linkedin;
+    this.picture = picture;
   }
 
-  private UserEntity(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin) {
-    this(username, firstname, lastname, email, website, github, linkedin);
+  private UserEntity(
+          String username,
+          String password,
+          String firstname,
+          String lastname,
+          String email,
+          String website,
+          String github,
+          String linkedin,
+          String picture) {
+    this(username, firstname, lastname, email, website, github, linkedin, picture);
     this.password = password;
   }
 
-  private UserEntity(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, Date creationDate, Date lastUpdateDate) {
-    this(username, password, firstname, lastname, email, website, github, linkedin);
+  private UserEntity(
+          String username,
+          String password,
+          String firstname,
+          String lastname,
+          String email,
+          String website,
+          String github,
+          String linkedin,
+          String picture,
+          boolean isActive,
+          Date creationDate,
+          Date lastUpdateDate) {
+    this(username, password, firstname, lastname, email, website, github, linkedin, picture);
     this.isActive = isActive;
     this.creationDate = creationDate;
     this.lastUpdateDate = lastUpdateDate;
@@ -145,6 +177,10 @@ public class UserEntity {
     this.linkedin = linkedin;
   }
 
+  public String getPicture() {
+    return picture;
+  }
+
   public boolean isActive() {
     return isActive;
   }
@@ -176,6 +212,7 @@ public class UserEntity {
     website = userEntity.website;
     github = userEntity.github;
     linkedin = userEntity.linkedin;
+    picture = userEntity.picture;
   }
 
   public void updateFromAdmin(UserInfo user) {
@@ -186,6 +223,7 @@ public class UserEntity {
     website = user.getWebsite();
     github = user.getGithub();
     linkedin = user.getLinkedin();
+    picture = user.getPicture();
   }
 
   public static UserEntity from(String username, String password) {
@@ -199,16 +237,16 @@ public class UserEntity {
     return userEntity;
   }
 
-  public static UserEntity from(String username, String firstname, String lastname, String email, String website, String github, String linkedin) {
-    return new UserEntity(username, firstname, lastname, email, website, github, linkedin);
+  public static UserEntity from(String username, String firstname, String lastname, String email, String website, String github, String linkedin, String picture) {
+    return new UserEntity(username, firstname, lastname, email, website, github, linkedin, picture);
   }
 
-  public static UserEntity from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin) {
-    return new UserEntity(username, password, firstname, lastname, email, website, github, linkedin);
+  public static UserEntity from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String picture) {
+    return new UserEntity(username, password, firstname, lastname, email, website, github, linkedin, picture);
   }
 
-  public static UserEntity from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, Date creationDate, Date lastUpdateDate) {
-    return new UserEntity(username, password, firstname, lastname, email, website, github, linkedin, isActive, creationDate, lastUpdateDate);
+  public static UserEntity from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String picture, boolean isActive, Date creationDate, Date lastUpdateDate) {
+    return new UserEntity(username, password, firstname, lastname, email, website, github, linkedin, picture, isActive, creationDate, lastUpdateDate);
   }
 
   public static UserEntity fromDomainToInfra(User user) {
@@ -231,14 +269,15 @@ public class UserEntity {
             user.getEmail(),
             user.getWebsite(),
             user.getGithub(),
-            user.getLinkedin()
+            user.getLinkedin(),
+            user.getPicture()
     );
   }
 
   public static UserInfo fromInfraToAdminDomain(UserEntity userEntity) throws UsernameException, PasswordException {
     return UserInfo.from(
             User.from(userEntity.getUsername(), userEntity.getPassword()),
-            Profile.from(Username.from(userEntity.getUsername()), Name.of(userEntity.getFirstname()), Name.of(userEntity.getLastname()), Email.from(userEntity.getEmail()), Link.to(userEntity.getWebsite()), Link.to(userEntity.getGithub()), Link.to(userEntity.getLinkedin())),
+            Profile.from(Username.from(userEntity.getUsername()), Name.of(userEntity.getFirstname()), Name.of(userEntity.getLastname()), Email.from(userEntity.getEmail()), Link.to(userEntity.getWebsite()), Link.to(userEntity.getGithub()), Link.to(userEntity.getLinkedin()), Name.of(userEntity.getPicture())),
             TechnicalUserDetails.from(Username.from(userEntity.getUsername()), userEntity.isActive(), DateConverter.fromDateToLocalDateTime(userEntity.getCreationDate()), DateConverter.fromDateToLocalDateTime(userEntity.getLastUpdateDate()))
     );
   }
@@ -251,11 +290,13 @@ public class UserEntity {
             Email.from(userEntity.getEmail()),
             Link.to(userEntity.getWebsite()),
             Link.to(userEntity.getGithub()),
-            Link.to(userEntity.getLinkedin()));
+            Link.to(userEntity.getLinkedin()),
+            Name.of(userEntity.getPicture())
+    );
   }
 
   public static UserEntity fromDomainToInfraProfile(Profile profile) {
-    return UserEntity.from(profile.getUsernameContent(), profile.getFirstnameContent(), profile.getLastnameContent(), profile.getEmailContent(), profile.getWebsiteContent(), profile.getGithubContent(), profile.getLinkedinContent());
+    return UserEntity.from(profile.getUsernameContent(), profile.getFirstnameContent(), profile.getLastnameContent(), profile.getEmailContent(), profile.getWebsiteContent(), profile.getGithubContent(), profile.getLinkedinContent(), profile.getPictureContent());
   }
 
   @Override
