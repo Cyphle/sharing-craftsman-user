@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN picture longtext COLLATE utf8_unicode_ci;
