@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        TARGET_PATH     = '/home/apps/userEntity'
+        TARGET_PATH     = '/home/apps/user'
     }
 
     agent {

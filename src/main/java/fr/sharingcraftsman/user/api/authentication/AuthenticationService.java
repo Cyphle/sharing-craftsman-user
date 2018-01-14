@@ -44,8 +44,6 @@ public class AuthenticationService {
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
-      log.info("UserEntity " + loginDTO.getUsername() + " is logging");
-
       AbstractToken accessToken = authenticationManager.login(ClientDTO.fromApiToDomain(clientDTO), LoginDTO.fromApiToDomain(loginDTO));
       TokenDTO token = TokenDTO.fromDomainToApi((AccessToken) accessToken, Username.from(loginDTO.getUsername()));
       return ResponseEntity.ok(token);
@@ -61,8 +59,6 @@ public class AuthenticationService {
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
-      log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
-
       boolean isTokenValid = authenticationManager.isTokenValid(Client.from(clientDTO.getName(), clientDTO.getSecret()), Username.from(token.getUsername()), TokenDTO.fromApiToDomain(token));
       if (isTokenValid) {
         return ResponseEntity.ok().build();
@@ -80,8 +76,6 @@ public class AuthenticationService {
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
-      log.info("Validating token of " + token.getUsername() + " with value " + token.getAccessToken());
-
       authenticationManager.logout(
               Client.from(clientDTO.getName(), ""),
               Username.from(token.getUsername()),
