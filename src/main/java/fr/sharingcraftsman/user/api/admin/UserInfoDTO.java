@@ -23,6 +23,7 @@ public class UserInfoDTO {
   private boolean isActive;
   private long creationDate;
   private long lastUpdateDate;
+  private String picture;
 
   public UserInfoDTO() {
   }
@@ -35,6 +36,7 @@ public class UserInfoDTO {
           String website,
           String github,
           String linkedin,
+          String picture,
           boolean isActive,
           long creationDate,
           long lastUpdateDate) {
@@ -45,6 +47,7 @@ public class UserInfoDTO {
     this.website = website;
     this.github = github;
     this.linkedin = linkedin;
+    this.picture = picture;
     this.isActive = isActive;
     this.creationDate = creationDate;
     this.lastUpdateDate = lastUpdateDate;
@@ -59,10 +62,11 @@ public class UserInfoDTO {
           String website,
           String github,
           String linkedin,
+          String picture,
           boolean isActive,
           long creationDate,
           long lastUpdateDate) {
-    this(username, firstname, lastname, email, website, github, linkedin, isActive, creationDate, lastUpdateDate);
+    this(username, firstname, lastname, email, website, github, linkedin, picture, isActive, creationDate, lastUpdateDate);
     this.password = password;
   }
 
@@ -74,15 +78,16 @@ public class UserInfoDTO {
           String website,
           String github,
           String linkedin,
+          String picture,
           AuthorizationsDTO authorizations,
           boolean isActive,
           long creationDate,
           long lastUpdateDate) {
-    this(username, firstname, lastname, email, website, github, linkedin, isActive, creationDate, lastUpdateDate);
+    this(username, firstname, lastname, email, website, github, linkedin, picture, isActive, creationDate, lastUpdateDate);
     this.authorizations = authorizations;
   }
 
-  public UserInfoDTO(
+  private UserInfoDTO(
           String username,
           String password,
           String firstname,
@@ -91,11 +96,12 @@ public class UserInfoDTO {
           String website,
           String github,
           String linkedin,
+          String picture,
           AuthorizationsDTO authorizations,
           boolean isActive,
           long creationDate,
           long lastUpdateDate) {
-    this(username, firstname, lastname, email, website, github, linkedin, isActive, creationDate, lastUpdateDate);
+    this(username, firstname, lastname, email, website, github, linkedin, picture, isActive, creationDate, lastUpdateDate);
     this.password = password;
     this.authorizations = authorizations;
   }
@@ -164,6 +170,10 @@ public class UserInfoDTO {
     this.linkedin = linkedin;
   }
 
+  public String getPicture() {
+    return picture;
+  }
+
   public AuthorizationsDTO getAuthorizations() {
     return authorizations;
   }
@@ -199,21 +209,21 @@ public class UserInfoDTO {
   public static UserInfo fromApiToDomain(UserInfoDTO user) throws UsernameException, PasswordException {
     return UserInfo.from(
             User.from(user.getUsername(), user.getPassword() != null && !user.getPassword().isEmpty() ? user.getPassword() : "NOPASSWORD"),
-            Profile.from(Username.from(user.getUsername()), Name.of(user.getFirstname()), Name.of(user.getLastname()), Email.from(user.getEmail()), Link.to(user.getWebsite()), Link.to(user.getGithub()), Link.to(user.getLinkedin())),
+            Profile.from(Username.from(user.getUsername()), Name.of(user.getFirstname()), Name.of(user.getLastname()), Email.from(user.getEmail()), Link.to(user.getWebsite()), Link.to(user.getGithub()), Link.to(user.getLinkedin()), Name.of(user.getPicture())),
             TechnicalUserDetails.from(Username.from(user.getUsername()), user.isActive, DateConverter.fromLongToLocalDateTime(user.getCreationDate()), DateConverter.fromLongToLocalDateTime(user.getLastUpdateDate()))
     );
   }
 
-  public static UserInfoDTO from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, boolean isActive, long creationDate, long lastUpdateDate) {
-    return new UserInfoDTO(username, password, firstname, lastname, email, website, github, linkedin, isActive, creationDate, lastUpdateDate);
+  public static UserInfoDTO from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String picture, boolean isActive, long creationDate, long lastUpdateDate) {
+    return new UserInfoDTO(username, password, firstname, lastname, email, website, github, linkedin, picture, isActive, creationDate, lastUpdateDate);
   }
 
-  public static UserInfoDTO from(String username, String firstname, String lastname, String email, String website, String github, String linkedin, AuthorizationsDTO authorizations, boolean isActive, long creationDate, long lastUpdateDate) {
-    return new UserInfoDTO(username, firstname, lastname, email, website, github, linkedin, authorizations, isActive, creationDate, lastUpdateDate);
+  public static UserInfoDTO from(String username, String firstname, String lastname, String email, String website, String github, String linkedin, String picture, AuthorizationsDTO authorizations, boolean isActive, long creationDate, long lastUpdateDate) {
+    return new UserInfoDTO(username, firstname, lastname, email, website, github, linkedin, picture, authorizations, isActive, creationDate, lastUpdateDate);
   }
 
-  public static UserInfoDTO from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, AuthorizationsDTO authorizations, boolean isActive, long creationDate, long lastUpdateDate) {
-    return new UserInfoDTO(username, password, firstname, lastname, email, website, github, linkedin, authorizations, isActive, creationDate, lastUpdateDate);
+  public static UserInfoDTO from(String username, String password, String firstname, String lastname, String email, String website, String github, String linkedin, String picture, AuthorizationsDTO authorizations, boolean isActive, long creationDate, long lastUpdateDate) {
+    return new UserInfoDTO(username, password, firstname, lastname, email, website, github, linkedin, picture, authorizations, isActive, creationDate, lastUpdateDate);
   }
 
   @Override

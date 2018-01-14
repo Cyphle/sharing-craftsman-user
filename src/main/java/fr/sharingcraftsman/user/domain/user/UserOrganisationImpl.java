@@ -91,7 +91,7 @@ public class UserOrganisationImpl implements UserOrganisation {
     if (!errors.isEmpty())
       throw new ProfileValidationException("Invalid profile", errors);
 
-    ((Profile) abstractProfileToUpdate).updateFrom((Profile) abstractProfile);
+    ((Profile) abstractProfileToUpdate).updateFields((Profile) abstractProfile);
     return (Profile) userRepository.updateProfileOf((Profile) abstractProfileToUpdate);
   }
 

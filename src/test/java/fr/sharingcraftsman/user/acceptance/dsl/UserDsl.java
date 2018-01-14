@@ -12,6 +12,7 @@ public class UserDsl {
   private String website;
   private String github;
   private String linkedin;
+  private String picture;
   private AuthorizationDsl authorizations;
   private boolean isActive;
   private long creationDate;
@@ -79,6 +80,14 @@ public class UserDsl {
 
   public void setLinkedin(String linkedin) {
     this.linkedin = linkedin;
+  }
+
+  public String getPicture() {
+    return picture;
+  }
+
+  public void setPicture(String picture) {
+    this.picture = picture;
   }
 
   public AuthorizationDsl getAuthorizations() {

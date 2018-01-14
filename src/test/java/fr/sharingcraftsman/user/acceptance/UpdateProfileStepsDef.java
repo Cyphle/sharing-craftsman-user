@@ -68,9 +68,9 @@ public class UpdateProfileStepsDef extends SpringAcceptanceTestConfig {
     token = Mapper.fromJsonStringToObject(response.getResponse().getContentAsString(), TokenDsl.class);
   }
 
-  @When("^I update my account with firstname <(.*)>, lastname <(.*)>, email <(.*)>, website <(.*)>, github <(.*)>, linkedin <(.*)>$")
-  public void updateProfile(String firstname, String lastname, String email, String website, String github, String linkedin) throws Exception {
-    profileDsl = new ProfileDsl(firstname, lastname, email, website, github, linkedin);
+  @When("^I update my account with firstname <(.*)>, lastname <(.*)>, email <(.*)>, website <(.*)>, github <(.*)>, linkedin <(.*)>, picture <(.*)>$")
+  public void updateProfile(String firstname, String lastname, String email, String website, String github, String linkedin, String picture) throws Exception {
+    profileDsl = new ProfileDsl(firstname, lastname, email, website, github, linkedin, picture);
 
     response = this.mvc
             .perform(post(getBaseUri() + "/users/update-profile")

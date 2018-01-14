@@ -110,6 +110,7 @@ public class UserAdminService {
                     user.getWebsite(),
                     user.getGithub(),
                     user.getLinkedin(),
+                    user.getPicture(),
                     user.isActive(),
                     user.getCreationDate(),
                     user.getLastUpdateDate()

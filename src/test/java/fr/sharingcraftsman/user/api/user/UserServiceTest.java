@@ -164,25 +164,25 @@ public class UserServiceTest {
   @Test
   public void should_update_profile_with_new_information() throws Exception {
     given(accessTokenRepository.findTokenFromAccessToken(any(Client.class), any(Username.class), any(AccessToken.class))).willReturn(validToken);
-    Profile profile = Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"));
+    Profile profile = Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"), Name.of("picture.jpg"));
     given(userRepository.findProfileOf(any(Username.class))).willReturn(profile);
     given(userRepository.updateProfileOf(any(Profile.class))).willReturn(profile);
 
     ResponseEntity response = userService.updateProfile(
             clientDTO,
             tokenDTO,
-            ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe")
+            ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "picture.pjg")
     );
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe"));
+    assertThat(response.getBody()).isEqualTo(ProfileDTO.from("John", "Doe", "john@doe.fr", "www.johndoe.fr", "github.com/johndoe", "linkedin.com/johndoe", "picture.pjg"));
   }
 
   @Test
   public void should_generate_token_when_lost_password() throws Exception {
     given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from("john@doe.fr", "password"));
     given(changePasswordTokenRepository.createChangePasswordTokenFor(any(ChangePasswordToken.class))).willReturn(ChangePasswordToken.from(User.from("john@doe.fr", "password"), "aaa", LocalDateTime.of(2017, 12, 25, 12, 0)));
-    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null));
+    given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null, null));
 
     ResponseEntity response = userService.getLostPasswordToken(clientDTO, "john@doe.fr");
 

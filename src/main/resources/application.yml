@@ -4,4 +4,4 @@ spring:
     active: ${SPRING_ACTIVE_PROFILE}
 
 status:
-  toinitialize: true
+  toinitialize: ${TO_INITIALIZE}

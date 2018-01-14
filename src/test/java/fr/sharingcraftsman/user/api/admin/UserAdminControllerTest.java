@@ -60,6 +60,7 @@ public class UserAdminControllerTest {
             "www.johndoe.fr",
             "github.com/johndoe",
             "linkedin.com/johndoe",
+            "picture.jpg",
             AuthorizationsDTO.from(Sets.newHashSet(GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER"))))),
             true,
             1514631600000L,

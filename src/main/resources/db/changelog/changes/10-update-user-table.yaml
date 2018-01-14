@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10-update-user-table.yaml
+      author: cphamle
+      changes:
+      - sqlFile:
+          encoding: utf8
+          path: ../sql/10-update-user-table.sql
+          relativeToChangelogFile: true
+          splitStatements: true
+          stripComments: true

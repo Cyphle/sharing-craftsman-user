@@ -80,6 +80,7 @@ public class UserAdminServiceTest {
             "www.johndoe.fr",
             "github.com/johndoe",
             "linkedin.com/johndoe",
+            "picture.jpg",
             AuthorizationsDTO.from(Sets.newHashSet(GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER"))))),
             true,
             1514631600000L,
@@ -94,6 +95,7 @@ public class UserAdminServiceTest {
             "www.admintoto.fr",
             "github.com/admintoto",
             "linkedin.com/admintoto",
+            "picture.jpg",
             AuthorizationsDTO.from(Sets.newHashSet(GroupDTO.from("ADMINS", Sets.newHashSet(RoleDTO.from("ROLE_USER"), RoleDTO.from("ROLE_ADMIN"))))),
             true,
             1514631600000L,
@@ -111,8 +113,8 @@ public class UserAdminServiceTest {
             User.from("admin@toto.fr", "password")
     ));
     given(adminUserRepository.getAllProfiles()).willReturn(Arrays.asList(
-            Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
-            Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("admin@toto.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto"))
+            Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"), Name.of("picture.jpg")),
+            Profile.from(Username.from("admin@toto.fr"), Name.of("Admin"), Name.of("Toto"), Email.from("admin@toto.fr"), Link.to("www.admintoto.fr"), Link.to("github.com/admintoto"), Link.to("linkedin.com/admintoto"), Name.of("picture.jpg"))
     ));
     given(adminUserRepository.getAllTechnicalUserDetails()).willReturn(Arrays.asList(
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0)),
@@ -149,7 +151,7 @@ public class UserAdminServiceTest {
   public void should_update_user() throws Exception {
     given(adminUserRepository.findUserInfoFromUsername(Username.from("john@doe.fr"))).willReturn(UserInfo.from(
             User.from("john@doe.fr", "password"),
-            Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
+            Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"), Name.of("picture.jpg")),
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
     ));
 
@@ -165,6 +167,7 @@ public class UserAdminServiceTest {
                     "www.johndoe.fr",
                     "github.com/johndoe",
                     "linkedin.com/johndoe",
+                    "picture.jpg",
                     AuthorizationsDTO.from(Sets.newHashSet(GroupDTO.from("USERS", Sets.newHashSet(RoleDTO.from("ROLE_USER"))))),
                     true,
                     1514631600000L,
@@ -174,7 +177,7 @@ public class UserAdminServiceTest {
 
     verify(adminUserRepository).updateUser(UserInfo.from(
             User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="),
-            Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("new@email.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
+            Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("new@email.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"), Name.of("picture.jpg")),
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
     ));
   }
@@ -187,7 +190,7 @@ public class UserAdminServiceTest {
 
     verify(adminUserRepository).createUser(UserInfo.from(
             User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="),
-            Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe")),
+            Profile.from(Username.from("john@doe.fr"), Name.of("John"), Name.of("Doe"), Email.from("john@doe.fr"), Link.to("www.johndoe.fr"), Link.to("github.com/johndoe"), Link.to("linkedin.com/johndoe"), Name.of("picture.jpg")),
             TechnicalUserDetails.from(Username.from("john@doe.fr"), true, LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0), LocalDateTime.of(2017, Month.DECEMBER, 28, 12, 0))
     ));
   }
