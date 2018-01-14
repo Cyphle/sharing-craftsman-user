@@ -1,10 +1,15 @@
-version: '2'
+version: '3'
 
 services:
-  userEntity:
+  user:
     build: .
     container_name: sc_user
     ports:
-      - 8080:8080
+      - "172.17.0.1:8081:8080"
     volumes:
      - /root/home/apps/logs:/logs
+
+networks:
+  default:
+    external:
+      name: sc-network
