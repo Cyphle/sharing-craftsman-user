@@ -7,5 +7,11 @@ user:
     port: 3306
     name: sharingcraftsmanuser
   upload:
-    path: /home/user
-  toinitialize: true
+    path: /home/scuser/upload-dir
+  logs:
+    path: /home/scuser/logs
+  app:
+    port: "172.17.0.1:8081:8080"
+    toinitialize: true
+  docker:
+    network: scnetwork

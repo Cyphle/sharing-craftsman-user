@@ -5,11 +5,11 @@ services:
     build: .
     container_name: sc_user
     ports:
-      - "172.17.0.1:8081:8080"
+      - <APP_PORT>
     volumes:
-     - /root/home/apps/logs:/logs
+     - <LOGS_PATH>:/logs
 
 networks:
   default:
     external:
-      name: sc-network
+      name: <DOCKER_NETWORK>
