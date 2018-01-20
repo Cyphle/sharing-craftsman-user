@@ -27,7 +27,7 @@ logging:
       springframework:
         web: DEBUG
       hibernate: ERROR
-  file: /logs/user.log
+  file: ${LOGS_PATH}/user.log
 
 bonecp:
   driverClass: com.mysql.jdbc.Driver

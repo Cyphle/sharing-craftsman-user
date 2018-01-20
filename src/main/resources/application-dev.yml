@@ -28,7 +28,7 @@ logging:
 
 bonecp:
   driverClass: com.mysql.jdbc.Driver
-  url: jdbc:mysql://192.168.1.18:3306/sharingcraftsmanuser?useUnicode=yes&characterEncoding=UTF-8
+  url: jdbc:mysql://127.0.0.1:32768/sharingcraftsmanuser?useUnicode=yes&characterEncoding=UTF-8
   username: root
   password: root
   idleMaxAgeInMinutes: 240
@@ -40,7 +40,7 @@ bonecp:
   statementsCacheSize: 100
 
 upload:
-  path: upload-dir
+  path: /Users/cyrilpham-le/Downloads/scuser/upload-dir
   extensions:
     authorized: jpeg,jpg,png
 
