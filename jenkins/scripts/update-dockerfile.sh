@@ -71,3 +71,6 @@ sed -i -e "s/<TO_INITIALIZE>/${toInitialize}/g" $target
 rm $target-e
 
 docker-compose up -d
+rm Dockerfile
+rm docker-compose.yml
+rm user-infos.yml
