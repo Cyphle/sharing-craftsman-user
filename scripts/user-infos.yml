@@ -19,3 +19,5 @@ user:
     logs:
       path: /home/scuser/logs
     network: scnetwork
+  eureka:
+    url: sc_eureka

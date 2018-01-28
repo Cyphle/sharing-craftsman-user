@@ -2,6 +2,8 @@
 spring:
   profiles:
     active: ${SPRING_ACTIVE_PROFILE}
+  application:
+    name: sharing-craftsman-user
 
 status:
   toinitialize: ${TO_INITIALIZE}

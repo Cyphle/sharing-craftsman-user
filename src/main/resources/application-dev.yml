@@ -18,6 +18,16 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
 
+# Eureka
+server:
+  port: 8080
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://192.168.1.12:8099/eureka}
+  instance:
+    preferIpAddress: true
+
 logging:
   level:
     org:
@@ -28,7 +38,7 @@ logging:
 
 bonecp:
   driverClass: com.mysql.jdbc.Driver
-  url: jdbc:mysql://127.0.0.1:32768/sharingcraftsmanuser?useUnicode=yes&characterEncoding=UTF-8
+  url: jdbc:mysql://192.168.1.12:3306/sharingcraftsmanuser?useUnicode=yes&characterEncoding=UTF-8
   username: root
   password: root
   idleMaxAgeInMinutes: 240
@@ -40,7 +50,7 @@ bonecp:
   statementsCacheSize: 100
 
 upload:
-  path: /Users/cyrilpham-le/Downloads/scuser/upload-dir
+  path: /Users/cyrilpham-le/Documents/Projets/Java/sharing-craftsman-user/src/test/resources/upload-dir
   extensions:
     authorized: jpeg,jpg,png
 
