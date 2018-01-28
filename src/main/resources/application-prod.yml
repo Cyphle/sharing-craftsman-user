@@ -26,7 +26,7 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: ${EUREKA_URL}
+      defaultZone: ${EUREKA_URI:<EUREKA_PATH>}
   instance:
     preferIpAddress: true
 

@@ -20,4 +20,4 @@ user:
       path: /home/scuser/logs
     network: scnetwork
   eureka:
-    url: sc_eureka
+    path: http://172.18.0.2:8099/eureka

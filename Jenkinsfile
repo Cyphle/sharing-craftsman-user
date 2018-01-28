@@ -1,6 +1,7 @@
 pipeline {
     environment {
         TARGET_PATH     = '/home/apps/user'
+        INFOS_PATH      = 'scripts/user-infos.yml'
     }
 
     agent {
@@ -10,6 +11,12 @@ pipeline {
         }
     }
     stages {
+        stage('Modify application properties') {
+            steps {
+                sh 'chmod +x ./scripts/update-application-properties.sh'
+                sh './scripts/update-application-properties.sh ${INFOS_PATH}'
+            }
+        }
         stage('Build') {
             steps {
                 sh 'mvn -B -DskipTests clean package'

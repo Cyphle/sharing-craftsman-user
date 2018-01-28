@@ -6,7 +6,6 @@ import fr.sharingcraftsman.user.domain.common.Username;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@EqualsAndHashCode
 @ToString
 public class TokenDTO {
   private String username;
@@ -91,5 +90,25 @@ public class TokenDTO {
 
   public static AccessToken fromApiToDomain(TokenDTO token) {
     return AccessToken.from(token.getAccessToken(), token.getRefreshToken(), DateConverter.fromLongToLocalDateTime(token.getExpirationDate()));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    TokenDTO tokenDTO = (TokenDTO) o;
+
+    if (username != null ? !username.equals(tokenDTO.username) : tokenDTO.username != null) return false;
+    if (accessToken != null ? !accessToken.equals(tokenDTO.accessToken) : tokenDTO.accessToken != null) return false;
+    return refreshToken != null ? refreshToken.equals(tokenDTO.refreshToken) : tokenDTO.refreshToken == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = username != null ? username.hashCode() : 0;
+    result = 31 * result + (accessToken != null ? accessToken.hashCode() : 0);
+    result = 31 * result + (refreshToken != null ? refreshToken.hashCode() : 0);
+    return result;
   }
 }

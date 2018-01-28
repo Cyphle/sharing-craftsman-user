@@ -97,15 +97,6 @@ sed -i -e 's|<UPLOAD_PATH>|'$dockerUploadPath'|g' $composeTarget
 sed -i -e 's|<LOGS_PATH>|'$dockerLogsPath'|g' $composeTarget
 sed -i -e "s/<DOCKER_NETWORK>/${dockerNetwork}/g" $composeTarget
 
-# EUREKA
-eurekaUrlEntry='user_eureka_url'
-
-eurekaUrlLength=$((${#infos[13]} - ${#eurekaUrlEntry} - 5))
-
-eurekaUrl=${infos[9]:${#eurekaUrlEntry} + 3:eurekaUrlLength}
-
-sed -i -e 's|<EUREKA_URL>|'eurekaUrl'|g' $target
-
 # LAUNCH DOCKER
 docker-compose up -d
 
