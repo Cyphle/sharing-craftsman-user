@@ -22,7 +22,7 @@ spring:
 
 # Eureka
 server:
-  port: 8080
+  port: <EUREKA_PORT>
 eureka:
   client:
     serviceUrl:
