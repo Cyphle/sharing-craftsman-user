@@ -28,13 +28,9 @@ infos=(${ymldata// / })
 
 # DOCKER
 eurekaPathEntry='user_eureka_path'
-eurekaPortEntry='user_eureka_port'
 
 eurekaPathLength=$((${#infos[13]} - ${#eurekaPathEntry} - 5))
-eurekaPortLength=$((${#infos[14]} - ${#eurekaPortEntry} - 5))
 
 eurekaPath=${infos[13]:${#eurekaPathEntry} + 3:eurekaPathLength}
-eurekaPort=${infos[14]:${#eurekaPortEntry} + 3:eurekaPortLength}
 
 sed -i -e 's|<EUREKA_PATH>|'$eurekaPath'|g' src/main/resources/application-prod.yml
-sed -i -e "s/<EUREKA_PORT>/\"${eurekaPort}\"/g" src/main/resources/application-prod.yml
