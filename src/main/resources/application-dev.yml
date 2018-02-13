@@ -38,7 +38,7 @@ logging:
 
 bonecp:
   driverClass: com.mysql.jdbc.Driver
-  url: jdbc:mysql://192.168.1.12:3306/sharingcraftsmanuser?useUnicode=yes&characterEncoding=UTF-8
+  url: jdbc:mysql://127.0.0.1:8082/sharingcraftsmanuser?useUnicode=yes&characterEncoding=UTF-8
   username: root
   password: root
   idleMaxAgeInMinutes: 240

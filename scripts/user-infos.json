@@ -1,0 +1,76 @@
+{
+  "library": [
+    {
+      "name": "Dockerfile",
+      "database": {
+        "host": {
+          "key": "<DB_HOST>",
+          "value": "192.168.1.18"
+        },
+        "port": {
+          "key": "<DB_PORT>",
+          "value": "3306"
+        },
+        "user": {
+          "key": "<DB_USER>",
+          "value": "root"
+        },
+        "password": {
+          "key": "<DB_PASSWORD>",
+          "value": "root"
+        },
+        "name": {
+          "key": "<DB_NAME>",
+          "value": "sharingcraftsmanuser"
+        }
+      },
+      "app": {
+        "profile": {
+          "key": "<PROFILE>",
+          "value": "prod"
+        },
+        "upload": {
+          "path": {
+            "key": "<UPLOAD_PATH>",
+            "value": "/app/upload"
+          }
+        },
+        "logs": {
+          "path": {
+            "key": "<LOGS_PATH>",
+            "value": "/app/logs"
+          }
+        },
+        "toinitialize": {
+          "key": "<TO_INITIALIZE>",
+          "value": "true"
+        }
+      }
+    },
+    {
+      "name": "docker-compose.yml",
+      "docker": {
+        "port": {
+          "key": "<APP_PORT>",
+          "value": "172.17.0.1:8081:8080"
+        },
+        "logs": {
+          "path": {
+            "key": "<LOGS_PATH>",
+            "value": "/home/sclibrary/logs"
+          }
+        },
+        "upload": {
+          "path": {
+            "key": "<LOGS_PATH>",
+            "value": "/home/scuser/upload-dir"
+          }
+        },
+        "network": {
+          "key": "<DOCKER_NETWORK>",
+          "value": "scnetwork"
+        }
+      }
+    }
+  ]
+}
