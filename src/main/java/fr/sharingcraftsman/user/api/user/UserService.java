@@ -21,6 +21,7 @@ import fr.sharingcraftsman.user.domain.user.AbstractProfile;
 import fr.sharingcraftsman.user.domain.user.ChangePasswordToken;
 import fr.sharingcraftsman.user.domain.user.Profile;
 import fr.sharingcraftsman.user.domain.user.UserOrganisationImpl;
+import fr.sharingcraftsman.user.domain.user.exceptions.InvalidChangePasswordTokenException;
 import fr.sharingcraftsman.user.domain.user.exceptions.ProfileValidationException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UnknownUserException;
 import fr.sharingcraftsman.user.domain.user.exceptions.UserException;
@@ -81,8 +82,6 @@ public class UserService {
     if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
 
     try {
-      log.info("Request for a change password token for:" + tokenDTO.getUsername());
-
       if (verifyToken(clientDTO, tokenDTO))
         return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
 
@@ -122,6 +121,20 @@ public class UserService {
       );
       return ResponseEntity.ok(changePasswordTokenForLostPassword);
     } catch (UserException | CredentialsException e) {
+      return logAndSendBadRequest(e);
+    }
+  }
+
+  public ResponseEntity changeLostPassword(ClientDTO clientDTO, TokenDTO tokenDTO, ChangePasswordDTO changePasswordDTO) {
+    log.info("[UserService::changeLostPassword] Client: " + clientDTO.getName() + ", User: " + tokenDTO.getUsername());
+
+    if (authorizationVerifierService.isUnauthorizedClient(clientDTO)) return new ResponseEntity<>("Unknown client", HttpStatus.UNAUTHORIZED);
+
+    try {
+      authenticationManager.deleteToken(Client.from(clientDTO.getName(), ""), Username.from(tokenDTO.getUsername()));
+      userOrganisation.changeLostPasswordOfUser(Username.from(tokenDTO.getUsername()), ChangePasswordDTO.fromApiToDomainNoOldPassword(changePasswordDTO));
+      return ResponseEntity.ok().build();
+    } catch (CredentialsException | UserException e) {
       return logAndSendBadRequest(e);
     }
   }

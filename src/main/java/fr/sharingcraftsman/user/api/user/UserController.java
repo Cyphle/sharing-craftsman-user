@@ -37,33 +37,6 @@ public class UserController {
     return userService.getChangePasswordToken(clientDTO, tokenDTO);
   }
 
-  @ApiOperation(value = "Endpoint to request a lost password token to change it", response = ResponseEntity.class)
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = ""),
-          @ApiResponse(code = 401, message = "Unauthorized")
-  })
-  @RequestMapping(method = RequestMethod.GET, value = "/lost-password")
-  public ResponseEntity requestLostPassword(@RequestHeader("client") String client,
-                                            @RequestHeader("secret") String secret,
-                                            @RequestHeader("username") String username) {
-    ClientDTO clientDTO = ClientDTO.from(client, secret);
-    return userService.getLostPasswordToken(clientDTO, username);
-  }
-
-  @ApiOperation(value = "Endpoint for a user to register", response = ResponseEntity.class)
-  @ApiResponses(value = {
-          @ApiResponse(code = 200, message = ""),
-          @ApiResponse(code = 401, message = "Unauthorized"),
-          @ApiResponse(code = 400, message = "Error with the request")
-  })
-  @RequestMapping(method = RequestMethod.POST, value = "/register")
-  public ResponseEntity registerUser(@RequestHeader("client") String client,
-                                     @RequestHeader("secret") String secret,
-                                     @RequestBody LoginDTO loginDTO) {
-    ClientDTO clientDTO = ClientDTO.from(client, secret);
-    return userService.registerUser(clientDTO, loginDTO);
-  }
-
   @ApiOperation(value = "Endpoint to change password from received token", response = ResponseEntity.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = ""),
@@ -78,6 +51,49 @@ public class UserController {
     ClientDTO clientDTO = ClientDTO.from(client, secret);
     TokenDTO tokenDTO = TokenDTO.from(username, accessToken);
     return userService.changePassword(clientDTO, tokenDTO, changePasswordDTO);
+  }
+
+  @ApiOperation(value = "Endpoint to request a lost password token to change it", response = ResponseEntity.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.GET, value = "/lost-password")
+  public ResponseEntity requestLostPassword(@RequestHeader("client") String client,
+                                            @RequestHeader("secret") String secret,
+                                            @RequestHeader("username") String username) {
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
+    // TODO Note that this is an unsecured version that sends a change password token as response but should send it in a mail. This is only for a demo to not bother with mail management
+    return userService.getLostPasswordToken(clientDTO, username);
+  }
+
+  @ApiOperation(value = "Endpoint to change password from lost password token", response = ResponseEntity.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized")
+  })
+  @RequestMapping(method = RequestMethod.POST, value = "/change-lost-password")
+  public ResponseEntity changeLostPassword(@RequestHeader("client") String client,
+                                       @RequestHeader("secret") String secret,
+                                       @RequestHeader("username") String username,
+                                       @RequestBody ChangePasswordDTO changePasswordDTO) {
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
+    TokenDTO tokenDTO = TokenDTO.from(username);
+    return userService.changeLostPassword(clientDTO, tokenDTO, changePasswordDTO);
+  }
+
+  @ApiOperation(value = "Endpoint for a user to register", response = ResponseEntity.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = ""),
+          @ApiResponse(code = 401, message = "Unauthorized"),
+          @ApiResponse(code = 400, message = "Error with the request")
+  })
+  @RequestMapping(method = RequestMethod.POST, value = "/register")
+  public ResponseEntity registerUser(@RequestHeader("client") String client,
+                                     @RequestHeader("secret") String secret,
+                                     @RequestBody LoginDTO loginDTO) {
+    ClientDTO clientDTO = ClientDTO.from(client, secret);
+    return userService.registerUser(clientDTO, loginDTO);
   }
 
   @ApiOperation(value = "Endpoint for a user to update its profile", response = ProfileDTO.class)

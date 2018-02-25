@@ -43,7 +43,7 @@ public class UserOrganisationImpl implements UserOrganisation {
   }
 
   @Override
-  public void createNewUser(Credentials credentials) throws UserException, CredentialsException {
+  public void createNewUser(Credentials credentials) throws UserException {
     if (doesUserExists(credentials.getUsername()))
       throw new AlreadyExistingUserException("User already exists with username: " + credentials.getUsernameContent());
 
@@ -69,6 +69,20 @@ public class UserOrganisationImpl implements UserOrganisation {
   public void changePasswordOfUser(Username username, ChangePasswordInfo changePasswordInfo) throws UserException, CredentialsException {
     Credentials userCredentials = Credentials.buildWithEncryption(username, changePasswordInfo.getOldPassword());
     AbstractUser abstractUser = userRepository.findUserFromCredentials(userCredentials);
+
+    if (!abstractUser.isKnown())
+      throw new UnknownUserException("Unknown user");
+
+    checkChangePasswordTokenValidity(changePasswordInfo, changePasswordTokenRepository.findByUsername(username));
+
+    ((User) abstractUser).setPassword(changePasswordInfo.getNewPassword().getEncryptedVersion());
+    userRepository.updateUserPassword((User) abstractUser);
+    changePasswordTokenRepository.deleteChangePasswordTokenOf(username);
+  }
+
+  @Override
+  public void changeLostPasswordOfUser(Username username, ChangePasswordInfo changePasswordInfo) throws UnknownUserException, CredentialsException, InvalidChangePasswordTokenException {
+    AbstractUser abstractUser = userRepository.findUserFromUsername(username);
 
     if (!abstractUser.isKnown())
       throw new UnknownUserException("Unknown user");
