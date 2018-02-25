@@ -154,6 +154,22 @@ public class UserOrganisationTest {
   }
 
   @Test
+  public void should_change_lost_password_with_new_password() throws Exception {
+    given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(
+            ChangePasswordToken.from(
+                    User.from(Username.from("john@doe.fr")),
+                    "aaa",
+                    LocalDateTime.of(2018, Month.JANUARY, 10, 12, 0)
+            )
+    );
+    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from(Username.from("john@doe.fr")));
+
+    userOrganisationImpl.changeLostPasswordOfUser(credentials.getUsername(), ChangePasswordInfo.from("aaa", "newpassword"));
+
+    verify(userRepository).updateUserPassword(User.from("john@doe.fr", "hXYHz1OSnuod1SuvLcgD4A=="));
+  }
+
+  @Test
   public void should_update_profile_of_user() throws Exception {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null, null));
     given(userRepository.updateProfileOf(any(Profile.class))).willReturn(Profile.from(

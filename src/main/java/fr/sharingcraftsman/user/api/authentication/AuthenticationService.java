@@ -97,7 +97,7 @@ public class AuthenticationService {
       Client client = Client.from(clientDTO.getName(), "");
 
       if (authenticationManager.isRefreshTokenValid(client, username, TokenDTO.fromApiToDomain(tokenDTO))) {
-        authenticationManager.deleteToken(client, username, TokenDTO.fromApiToDomain(tokenDTO));
+        authenticationManager.deleteToken(client, username);
         TokenDTO token = TokenDTO.fromDomainToApi((AccessToken) authenticationManager.createNewToken(client, username), username);
         return ResponseEntity.ok(token);
       } else {

@@ -16,6 +16,10 @@ public class TokenDTO {
   private TokenDTO() {
   }
 
+  public TokenDTO(String username) {
+    this.username = username;
+  }
+
   private TokenDTO(String username, String accessToken) {
     this.username = username;
     this.accessToken = accessToken;
@@ -68,6 +72,10 @@ public class TokenDTO {
 
   public static TokenDTO from(String username, String accessToken) {
     return new TokenDTO(username, accessToken);
+  }
+
+  public static TokenDTO from(String username) {
+    return new TokenDTO(username);
   }
 
   public static TokenDTO from(String username, String accessToken, String refreshToken) {

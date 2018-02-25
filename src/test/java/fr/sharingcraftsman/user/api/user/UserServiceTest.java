@@ -9,6 +9,7 @@ import fr.sharingcraftsman.user.common.DateService;
 import fr.sharingcraftsman.user.domain.authentication.AccessToken;
 import fr.sharingcraftsman.user.domain.authentication.Credentials;
 import fr.sharingcraftsman.user.domain.authentication.InvalidToken;
+import fr.sharingcraftsman.user.domain.authentication.exceptions.CredentialsException;
 import fr.sharingcraftsman.user.domain.authentication.ports.AccessTokenRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.AuthorizationRepository;
 import fr.sharingcraftsman.user.domain.authorization.ports.UserAuthorizationRepository;
@@ -185,6 +186,20 @@ public class UserServiceTest {
     given(userRepository.findProfileOf(any(Username.class))).willReturn(Profile.from(Username.from("john@doe.fr"), null, null, null, null, null, null, null));
 
     ResponseEntity response = userService.getLostPasswordToken(clientDTO, "john@doe.fr");
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  @Test
+  public void should_change_lost_password_when_sending_new_password() throws CredentialsException {
+    given(userRepository.findUserFromUsername(any(Username.class))).willReturn(User.from(Username.from("john@doe.fr")));
+    given(changePasswordTokenRepository.findByUsername(any(Username.class))).willReturn(ChangePasswordToken.from(User.from("john@doe.fr", "T49xWf/l7gatvfVwethwDw=="), "aaa", LocalDateTime.of(2018, Month.MARCH, 10, 0, 0)));
+
+    ResponseEntity response = userService.changeLostPassword(
+            clientDTO,
+            tokenDTO,
+            ChangePasswordDTO.from("aaa", "newpassword")
+    );
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

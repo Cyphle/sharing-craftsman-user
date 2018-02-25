@@ -75,7 +75,7 @@ public class UserControllerTest {
   @Test
   public void should_change_password() throws Exception {
     given(userService.changePassword(any(ClientDTO.class), any(TokenDTO.class), any(ChangePasswordDTO.class))).willReturn(ResponseEntity.ok().build());
-    ChangePasswordDTO changePassword = ChangePasswordDTO.from("password", "newpassword");
+    ChangePasswordDTO changePassword = ChangePasswordDTO.from("aaa","password", "newpassword");
 
     this.mvc.perform(post("/users/change-password")
             .header("client", "client")
@@ -110,6 +110,20 @@ public class UserControllerTest {
             .header("client", "client")
             .header("secret", "clientsecret")
             .header("username", "john@doe.fr"))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void should_change_password_from_lost_password_token() throws Exception {
+    given(userService.changePassword(any(ClientDTO.class), any(TokenDTO.class), any(ChangePasswordDTO.class))).willReturn(ResponseEntity.ok().build());
+    ChangePasswordDTO changePassword = ChangePasswordDTO.from("aaa", "newpassword");
+
+    this.mvc.perform(post("/users/change-lost-password")
+            .header("client", "client")
+            .header("secret", "clientsecret")
+            .header("username", "john@doe.fr")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(Mapper.fromObjectToJsonString(changePassword)))
             .andExpect(status().isOk());
   }
 }

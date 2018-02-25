@@ -64,7 +64,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   }
 
   @Override
-  public void deleteToken(Client client, Username username, AccessToken token) {
+  public void deleteToken(Client client, Username username) {
     deleteToken(username, client);
   }
 

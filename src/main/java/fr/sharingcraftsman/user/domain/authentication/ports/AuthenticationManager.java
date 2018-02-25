@@ -18,5 +18,5 @@ public interface AuthenticationManager {
 
   AbstractToken createNewToken(Client client, Username username) throws UserException;
 
-  void deleteToken(Client client, Username username, AccessToken token);
+  void deleteToken(Client client, Username username);
 }
