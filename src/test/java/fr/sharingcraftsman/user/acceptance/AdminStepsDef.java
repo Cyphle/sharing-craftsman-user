@@ -169,7 +169,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
     groupDsl.setName(group);
     groupDsl.setRoles(new HashSet<>(Collections.singletonList(new RoleDsl(role))));
 
-    this.mvc.perform(delete(getBaseUri() + "/admin/roles/groups")
+    this.mvc.perform(post(getBaseUri() + "/admin/roles/groups/delete")
             .header("client", "sharingcraftsman")
             .header("secret", "secret")
             .header("username", login.getUsername())
@@ -210,7 +210,7 @@ public class AdminStepsDef extends SpringAcceptanceTestConfig {
   public void removeAuthorization(String group, String username) throws Exception {
     UserGroupDsl userGroup = new UserGroupDsl(username, group);
 
-    this.mvc.perform(delete(getBaseUri() + "/admin/users/groups")
+    this.mvc.perform(post(getBaseUri() + "/admin/users/groups/delete")
             .header("client", "sharingcraftsman")
             .header("secret", "secret")
             .header("username", login.getUsername())

@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {UserApplication.class})
 @WebMvcTest(UserAuthorizationAdminController.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class UserEntityAuthorizationAdminControllerTest {
+public class UserAuthorizationAdminControllerTest {
   @Autowired
   private MockMvc mvc;
 
@@ -59,7 +59,7 @@ public class UserEntityAuthorizationAdminControllerTest {
   public void should_remove_group_from_user() throws Exception {
     UserGroupDTO newGroupForUser = UserGroupDTO.from("hello@world.fr", "USERS");
 
-    this.mvc.perform(delete("/admin/users/groups")
+    this.mvc.perform(post("/admin/users/groups/delete")
             .header("client", "client")
             .header("secret", "clientsecret")
             .header("username", "john@doe.fr")

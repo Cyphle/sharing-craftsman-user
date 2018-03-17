@@ -43,7 +43,7 @@ public class UserAuthorizationAdminController {
           @ApiResponse(code = 200, message = ""),
           @ApiResponse(code = 401, message = "Unauthorized")
   })
-  @RequestMapping(method = RequestMethod.DELETE, value = "/groups")
+  @RequestMapping(method = RequestMethod.POST, value = "/groups/delete")
   public ResponseEntity removeGroup(@RequestHeader("client") String client,
                                     @RequestHeader("secret") String secret,
                                     @RequestHeader("username") String username,

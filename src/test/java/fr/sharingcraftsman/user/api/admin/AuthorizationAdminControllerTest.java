@@ -90,7 +90,7 @@ public class AuthorizationAdminControllerTest {
     roles.add(RoleDTO.from("ROLE_USER"));
     GroupDTO newGroup = GroupDTO.from("SUPER_ADMINS", roles);
 
-    this.mvc.perform(delete("/admin/roles/groups")
+    this.mvc.perform(post("/admin/roles/groups/delete")
             .header("client", "client")
             .header("secret", "clientsecret")
             .header("username", "john@doe.fr")
