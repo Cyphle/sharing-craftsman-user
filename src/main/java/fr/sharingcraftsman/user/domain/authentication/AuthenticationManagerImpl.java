@@ -13,6 +13,7 @@ import fr.sharingcraftsman.user.domain.user.ports.UserRepository;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.UUID;
 
 public class AuthenticationManagerImpl implements AuthenticationManager {
   private final int LONG_VALIDITY_OFFSET = 8;
@@ -76,7 +77,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
   private AbstractToken generateToken(Client client, User user, boolean isPersistentLogging) {
     AccessToken token = AccessToken.from(
             generateToken(client.getName() + user.getUsernameContent()),
-            generateToken(client.getName() + user.getUsernameContent()),
+            generateToken(client.getName() + user.getUsernameContent() + UUID.randomUUID()),
             dateService.getDayAt(isPersistentLogging ? LONG_VALIDITY_OFFSET : SHORT_VALIDITY_OFFSET)
     );
 
